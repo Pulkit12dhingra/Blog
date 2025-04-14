@@ -9,385 +9,201 @@
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
   />
   <!-- Bootstrap Icons -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     rel="stylesheet"
   />
-  <style>
-    html, body {
-      height: 100%;
-      font-size: 1.1rem;
-    }
 
-    .sidebar {
-      min-width: 300px;
-      max-width: 300px;
-      background-color: #f8f9fa;
-      padding: 2rem 1.5rem;
-    }
+  <link rel="stylesheet" href="data/style.css" />
 
-    .sidebar a {
-      display: block;
-      margin-bottom: 0.75rem;
-      color: #333;
-      text-decoration: none;
-    }
-
-    .sidebar a:hover {
-      text-decoration: underline;
-    }
-
-    .content-wrapper {
-      padding-top: 70px; /* For fixed navbar */
-    }
-
-    .sidebar img.profile {
-      width: 120px;
-      height: 120px;
-    }
-
-    .sidebar a {
-      white-space: nowrap;
-    }
-    .sidebar {
-      transition: all 0.3s ease;
-    }
-    @keyframes blink {
-        0% { opacity: 1; }
-        50% { opacity: 0.3; }
-        100% { opacity: 1; }
-        }
-
-    .blink {
-        animation: blink 1.5s infinite;
-        border-color: #ffc107;
-        color: #ffc107;
-        }
-    .content-wrapper {
-        padding-top: 70px; /* default for large screens */
-        }
-
-        @media (max-width: 767px) {
-        .content-wrapper {
-            padding-top: 100px; /* more space on small screens */
-        }
-        }
-        .custom-navbar {
-  background: linear-gradient(90deg, #343a40, #495057);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.custom-navbar .nav-link,
-.custom-navbar .navbar-brand {
-  color: white !important;
-  transition: color 0.3s ease;
-}
-
-.custom-navbar .nav-link:hover,
-.custom-navbar .navbar-brand:hover {
-  color: #ffc107 !important; /* Bootstrap's warning yellow */
-}
-
-.custom-navbar .btn-outline-light {
-  border-color: #ffffff88;
-  color: #ffffff;
-}
-
-.custom-navbar .btn-outline-light:hover {
-  background-color: #ffc107;
-  color: #212529;
-  border-color: #ffc107;
-}
-
-.custom-navbar input.form-control {
-  background-color: #f8f9fa;
-  border: none;
-}
-
-
-  </style>
 </head>
 <body>
 
-  <!-- Fixed Navbar -->
-  <nav class="navbar navbar-expand-lg custom-navbar px-4 fixed-top">
-    <div class="d-flex align-items-center">
-      <a class="navbar-brand fs-4 me-2 text-white" href="#">Pulkit's Blog</a>
-      <button id="toggle-sidebar" class="btn btn-outline-light">
-        <i class="bi bi-layout-sidebar-inset"></i>
-      </button>
-    </div>
-  
-    <div class="ms-auto d-flex align-items-center">
-      <a class="nav-link text-white me-3" href="#" id="about-link">About</a>
-      <a class="nav-link text-white me-3" href="#" id="home-link">Home</a>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-        <button class="btn btn-outline-light" type="submit">
-          <i class="bi bi-search"></i>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg custom-navbar px-3 fixed-top">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <a class="navbar-brand fs-4 me-2 text-white" href="#">Pulkit's Blog</a>
+        <button id="toggle-sidebar" class="btn btn-outline-light me-2">
+          <i class="bi bi-layout-sidebar-inset"></i>
         </button>
-      </form>
+  
+        <!-- Mobile Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+  
+      <!-- Nav Links + Search -->
+      <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#" id="about-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#" id="home-link">Home</a>
+          </li>
+        </ul>
+  
+        <form class="d-flex mt-2 mt-lg-0" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+          <button class="btn btn-outline-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
     </div>
   </nav>
   
-  
-
-  <!-- Sidebar + Main Content -->
-  <div class="d-flex min-vh-100 content-wrapper">
+  <!-- Layout: Sidebar + Scrollable Main -->
+  <div class="d-flex vh-100" style="overflow: hidden;">
     <!-- Sidebar -->
     <div class="sidebar text-center" id="sidebar">
       <img src="https://via.placeholder.com/120" class="rounded-circle mb-3 profile" alt="Profile" />
       <h4 class="fw-bold">Pulkit Dhingra</h4>
-      <p class="text-muted small">
-        ❤️ code / ❤️ languages 🇮🇹 🇯🇵 / ❤️ mech ⌨️ / Learning stenography
-      </p>
+      <p class="text-muted small">❤️ code / ❤️ languages 🇮🇹 🇯🇵 / ❤️ mech ⌨️ / Learning stenography</p>
       <p class="text-muted">
         <i class="bi bi-geo-alt-fill me-1"></i> Bristol, United Kingdom
       </p>
-  
       <div class="text-start">
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-link-45deg me-2"></i>
-          <a href="#">Website</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-envelope-fill me-2"></i>
-          <a href="#">Email</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-twitter me-2"></i>
-          <a href="#">Twitter</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-linkedin me-2"></i>
-          <a href="#">LinkedIn</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-instagram me-2"></i>
-          <a href="#">Instagram</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-github me-2"></i>
-          <a href="#">GitHub</a>
-        </div>
-        <div class="d-flex align-items-center mb-2">
-          <i class="bi bi-stack-overflow me-2"></i>
-          <a href="#">Stack Overflow</a>
-        </div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-link-45deg me-2"></i><a href="#">Website</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-envelope-fill me-2"></i><a href="#">Email</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-twitter me-2"></i><a href="#">Twitter</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-linkedin me-2"></i><a href="#">LinkedIn</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-instagram me-2"></i><a href="#">Instagram</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-github me-2"></i><a href="#">GitHub</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-stack-overflow me-2"></i><a href="#">Stack Overflow</a></div>
       </div>
-  
       <div class="mt-4 text-start">
         <p class="fw-bold">Get notified of new posts!</p>
         <input type="email" class="form-control" placeholder="email address" />
       </div>
     </div>
 
-    
-
     <!-- Main Content -->
-    <div class="flex-grow-1 p-4" id="main-content">
-        <h2>Welcome to Pulkit's Blog!</h2>
-        <p>Loading blog posts...</p>
-      </div>
-      
+    <div class="flex-grow-1" id="main-content">
 
-<script>
-    const mainContent = document.getElementById("main-content");
-  
-    // Load blog data from JSON file in /data
-    fetch("data/blogData.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load blog data");
-        return res.json();
-      })
-      .then((data) => {
-        renderBlogList(data);
-      })
-      .catch((err) => {
-        mainContent.innerHTML = "<p class='text-danger'>Error loading blog list.</p>";
-        console.error(err);
-      });
-  
-    // Render list of blog titles and summaries
-    function renderBlogList(data) {
-      let html = "<h2>Latest Posts</h2><div class='list-group'>";
-      data.forEach((post) => {
-        html += `
-          <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
-            <h5 class="mb-1">${post.title}</h5>
-            <p class="mb-1">${post.summary}</p>
-          </a>
-        `;
-      });
-      html += "</div>";
-      mainContent.innerHTML = html;
-  
-      // Attach click events to each title
-      document.querySelectorAll("[data-file]").forEach((el) => {
-        el.addEventListener("click", function (e) {
-          e.preventDefault();
-          const file = this.getAttribute("data-file");
-  
-          fetch("content/" + file)
-            .then((res) => {
-              if (!res.ok) throw new Error("Blog file not found");
-              return res.text();
-            })
-            .then((html) => {
-              mainContent.innerHTML = html;
-            })
-            .catch((err) => {
-              mainContent.innerHTML = "<p class='text-danger'>Error loading blog content.</p>";
-              console.error(err);
-            });
-        });
-      });
-    }
-  
-    // Static About page loader
-    document.getElementById("about-link").addEventListener("click", function (e) {
-      e.preventDefault();
-      fetch("content/About.html")
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to load About.html");
-          return res.text();
-        })
-        .then((html) => {
-          mainContent.innerHTML = html;
-        })
-        .catch((err) => {
-          mainContent.innerHTML = "<p class='text-danger'>Could not load About page.</p>";
-        });
-    });
-  
-    // Static Home page loader
-    document.getElementById("home-link").addEventListener("click", function (e) {
-      e.preventDefault();
-      fetch("data/blogData.json")
-        .then((res) => res.json())
-        .then((data) => renderBlogList(data));
-    });
-  </script>
-  
+      <h2>Welcome to Pulkit's Blog!</h2>
+      <p>Loading blog posts...</p>
+    </div>
+</div>
+
+  <!-- Scripts -->
   <script>
-    const searchForm = document.querySelector("form[role='search']");
-    const searchInput = searchForm.querySelector("input[type='search']");
-  
-    // Cache blog data after first fetch
-    let cachedBlogData = [];
-  
-    // Fetch once and store
-    fetch("data/blogData.json")
-      .then((res) => res.json())
-      .then((data) => {
-        cachedBlogData = data;
-        renderBlogList(data); // Initial render
-      });
-  
-    // Handle search submit
-    searchForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      const query = searchInput.value.trim().toLowerCase();
-  
-      if (query === "") {
-        renderBlogList(cachedBlogData);
-        return;
+    const mainContent = document.getElementById("main-content");
+    const toggleBtn = document.getElementById("toggle-sidebar");
+    const sidebar = document.getElementById("sidebar");
+
+    // Toggle Sidebar
+    function toggleSidebar() {
+      sidebar.classList.toggle("d-none");
+      toggleBtn.classList.remove("blink");
+    }
+
+    toggleBtn.addEventListener("click", toggleSidebar);
+
+    // Hide sidebar on small screens
+    function handleInitialSidebar() {
+      if (window.innerWidth < 768) {
+        sidebar.classList.add("d-none");
+        toggleBtn.classList.add("blink");
+        setTimeout(() => {
+          toggleBtn.classList.remove("blink");
+        }, 4000);
       }
-  
-      const filtered = cachedBlogData.filter((post) =>
-        post.title.toLowerCase().includes(query) ||
-        post.summary.toLowerCase().includes(query)
-      );
-  
-      renderBlogList(filtered);
-    });
-  
-    // Reuse the render function for displaying results
+    }
+
+    window.addEventListener("DOMContentLoaded", handleInitialSidebar);
+
+    // Load blog list
+    let cachedBlogData = [];
+
     function renderBlogList(data) {
       let html = "<h2>Latest Posts</h2>";
       if (data.length === 0) {
         html += "<p>No results found.</p>";
       } else {
-        html += `<div class='list-group'>`;
+        html += "<div class='list-group'>";
         data.forEach((post) => {
           html += `
             <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
               <h5 class="mb-1">${post.title}</h5>
               <p class="mb-1">${post.summary}</p>
-            </a>
-          `;
+            </a>`;
         });
         html += "</div>";
       }
       mainContent.innerHTML = html;
-  
-      // Attach file click events
+
       document.querySelectorAll("[data-file]").forEach((el) => {
         el.addEventListener("click", function (e) {
           e.preventDefault();
           const file = this.getAttribute("data-file");
-  
           fetch("content/" + file)
-            .then((res) => {
-              if (!res.ok) throw new Error("Blog file not found");
-              return res.text();
-            })
+            .then((res) => res.text())
             .then((html) => {
               mainContent.innerHTML = html;
             })
-            .catch((err) => {
+            .catch(() => {
               mainContent.innerHTML = "<p class='text-danger'>Error loading blog content.</p>";
             });
         });
       });
     }
 
+    // Load blog data
+    fetch("data/blogData.json")
+      .then((res) => res.json())
+      .then((data) => {
+        cachedBlogData = data;
+        renderBlogList(data);
+      });
+
+    // About page
+    document.getElementById("about-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      fetch("content/About.html")
+        .then((res) => res.text())
+        .then((html) => {
+          mainContent.innerHTML = html;
+        })
+        .catch(() => {
+          mainContent.innerHTML = "<p class='text-danger'>Could not load About page.</p>";
+        });
+    });
+
+    // Home (reload blog list)
+    document.getElementById("home-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      renderBlogList(cachedBlogData);
+    });
+
+    // Search
+    const searchForm = document.querySelector("form[role='search']");
+    const searchInput = searchForm.querySelector("input[type='search']");
+
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const query = searchInput.value.trim().toLowerCase();
+      if (query === "") {
+        renderBlogList(cachedBlogData);
+        return;
+      }
+      const filtered = cachedBlogData.filter((post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.summary.toLowerCase().includes(query)
+      );
+      renderBlogList(filtered);
+    });
   </script>
 
-  
-
-
-  <script>
-const toggleBtn = document.getElementById("toggle-sidebar");
-const sidebar = document.getElementById("sidebar");
-
-// Toggle the sidebar on button click
-function toggleSidebar() {
-  sidebar.classList.toggle("d-none");
-
-  // Remove blink immediately if user manually toggles
-  toggleBtn.classList.remove("blink");
-  toggleBtn.classList.remove("btn-warning");
-}
-
-// Highlight briefly on small screens
-function handleInitialSidebar() {
-  if (window.innerWidth < 768) {
-    sidebar.classList.add("d-none");
-    toggleBtn.classList.add("blink");
-
-    // Stop blinking after 4 seconds
-    setTimeout(() => {
-      toggleBtn.classList.remove("blink");
-    }, 8000);
-  }
-}
-
-toggleBtn.addEventListener("click", toggleSidebar);
-window.addEventListener("DOMContentLoaded", handleInitialSidebar);
-
-</script>
-  
-
-<!-- Bootstrap JS -->
-<script
+  <!-- Bootstrap JS -->
+  <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ENjdO4Dr2bkBIFxQpeo9BxZUpnCb3AKypD9P6FQa/nlJp9ggPCu2P31Cv9yY7Nlg"
     crossorigin="anonymous"
-></script>
+  ></script>
+
 </body>
 </html>

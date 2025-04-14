@@ -1,0 +1,109 @@
+html, body {
+    height: 100%;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  
+  .sidebar {
+    min-width: 300px;
+    max-width: 300px;
+    background-color: #f8f9fa;
+    padding: 2rem 1.5rem;
+    height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s ease;
+    padding-top: 120px;
+  }
+  
+  .sidebar a {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: #333;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .sidebar a:hover {
+    text-decoration: underline;
+  }
+  
+  .sidebar img.profile {
+    width: 120px;
+    height: 120px;
+  }
+  
+  #main-content {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-top: 100px;
+  }
+  
+  @media (min-width: 768px) {
+    #main-content {
+      padding-top: 70px;
+    }
+  }
+  
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+  
+  .blink {
+    animation: blink 1.5s infinite;
+    border-color: #ffc107;
+    color: #ffc107;
+  }
+  
+  .custom-navbar {
+    background: linear-gradient(90deg, #343a40, #495057);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  .custom-navbar .nav-link,
+  .custom-navbar .navbar-brand {
+    color: white !important;
+    transition: color 0.3s ease;
+  }
+  
+  .custom-navbar .nav-link:hover,
+  .custom-navbar .navbar-brand:hover {
+    color: #ffc107 !important;
+  }
+  
+  .custom-navbar .btn-outline-light {
+    border-color: #ffffff88;
+    color: #ffffff;
+  }
+  
+  .custom-navbar .btn-outline-light:hover {
+    background-color: #ffc107;
+    color: #212529;
+    border-color: #ffc107;
+  }
+  
+  .custom-navbar input.form-control {
+    background-color: #f8f9fa;
+    border: none;
+  }
+  
+  @media (max-width: 767px) {
+    .sidebar {
+      padding-top: 100px;
+    }
+  
+    #main-scroll {
+      padding-top: 100px;
+    }
+  }
+  
+  #main-scroll {
+    padding-top: 120px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
