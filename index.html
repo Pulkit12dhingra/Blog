@@ -49,6 +49,11 @@
       width: 120px;
       height: 120px;
     }
+
+    .sidebar a {
+      white-space: nowrap;
+    }
+
   </style>
 </head>
 <body>
@@ -205,6 +210,79 @@
     });
   </script>
   
+  <script>
+    const searchForm = document.querySelector("form[role='search']");
+    const searchInput = searchForm.querySelector("input[type='search']");
+  
+    // Cache blog data after first fetch
+    let cachedBlogData = [];
+  
+    // Fetch once and store
+    fetch("data/blogData.json")
+      .then((res) => res.json())
+      .then((data) => {
+        cachedBlogData = data;
+        renderBlogList(data); // Initial render
+      });
+  
+    // Handle search submit
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const query = searchInput.value.trim().toLowerCase();
+  
+      if (query === "") {
+        renderBlogList(cachedBlogData);
+        return;
+      }
+  
+      const filtered = cachedBlogData.filter((post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.summary.toLowerCase().includes(query)
+      );
+  
+      renderBlogList(filtered);
+    });
+  
+    // Reuse the render function for displaying results
+    function renderBlogList(data) {
+      let html = "<h2>Latest Posts</h2>";
+      if (data.length === 0) {
+        html += "<p>No results found.</p>";
+      } else {
+        html += `<div class='list-group'>`;
+        data.forEach((post) => {
+          html += `
+            <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
+              <h5 class="mb-1">${post.title}</h5>
+              <p class="mb-1">${post.summary}</p>
+            </a>
+          `;
+        });
+        html += "</div>";
+      }
+      mainContent.innerHTML = html;
+  
+      // Attach file click events
+      document.querySelectorAll("[data-file]").forEach((el) => {
+        el.addEventListener("click", function (e) {
+          e.preventDefault();
+          const file = this.getAttribute("data-file");
+  
+          fetch("content/" + file)
+            .then((res) => {
+              if (!res.ok) throw new Error("Blog file not found");
+              return res.text();
+            })
+            .then((html) => {
+              mainContent.innerHTML = html;
+            })
+            .catch((err) => {
+              mainContent.innerHTML = "<p class='text-danger'>Error loading blog content.</p>";
+            });
+        });
+      });
+    }
+  </script>
   
 
 <!-- Bootstrap JS -->
