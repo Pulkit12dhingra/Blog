@@ -1,2 +1,85 @@
-<h2>This is blog post 2</h2>
-<p>Hello! I'm Pulkit — a developer passionate about code, languages, and mechanical keyboards!</p>
+<div class="container mt-4">
+    <h2 class="fw-bold mb-3">Setting Up Your Python Environment 🐍</h2>
+    <p class="text-muted">Published: <span id="publish-date">April 14, 2025</span></p>
+    <hr />
+  
+    <p>
+      One of the most important first steps for any Python project is setting up a clean and manageable environment. Whether you're building a web app, training a machine learning model, or just experimenting — having the right setup saves you from a ton of headaches later.
+    </p>
+  
+    <h4 class="mt-4">🧰 Step 1: Install Python</h4>
+    <p>
+      Visit the official <a href="https://www.python.org/downloads/" target="_blank">Python website</a> and download the latest stable version. During installation, make sure to check:
+    </p>
+  
+    <ul>
+      <li><strong>Add Python to PATH</strong> ✔️</li>
+      <li>Install pip (Python’s package manager)</li>
+    </ul>
+  
+    <h4 class="mt-4">📦 Step 2: Create a Virtual Environment</h4>
+    <p>
+      Virtual environments let you isolate dependencies per project, so packages from one project don’t mess with another.
+    </p>
+  
+    <pre class="bg-light p-3 rounded">
+  <code># Create a virtual environment
+  python -m venv env
+  
+  # Activate it
+  # On Windows:
+  env\Scripts\activate
+  
+  # On macOS/Linux:
+  source env/bin/activate
+  </code>
+    </pre>
+  
+    <p>
+      Once activated, your terminal will show the environment name — and now you're installing packages into that isolated space.
+    </p>
+  
+    <h4 class="mt-4">📚 Step 3: Install Packages</h4>
+    <p>
+      With your virtual environment active, use <code>pip</code> to install libraries:
+    </p>
+  
+    <pre class="bg-light p-3 rounded">
+  <code>pip install numpy pandas matplotlib</code>
+    </pre>
+  
+    <p>
+      You can freeze your installed packages for future sharing:
+    </p>
+  
+    <pre class="bg-light p-3 rounded">
+  <code>pip freeze > requirements.txt</code>
+    </pre>
+  
+    <p>
+      And later recreate the exact environment with:
+    </p>
+  
+    <pre class="bg-light p-3 rounded">
+  <code>pip install -r requirements.txt</code>
+    </pre>
+  
+    <h4 class="mt-4">💡 Pro Tip: Use <code>python -m pip</code></h4>
+    <p>
+      To avoid path issues, it’s best practice to use:
+    </p>
+  
+    <pre class="bg-light p-3 rounded">
+  <code>python -m pip install flask</code>
+    </pre>
+  
+    <h4 class="mt-4">✅ That’s It!</h4>
+    <p>
+      Now you're ready to build your Python project in a clean, reproducible setup. Whether you’re experimenting or building production tools, this foundation will make your development experience smoother and more organized.
+    </p>
+  
+    <p class="fw-bold">
+      In future posts, I’ll dive into using tools like Conda, Poetry, and virtualenvwrapper — so stay tuned!
+    </p>
+  </div>
+  
