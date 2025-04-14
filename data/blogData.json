@@ -1,13 +1,12 @@
 [
-    {
-      "file": "Blog_1.html",
-      "title": "Hello World! 🚀 — My First Blog Post",
-      "summary": "Kicking off my blog with excitement and a glimpse of what’s to come. Let the journey begin!"
-    },
-    {
-      "file": "Blog_2.html",
-      "title": "Second Blog",
-      "summary": "This is second Blog mechanical"
-    }
-  ]
-  
+  {
+    "file": "Blog_2.html",
+    "title": "Setting Up Your Python Environment 🐍",
+    "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively."
+  },
+  {
+    "file": "Blog_1.html",
+    "title": "Hello World! 🚀 — My First Blog Post",
+    "summary": "Kicking off my blog with excitement and a glimpse of what’s to come. Let the journey begin!"
+  }
+]
