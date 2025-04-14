@@ -76,6 +76,37 @@
             padding-top: 100px; /* more space on small screens */
         }
         }
+        .custom-navbar {
+  background: linear-gradient(90deg, #343a40, #495057);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .navbar-brand {
+  color: white !important;
+  transition: color 0.3s ease;
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .navbar-brand:hover {
+  color: #ffc107 !important; /* Bootstrap's warning yellow */
+}
+
+.custom-navbar .btn-outline-light {
+  border-color: #ffffff88;
+  color: #ffffff;
+}
+
+.custom-navbar .btn-outline-light:hover {
+  background-color: #ffc107;
+  color: #212529;
+  border-color: #ffc107;
+}
+
+.custom-navbar input.form-control {
+  background-color: #f8f9fa;
+  border: none;
+}
 
 
   </style>
@@ -83,25 +114,26 @@
 <body>
 
   <!-- Fixed Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 fixed-top">
+  <nav class="navbar navbar-expand-lg custom-navbar px-4 fixed-top">
     <div class="d-flex align-items-center">
-      <a class="navbar-brand fs-4 me-2" href="#">Pulkit's Blog</a>
-      <button id="toggle-sidebar" class="btn btn-outline-secondary">
+      <a class="navbar-brand fs-4 me-2 text-white" href="#">Pulkit's Blog</a>
+      <button id="toggle-sidebar" class="btn btn-outline-light">
         <i class="bi bi-layout-sidebar-inset"></i>
       </button>
     </div>
   
     <div class="ms-auto d-flex align-items-center">
-      <a class="nav-link me-3" href="#" id="about-link">About</a>
-      <a class="nav-link me-3" href="#" id="home-link">Home</a>
+      <a class="nav-link text-white me-3" href="#" id="about-link">About</a>
+      <a class="nav-link text-white me-3" href="#" id="home-link">Home</a>
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-        <button class="btn btn-outline-secondary" type="submit">
+        <button class="btn btn-outline-light" type="submit">
           <i class="bi bi-search"></i>
         </button>
       </form>
     </div>
   </nav>
+  
   
 
   <!-- Sidebar + Main Content -->
