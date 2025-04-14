@@ -119,11 +119,20 @@ html, body {
     border-radius: 0.5rem;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   }
+  
+  /* ✅ More breathing room on wider screens */
   @media (min-width: 992px) {
     #main-content {
       margin-left: 2rem;
       margin-right: 2rem;
     }
   }
-    
-    
+  
+  /* ✅ Add padding inside the content for mobile too */
+  @media (max-width: 767px) {
+    #main-content {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+  
