@@ -106,4 +106,7 @@ html, body {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
-  
+  #main-content {
+    margin-left: 1rem; /* or try 1.5rem or 2rem for more spacing */
+  }
+    
