@@ -30,8 +30,8 @@ html, body {
   }
   
   .sidebar img.profile {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
   }
   
   #main-content {
@@ -134,5 +134,9 @@ html, body {
       padding-left: 1rem;
       padding-right: 1rem;
     }
+  }
+  .sidebar a {
+    white-space: normal;  /* previously set to nowrap */
+    word-break: break-word; /* break long words if needed */
   }
   

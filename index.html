@@ -17,7 +17,10 @@
   />
 
   <link rel="stylesheet" href="data/style.css" />
-
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  rel="stylesheet"
+/>
 </head>
 <body>
 
@@ -61,25 +64,58 @@
   <div class="d-flex vh-100" style="overflow: hidden;">
     <!-- Sidebar -->
     <div class="sidebar text-center" id="sidebar">
-      <img src="https://via.placeholder.com/120" class="rounded-circle mb-3 profile" alt="Profile" />
+      <img src="img/profile.jpeg" class="rounded-circle mb-3 profile" alt="Profile" />
       <h4 class="fw-bold">Pulkit Dhingra</h4>
-      <p class="text-muted small">❤️ code / ❤️ languages 🇮🇹 🇯🇵 / ❤️ mech ⌨️ / Learning stenography</p>
+      <p class="text-muted small">💻 code / 🤖 Artificial Intelligence / 👨‍💻 Software Dev / ☁️ + 🖥️ ing</p>
       <p class="text-muted">
         <i class="bi bi-geo-alt-fill me-1"></i> Bristol, United Kingdom
       </p>
       <div class="text-start">
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-link-45deg me-2"></i><a href="#">Website</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-envelope-fill me-2"></i><a href="#">Email</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-twitter me-2"></i><a href="#">Twitter</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-linkedin me-2"></i><a href="#">LinkedIn</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-instagram me-2"></i><a href="#">Instagram</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-github me-2"></i><a href="#">GitHub</a></div>
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-stack-overflow me-2"></i><a href="#">Stack Overflow</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-link-45deg me-2"></i><a target="_blank" href="https://pulkit12dhingra.github.io/portfolio/">Website</a></div>
+        <div class="d-flex align-items-center mb-2">
+            <i class="fab fa-kaggle me-2"></i>
+            <a target="_blank" href="https://www.kaggle.com/pulkit12dhingra">Kaggle</a>
+          </div>
+          
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-linkedin me-2"></i><a target="_blank" href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/">LinkedIn</a></div>
+        <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-chart-pie me-2"></i>
+            <a target="_blank" href="https://public.tableau.com/app/profile/pulkit.dhingra/vizzes#!/?newProfile=&activeTab=0">Tableau</a>
+          </div>
+          
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-github me-2"></i><a target="_blank" href="https://github.com/Pulkit12dhingra">GitHub</a></div>
+        <div class="d-flex align-items-center mb-2">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" width="20" class="me-2" alt="GfG" />
+            <a target="_blank" href="https://www.geeksforgeeks.org/user/pulkit12dhingra/contributions/?type=articles">GeeksforGeeks Articles</a>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-journal-text me-2"></i>
+            <a href="http://ijsret.com/wp-content/uploads/2022/07/IJSRET_V8_issue4_461.pdf" target="_blank">Paper 1: Sketch to Image Generation</a>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-journal-text me-2"></i>
+            <a href="https://ijsret.com/wp-content/uploads/2021/07/IJSRET_V7_issue4_579.pdf" target="_blank">Paper 2: Gradient Boosting Glass Identification</a>
+          </div>          
       </div>
+
       <div class="mt-4 text-start">
-        <p class="fw-bold">Get notified of new posts!</p>
-        <input type="email" class="form-control" placeholder="email address" />
-      </div>
+  <p class="fw-bold">Let's Connect 🤗</p>
+  <form action="mailto:youremail@example.com" method="POST" enctype="text/plain">
+    <div class="mb-2">
+      <input type="text" class="form-control" name="name" placeholder="Your name" required />
+    </div>
+    <div class="mb-2">
+      <input type="email" class="form-control" name="email" placeholder="Your email" required />
+    </div>
+    <div class="mb-2">
+      <textarea class="form-control" name="message" rows="3" placeholder="Your message..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-outline-primary w-100">
+      Send Message
+    </button>
+  </form>
+</div>
+
     </div>
 
     <!-- Main Content -->
