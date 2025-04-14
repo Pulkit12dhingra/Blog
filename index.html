@@ -56,6 +56,18 @@
     .sidebar {
       transition: all 0.3s ease;
     }
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.3; }
+        100% { opacity: 1; }
+        }
+
+        .blink {
+        animation: blink 1.5s infinite;
+        border-color: #ffc107;
+        color: #ffc107;
+        }
+
 
   </style>
 </head>
@@ -296,8 +308,6 @@
 
 
   <script>
-    // === SIDEBAR TOGGLE LOGIC ===
-
 const toggleBtn = document.getElementById("toggle-sidebar");
 const sidebar = document.getElementById("sidebar");
 
@@ -305,27 +315,28 @@ const sidebar = document.getElementById("sidebar");
 function toggleSidebar() {
   sidebar.classList.toggle("d-none");
 
-  // Highlight the button when sidebar is hidden
-  if (sidebar.classList.contains("d-none")) {
-    toggleBtn.classList.add("btn-warning");
-  } else {
-    toggleBtn.classList.remove("btn-warning");
+  // Remove blink immediately if user manually toggles
+  toggleBtn.classList.remove("blink");
+  toggleBtn.classList.remove("btn-warning");
+}
+
+// Highlight briefly on small screens
+function handleInitialSidebar() {
+  if (window.innerWidth < 768) {
+    sidebar.classList.add("d-none");
+    toggleBtn.classList.add("blink");
+
+    // Stop blinking after 4 seconds
+    setTimeout(() => {
+      toggleBtn.classList.remove("blink");
+    }, 8000);
   }
 }
 
 toggleBtn.addEventListener("click", toggleSidebar);
-
-// Auto-hide on small screens on initial load
-function handleInitialSidebar() {
-  if (window.innerWidth < 768) {
-    sidebar.classList.add("d-none");
-    toggleBtn.classList.add("btn-warning");
-  }
-}
-
 window.addEventListener("DOMContentLoaded", handleInitialSidebar);
 
-  </script>
+</script>
   
 
 <!-- Bootstrap JS -->
