@@ -107,6 +107,23 @@ html, body {
     padding-right: 1.5rem;
   }
   #main-content {
-    margin-left: 1rem; /* or try 1.5rem or 2rem for more spacing */
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-top: 100px;
+  
+    margin-left: 1rem;
+    margin-right: 1rem;
+  
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   }
+  @media (min-width: 992px) {
+    #main-content {
+      margin-left: 2rem;
+      margin-right: 2rem;
+    }
+  }
+    
     
