@@ -80,12 +80,30 @@ X_test_bias = np.c_[np.ones((X_test.shape[0], 1)), X_test]</code></pre>
 
 
 
-    <h5>4️⃣ Apply the OLS Formula</h5>
+    
+<p><strong>Why add a bias term?</strong> In linear regression, the bias (or intercept) allows the model to fit data that doesn't necessarily pass through the origin (0,0). 
+To include this, we prepend a column of 1s to the feature matrix using <code>np.ones()</code>. This new column represents the bias term, and its coefficient is learned just like the other feature weights.</p>
+
+
+<h5>4️⃣ Apply the OLS Formula</h5>
     <pre class="bg-light p-3 rounded"><code>theta_best = np.linalg.inv(X_train_bias.T.dot(X_train_bias)).dot(X_train_bias.T).dot(y_train)</code></pre>
 
 
 
-    <h5>5️⃣ Make Predictions</h5>
+    
+<p><strong>What does this formula do?</strong> This is the classic <em>Normal Equation</em> for OLS regression:</p>
+
+<ul>
+  <li><code>X_train_bias.T.dot(X_train_bias)</code> computes the Gram matrix \( X^TX \)</li>
+  <li><code>np.linalg.inv(...)</code> calculates its inverse — this step "undoes" the multiplication to isolate theta</li>
+  <li><code>.dot(X_train_bias.T).dot(y_train)</code> completes the equation \( \theta = (X^TX)^{-1}X^Ty \)</li>
+</ul>
+
+<p>This yields the exact weight vector <code>theta_best</code> that minimizes the squared error between predictions and true values — a closed-form solution!</p>
+<p><strong>Note:</strong> If the matrix is non-invertible (singular), this will throw an error — that’s when SVD or regularized methods come in handy.</p>
+
+
+<h5>5️⃣ Make Predictions</h5>
     <pre class="bg-light p-3 rounded"><code>y_pred = X_test_bias.dot(theta_best)</code></pre>
 
 
