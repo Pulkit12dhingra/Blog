@@ -14,22 +14,63 @@
     <p>Mathematically, the optimal weight vector \( \theta \) is calculated using:</p>
     <pre class="bg-light p-3 rounded"><code>θ = (XᵀX)<sup>-1</sup>Xᵀy</code></pre>
 
+
+
     <p>This is known as the <strong>Normal Equation</strong>. It avoids iteration (like in gradient descent) and directly gives us the best solution — if (XᵀX) is invertible.</p>
 
-    <h4 class="mt-4">📦 Step-by-Step Implementation</h4>
+    
+<h4 class="mt-4">📊 Dataset Overview: California Housing</h4>
+<p>For this tutorial, we’re using the <strong>California Housing Dataset</strong> from scikit-learn. It's a classic regression dataset used for predicting the median house value across various districts in California.</p>
+
+<p>📌 <strong>Dataset Details:</strong></p>
+<ul>
+  <li><strong>Type:</strong> Regression</li>
+  <li><strong>Samples:</strong> 20,640</li>
+  <li><strong>Features:</strong> 8 numerical features</li>
+  <li><strong>Target:</strong> Median house value (in $100,000s)</li>
+</ul>
+
+<p>🔍 <strong>Features:</strong></p>
+<ul>
+  <li>longitude</li>
+  <li>latitude</li>
+  <li>housing_median_age</li>
+  <li>total_rooms</li>
+  <li>total_bedrooms</li>
+  <li>population</li>
+  <li>households</li>
+  <li>median_income</li>
+</ul>
+
+<p>🎯 <strong>Target Variable:</strong> <code>median_house_value</code></p>
+
+
+<h4 class="mt-4">📦 Step-by-Step Implementation</h4>
 
     <h5>1️⃣ Load the California Housing Dataset</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.datasets import fetch_california_housing
 
 housing = fetch_california_housing()
 X = housing.data
-y = housing.target</code></pre>
+y = housing.target
+print("Data shape:", X.shape)
+print("Target shape:", y.shape)</code></pre>
+<div class="mt-2 mb-4 text-center">
+  <img src="../img/Blog_3/_1.png" alt="Code Output Screenshot" class="img-fluid rounded shadow"/>
+</div>
+
 
     <h5>2️⃣ Split the Data into Train and Test Sets</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42)</code></pre>
+    X, y, test_size=0.2, random_state=42)
+    print("Training data shape:", X_train.shape)
+    print("Testing data shape:", X_test.shape)</code></pre>
+<div class="mt-2 mb-4 text-center">
+  <img src="../img/Blog_3/_2.png" alt="Code Output Screenshot" class="img-fluid rounded shadow"/>
+</div>
+
 
     <h5>3️⃣ Add Bias Term (Intercept)</h5>
     <pre class="bg-light p-3 rounded"><code>import numpy as np
@@ -37,17 +78,29 @@ X_train, X_test, y_train, y_test = train_test_split(
 X_train_bias = np.c_[np.ones((X_train.shape[0], 1)), X_train]
 X_test_bias = np.c_[np.ones((X_test.shape[0], 1)), X_test]</code></pre>
 
+
+
     <h5>4️⃣ Apply the OLS Formula</h5>
     <pre class="bg-light p-3 rounded"><code>theta_best = np.linalg.inv(X_train_bias.T.dot(X_train_bias)).dot(X_train_bias.T).dot(y_train)</code></pre>
 
+
+
     <h5>5️⃣ Make Predictions</h5>
     <pre class="bg-light p-3 rounded"><code>y_pred = X_test_bias.dot(theta_best)</code></pre>
+
+
 
     <h5>6️⃣ Evaluate Model Performance</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.metrics import mean_squared_error, r2_score
 
 mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)</code></pre>
+r2 = r2_score(y_test, y_pred)
+print("Mean Squared Error (manual OLS):", mse)
+print("R^2 Score:", r2)</code></pre>
+<div class="mt-2 mb-4 text-center">
+  <img src="../img/Blog_3/_3.png" alt="Code Output Screenshot" class="img-fluid rounded shadow"/>
+</div>
+
 
     <p>These metrics help us understand model accuracy. A higher R² and lower MSE means a better fit.</p>
 
@@ -56,6 +109,7 @@ r2 = r2_score(y_test, y_pred)</code></pre>
     <pre class="bg-light p-3 rounded"><code>from numpy.linalg import svd
 
 U, s, Vt = svd(X_train_bias)</code></pre>
+
 
     <p>This numerically stable method still lets us solve OLS efficiently.</p>
 
@@ -69,14 +123,30 @@ model = LinearRegression()
 model.fit(X_train, y_train)
 y_sklearn_pred = model.predict(X_test)</code></pre>
 
+
+
 <p>Then evaluate the performance using the same metrics:</p>
 
 <pre class="bg-light p-3 rounded"><code>from sklearn.metrics import mean_squared_error, r2_score
 
 mse_sklearn = mean_squared_error(y_test, y_sklearn_pred)
 r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
+<div class="mt-2 mb-4 text-center">
+  <img src="../img/Blog_3/_4.png" alt="Code Output Screenshot" class="img-fluid rounded shadow"/>
+</div>
+
 
 <p>This allows you to confirm that both approaches yield nearly identical results — verifying that our OLS formula is working correctly!</p>
+<p>🔬 The comparison below shows the output from both models:</p>
+<p><strong>Original (scikit-learn):</strong> MSE ≈ 0.55589, R² ≈ 0.57578</p>
+<p><strong>Manual OLS:</strong> MSE ≈ 0.55589, R² ≈ 0.57578</p>
+
+<p>This validates that our manual implementation produces the same result as scikit-learn’s optimized solution.</p>
+
+<div class="text-center">
+  <img src="../img/Blog_3/_5.png" alt="Model Comparison Results" class="img-fluid rounded shadow mt-3"/>
+</div>
+
 
 
 <h4 class="mt-4">✅ Wrapping Up</h4>
