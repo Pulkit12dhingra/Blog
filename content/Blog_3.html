@@ -130,6 +130,27 @@ U, s, Vt = svd(X_train_bias)</code></pre>
 
 
     <p>This numerically stable method still lets us solve OLS efficiently.</p>
+<p><strong>What is SVD (Singular Value Decomposition)?</strong></p>
+<p>Singular Value Decomposition (SVD) is a powerful matrix factorization technique used to decompose a matrix into three other matrices:</p>
+
+<pre class="bg-light p-3 rounded"><code>from numpy.linalg import svd
+
+U, s, Vt = svd(X_train_bias)</code></pre>
+
+<p>Here’s what each component represents:</p>
+
+<ul>
+  <li><code>U</code>: An orthogonal matrix of shape (m × m), where m is the number of training samples. It contains the left singular vectors.</li>
+  <li><code>s</code>: A 1D array of singular values (diagonal elements of Σ). These are always non-negative and sorted in descending order.</li>
+  <li><code>Vt</code>: The transpose of an orthogonal matrix V (of shape n × n), where n is the number of features (including the bias column). It contains the right singular vectors.</li>
+</ul>
+
+<p>Together, these satisfy the identity:</p>
+
+<pre><code>X ≈ U × Σ × Vᵗ</code></pre>
+
+<p>Using SVD is especially useful when the matrix <code>XᵀX</code> is not invertible or poorly conditioned. Instead of relying on inversion, SVD allows for a more numerically stable way to solve for the weights in linear regression.</p>
+
 
     
 <h4 class="mt-4">🤖 Comparing with scikit-learn's LinearRegression</h4>
