@@ -1,3 +1,4 @@
+
 <div class="container mt-4">
     <h2 class="fw-bold mb-3">Unraveling Linear Regression with OLS — A Deep Dive Using California Housing Data 🏡</h2>
     <p class="text-muted">Published: <span id="publish-date">April 19, 2025</span></p>
@@ -10,7 +11,7 @@
     <h4 class="mt-4">🧠 What is OLS?</h4>
     <p>OLS is a mathematical method to determine the "best-fitting" line through a dataset. It works by minimizing the <strong>sum of squared errors</strong> between actual values and the values predicted by the model.</p>
 
-    <p>Mathematically, the optimal weight vector \\( \\theta \\) is calculated using:</p>
+    <p>Mathematically, the optimal weight vector \( \theta \) is calculated using:</p>
     <pre class="bg-light p-3 rounded"><code>θ = (XᵀX)<sup>-1</sup>Xᵀy</code></pre>
 
     <p>This is known as the <strong>Normal Equation</strong>. It avoids iteration (like in gradient descent) and directly gives us the best solution — if (XᵀX) is invertible.</p>
@@ -58,7 +59,27 @@ U, s, Vt = svd(X_train_bias)</code></pre>
 
     <p>This numerically stable method still lets us solve OLS efficiently.</p>
 
-    <h4 class="mt-4">✅ Wrapping Up</h4>
+    
+<h4 class="mt-4">🤖 Comparing with scikit-learn's LinearRegression</h4>
+<p>We can validate our manual OLS implementation by comparing it with scikit-learn’s built-in <code>LinearRegression</code> model:</p>
+
+<pre class="bg-light p-3 rounded"><code>from sklearn.linear_model import LinearRegression
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_sklearn_pred = model.predict(X_test)</code></pre>
+
+<p>Then evaluate the performance using the same metrics:</p>
+
+<pre class="bg-light p-3 rounded"><code>from sklearn.metrics import mean_squared_error, r2_score
+
+mse_sklearn = mean_squared_error(y_test, y_sklearn_pred)
+r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
+
+<p>This allows you to confirm that both approaches yield nearly identical results — verifying that our OLS formula is working correctly!</p>
+
+
+<h4 class="mt-4">✅ Wrapping Up</h4>
     <p>OLS linear regression might look like just a formula — but when you apply it to a real dataset, each step teaches something new:</p>
     <ul>
         <li>Data preprocessing</li>

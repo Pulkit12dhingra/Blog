@@ -1,8 +1,8 @@
 [
   {
     "file": "Blog_3.html",
-    "title": "SMastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
-    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance — while demystifying the math and logic behind OLS. Ideal for beginners and enthusiasts looking to build a solid foundation in regression modeling."
+    "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
+    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance."
   },
   {
     "file": "Blog_2.html",
