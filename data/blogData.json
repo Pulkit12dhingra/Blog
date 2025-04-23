@@ -1,5 +1,10 @@
 [
   {
+    "file": "Blog_4.html",
+    "title": "Linear Regression from Scratch — With Gradient Descent",
+    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on."
+  },
+  {
     "file": "Blog_3.html",
     "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
     "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance."
