@@ -197,7 +197,10 @@
     }
 
     // Load blog data
-    fetch("data/blogData.json?v=2.0")
+    fetch("data/blogData.json?version=2.1", {
+    cache: "no-cache"
+    });
+
 
       .then((res) => res.json())
       .then((data) => {
@@ -208,7 +211,7 @@
     // About page
     document.getElementById("about-link").addEventListener("click", function (e) {
       e.preventDefault();
-      fetch("content/About.html")
+      fetch("content/About.html?version=2.1", { cache: "no-cache" })
         .then((res) => res.text())
         .then((html) => {
           mainContent.innerHTML = html;
