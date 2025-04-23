@@ -1,0 +1,177 @@
+<div class="container mt-4">
+    <h2 class="fw-bold mb-3">Linear Regression from Scratch — With Gradient Descent 🧐📉</h2>
+    <p class="text-muted">Published: <span id="publish-date">April 23, 2025</span></p>
+    <hr />
+  
+    <p>
+      If you’ve ever worked with data and wondered how models learn from it — linear regression is the perfect place to start.
+      In this post, we’ll build a linear regression model step-by-step. First with <code>scikit-learn</code>, and then from scratch using gradient descent.
+    </p>
+  
+    <h4 class="mt-4">📌 1. What is Linear Regression?</h4>
+    <p>
+      Linear regression models the relationship between features (inputs) and a continuous target (output) by fitting a line.
+      The model assumes:
+      <pre class="bg-light p-3 rounded"><code>y = wX + b</code></pre>
+      Where:
+      <ul>
+        <li><code>w</code> is the weight (slope)</li>
+        <li><code>b</code> is the bias (intercept)</li>
+        <li><code>X</code> is input data</li>
+      </ul>
+    </p>
+  
+    <h4 class="mt-4">🌟 2. Why Do We Need a Loss Function?</h4>
+    <p>
+      When we train a machine learning model, we want it to make good predictions. But how do we know if it's doing a good job?
+      That’s where a <strong>loss function</strong> comes in. It’s a mathematical tool that tells us how far off our predictions are from the actual values.
+    </p>
+    <p>
+      For linear regression, the most common choice is:
+      <pre class="bg-light p-3 rounded"><code>Mean Squared Error (MSE) = (1/n) * Σ(y_pred - y_true)²</code></pre>
+      This gives us a single number — a score. The closer it is to zero, the better our model’s predictions. Our ultimate goal during training is to <strong>minimize this loss</strong>.
+    </p>
+  
+    <h4 class="mt-4">🧽 3. How Gradient Descent Optimizes the Loss</h4>
+    <p>
+      Now that we know what we’re minimizing (the loss), the next question is — <em>how</em> do we minimize it? That’s where <strong>gradient descent</strong> comes in.
+    </p>
+    <p>
+      Gradient descent is an optimization algorithm. Imagine you're standing on a mountain (high loss) and want to reach the valley (low loss). Gradient descent helps you figure out which direction to take a step (and how big a step) so that your loss decreases.
+    </p>
+    <p>
+      It does this by computing the <strong>gradient</strong> of the loss function — i.e., the rate of change of loss with respect to each model parameter (weights and bias):
+    </p>
+  
+    <pre class="bg-light p-3 rounded"><code>w = w - α * ∂MSE/∂w
+  b = b - α * ∂MSE/∂b</code></pre>
+  
+    <ul>
+      <li><code>∂MSE/∂w</code> and <code>∂MSE/∂b</code> tell us how much the loss would change if we tweaked the weights and bias.</li>
+      <li><code>α</code> (learning rate) controls how big a step we take in that direction.</li>
+    </ul>
+  
+    <p class="fw-bold">
+      So, in short: <strong>Loss tells us how wrong we are. Gradient descent tells us how to get less wrong.</strong> 🚀
+    </p>
+  
+    <h4 class="mt-4">📅 4. Load & Scale the Data</h4>
+    <pre class="bg-light p-3 rounded"><code>from sklearn.datasets import fetch_california_housing
+  from sklearn.model_selection import train_test_split
+  from sklearn.preprocessing import StandardScaler
+  
+  housing = fetch_california_housing()
+  X = housing.data
+  y = housing.target
+  
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+  
+  scaler = StandardScaler()
+  X_train_scaled = scaler.fit_transform(X_train)
+  X_test_scaled = scaler.transform(X_test)</code></pre>
+    <p><strong>Why scale?</strong> Gradient descent converges faster and more reliably when features are on the same scale.</p>
+  
+    <h4 class="mt-4">🪪 5. scikit-learn Linear Regression</h4>
+    <pre class="bg-light p-3 rounded"><code>from sklearn.linear_model import LinearRegression
+  from sklearn.metrics import mean_squared_error, r2_score
+  
+  model = LinearRegression()
+  model.fit(X_train_scaled, y_train)
+  y_pred = model.predict(X_test_scaled)
+  
+  print("MSE:", mean_squared_error(y_test, y_pred))
+  print("R2 Score:", r2_score(y_test, y_pred))</code></pre>
+  
+    <h4 class="mt-4">🔧 6. From Scratch: Function by Function</h4>
+  
+    <h5>✅ Function 1: Prediction</h5>
+    <p>This function performs the forward pass and generates predicted values.</p>
+    <pre class="bg-light p-3 rounded"><code>def predict(X, weights, bias):
+      return np.dot(X, weights) + bias</code></pre>
+  
+    <h5>✅ Function 2: Loss Calculation</h5>
+    <p>This function calculates how far the predicted values are from the actual values using MSE.</p>
+    <pre class="bg-light p-3 rounded"><code>def compute_loss(y_true, y_pred):
+      return np.mean((y_true - y_pred) ** 2)</code></pre>
+  
+    <h5>✅ Function 3: Compute Gradients</h5>
+    <p>This function computes the gradients (partial derivatives) of the loss with respect to the weights and bias.</p>
+    <pre class="bg-light p-3 rounded"><code>def compute_gradients(X, y_true, y_pred):
+      n = X.shape[0]
+      dw = -2/n * np.dot(X.T, (y_true - y_pred))
+      db = -2/n * np.sum(y_true - y_pred)
+      return dw, db</code></pre>
+  
+    <h5>✅ Function 4: Training with Gradient Descent</h5>
+    <p>This is the core training loop where weights and bias are updated iteratively to minimize loss.</p>
+    <pre class="bg-light p-3 rounded"><code>def train(X, y, lr=0.01, epochs=1000):
+      n_features = X.shape[1]
+      weights = np.zeros(n_features)
+      bias = 0
+  
+      for i in range(epochs):
+          y_pred = predict(X, weights, bias)
+          loss = compute_loss(y, y_pred)
+          dw, db = compute_gradients(X, y, y_pred)
+          weights -= lr * dw
+          bias -= lr * db
+          if i % 100 == 0:
+              print(f"Epoch {i}, Loss: {loss:.4f}")
+      return weights, bias</code></pre>
+  
+    <h4 class="mt-4">🏋️ 7. Final Combined Code</h4>
+    <p>This is the complete training pipeline with all the helper functions integrated.</p>
+    <pre class="bg-light p-3 rounded"><code>import numpy as np
+  
+  def predict(X, weights, bias):
+      return np.dot(X, weights) + bias
+  
+  def compute_loss(y_true, y_pred):
+      return np.mean((y_true - y_pred) ** 2)
+  
+  def compute_gradients(X, y_true, y_pred):
+      n = X.shape[0]
+      dw = -2/n * np.dot(X.T, (y_true - y_pred))
+      db = -2/n * np.sum(y_true - y_pred)
+      return dw, db
+  
+  def train(X, y, lr=0.01, epochs=1000):
+      n_features = X.shape[1]
+      weights = np.zeros(n_features)
+      bias = 0
+  
+      for i in range(epochs):
+          y_pred = predict(X, weights, bias)
+          loss = compute_loss(y, y_pred)
+          dw, db = compute_gradients(X, y, y_pred)
+          weights -= lr * dw
+          bias -= lr * db
+          if i % 100 == 0:
+              print(f"Epoch {i}, Loss: {loss:.4f}")
+  
+      return weights, bias</code></pre>
+  
+    <h4 class="mt-4">📊 8. Compare Results</h4>
+    <ul>
+      <li><strong>scikit-learn</strong> — MSE: 0.5558, R²: 0.5757</li>
+      <li><strong>Custom Model</strong> — MSE: ~similar, R²: ~similar</li>
+    </ul>
+  
+    <h4 class="mt-4">✅ Final Thoughts</h4>
+    <p>
+      By implementing linear regression both with and without libraries, we got a deep understanding of how models learn.
+      Gradient descent is foundational in machine learning — and this hands-on build makes it far less mysterious.
+    </p>
+    
+    <p class="fw-bold">Next up: regularization (Ridge & Lasso) and nonlinear regression. Stay curious! 🔍</p>
+
+    <h4 class="mt-4">🔗 Reference</h4>
+    <p>You can explore the full notebook used to generate this blog on GitHub:</p>
+    <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Linear_Regression_OLS.ipynb" target="_blank">
+      📓 Linear_Regression_OLS.ipynb on GitHub
+    </a></p>
+    
+    <p class="fw-bold">Next up: regularization (Ridge & Lasso) and nonlinear regression. Stay curious! 🔍</p>
+  
+</div>
+  
