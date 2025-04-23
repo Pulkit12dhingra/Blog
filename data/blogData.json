@@ -1,11 +1,6 @@
 [
   {
     "file": "Blog_4.html",
-    "title": "test2",
-    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on."
-  },
-  {
-    "file": "Blog_4.html",
     "title": "Linear Regression from Scratch — With Gradient Descent",
     "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on."
   },
