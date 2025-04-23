@@ -197,7 +197,8 @@
     }
 
     // Load blog data
-    fetch("data/blogData.json")
+    fetch("data/blogData.json?v=2.0")
+
       .then((res) => res.json())
       .then((data) => {
         cachedBlogData = data;
