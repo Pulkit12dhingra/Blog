@@ -197,13 +197,24 @@
     }
 
     // Load blog data
-    fetch("data/blogData.json?v=2.0")
+    //fetch("data/blogData.json?v=2.0")
 
-      .then((res) => res.json())
-      .then((data) => {
-        cachedBlogData = data;
-        renderBlogList(data);
-      });
+      //.then((res) => res.json())
+     // .then((data) => {
+      //  cachedBlogData = data;
+       // renderBlogList(data);
+      //});
+      const cacheVersion = "v=2.1";
+
+      fetch(`data/blogData.json?${cacheVersion}`, { cache: "no-cache" })
+        .then(res => res.json())
+        .then(data => {
+          cachedBlogData = data;
+          renderBlogList(data);
+        })
+        .catch(() => {
+          mainContent.innerHTML = "<p class='text-danger'>Failed to load blog data.</p>";
+        });
 
     // About page
     document.getElementById("about-link").addEventListener("click", function (e) {
