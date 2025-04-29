@@ -170,8 +170,13 @@
       } else {
         html += "<div class='list-group'>";
         data.forEach((post) => {
+          // html += `
+          //   <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
+          //     <h5 class="mb-1">${post.title}</h5>
+          //     <p class="mb-1">${post.summary}</p>
+          //   </a>`;
           html += `
-            <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
+            <a href="content/${post.file}" class="list-group-item list-group-item-action mb-2">
               <h5 class="mb-1">${post.title}</h5>
               <p class="mb-1">${post.summary}</p>
             </a>`;
