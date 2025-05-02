@@ -2,21 +2,25 @@
   {
     "file": "Blog_4.html",
     "title": "Linear Regression from Scratch — With Gradient Descent",
-    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on."
+    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on.",
+    "date": "April 23, 2025"
   },
   {
     "file": "Blog_3.html",
     "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
-    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance."
+    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance.",
+    "date": "April 19, 2025"
   },
   {
     "file": "Blog_2.html",
     "title": "Setting Up Your Python Environment 🐍",
-    "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively."
+    "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively.",
+    "date": "April 14, 2025"
   },
   {
     "file": "Blog_1.html",
     "title": "Hello World! 🚀 — My First Blog Post",
-    "summary": "Kicking off my blog with excitement and a glimpse of what’s to come. Let the journey begin!"
+    "summary": "Kicking off my blog with excitement and a glimpse of what’s to come. Let the journey begin!",
+    "date": "April 14, 2025"
   }
 ]
