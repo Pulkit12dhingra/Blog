@@ -1,0 +1,245 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Lasso Regression from Scratch — Feature Selection Meets Regularization 🧠</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <p class="text-muted">Published: <span id="publish-date">May 6, 2025</span></p>
+  <hr />
+
+  <h4 class="mt-4">📌 What is Lasso Regression?</h4>
+  <p>
+    Lasso Regression is a linear regression model that includes an L1 regularization term. It not only helps prevent overfitting but also performs automatic feature selection by shrinking some coefficients to zero. 
+  </p>
+  <p>
+    This makes Lasso particularly powerful for high-dimensional data where not all features are useful.
+  </p>
+
+  <h4 class="mt-4">🧮 Formula</h4>
+  <pre class="bg-light p-3 rounded"><code>Loss = (1/n) * Σ(yᵢ - ŷᵢ)² + α * Σ|θⱼ|</code></pre>
+  <ul>
+    <li><strong>n</strong>: number of data points</li>
+    <li><strong>yᵢ</strong>: actual values</li>
+    <li><strong>ŷᵢ</strong>: predicted values</li>
+    <li><strong>θⱼ</strong>: model coefficients</li>
+    <li><strong>α</strong>: regularization strength (higher = more shrinkage)</li>
+  </ul>
+
+  <h4 class="mt-4">🏠 Load & Prepare the Data</h4>
+  <p>
+    For this project, we’re using the <strong>California Housing Dataset</strong> — a classic dataset often used for regression tasks. It contains various features such as median income, house age, population, and more, collected from different districts in California. The goal is to predict the <code>median_house_value</code> based on these features.
+  </p>
+  <p>
+    Before training our model, it's crucial to <strong>standardize the features</strong>. Lasso (like many gradient-based models) is sensitive to the scale of inputs — if features are on very different scales, the model may unfairly penalize some more than others. Standard scaling transforms all features to have a mean of 0 and standard deviation of 1, ensuring fair optimization.
+  </p>
+  <p>
+    We also <strong>add a bias (intercept) term</strong> by inserting a column of 1s to the feature matrix. This allows the model to learn a constant offset in the predictions, which is essential for accurate fitting when the target doesn’t naturally pass through the origin.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+housing = fetch_california_housing()
+X, y = housing.data, housing.target
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+X_train_bias = np.c_[np.ones((X_train_scaled.shape[0], 1)), X_train_scaled]
+X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]
+</code></pre>
+
+<h4 class="mt-4">🧠 Lasso Regression (Coordinate Descent)</h4>
+<p>
+  To truly understand Lasso, we’re implementing it from scratch using the <strong>Coordinate Descent</strong> algorithm — a simple yet powerful technique well-suited for models with L1 regularization. Unlike gradient descent, which updates all weights simultaneously, coordinate descent updates one parameter at a time while keeping the others fixed. This approach is especially effective for optimizing Lasso’s non-differentiable L1 penalty.
+</p>
+
+<p>Let’s break down the code:</p>
+
+<pre class="bg-light p-3 rounded"><code>
+class LassoRegression:
+    def __init__(self, alpha=1.0, n_iterations=100, tolerance=1e-4):
+        self.alpha = alpha
+        self.n_iterations = n_iterations
+        self.tolerance = tolerance
+</code></pre>
+<p>
+  This class initializes the regularization strength <code>alpha</code>, number of iterations, and a convergence <code>tolerance</code> threshold to stop training when improvements become negligible.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>
+    def soft_threshold(self, rho, alpha):
+        if rho < -alpha:
+            return rho + alpha
+        elif rho > alpha:
+            return rho - alpha
+        else:
+            return 0.0
+</code></pre>
+<p>
+  The <code>soft_threshold</code> function is the heart of Lasso. It applies the L1 penalty, shrinking coefficients toward zero. If the absolute value of a parameter's gradient is less than alpha, it gets zeroed out — this is how Lasso performs feature selection.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>
+    def fit(self, X, y):
+        m, n = X.shape
+        self.coef_ = np.zeros(n)
+
+        for _ in range(self.n_iterations):
+            coef_old = self.coef_.copy()
+            for j in range(n):
+                X_j = X[:, j]
+                y_pred = X @ self.coef_
+                residual = y - y_pred + self.coef_[j] * X_j
+                rho = np.dot(X_j, residual)
+
+                if j == 0:
+                    self.coef_[j] = rho / np.dot(X_j, X_j)
+                else:
+                    self.coef_[j] = self.soft_threshold(rho, self.alpha) / np.dot(X_j, X_j)
+
+            if np.sum(np.abs(self.coef_ - coef_old)) < self.tolerance:
+                break
+</code></pre>
+<p>
+  The <code>fit()</code> method implements coordinate descent. For each feature (coordinate), it:
+</p>
+<ul>
+  <li>Computes predictions with current weights</li>
+  <li>Calculates the <code>residual</code> excluding the effect of the current feature</li>
+  <li>Updates the coefficient using either a basic update (for the intercept) or the soft-thresholding function (for other features)</li>
+</ul>
+<p>
+  If the change in coefficients is below the defined tolerance across all features, the loop exits early — signaling convergence.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>
+    def predict(self, X):
+        return X @ self.coef_
+</code></pre>
+<p>
+  The <code>predict()</code> method computes the dot product between the input and learned coefficients to generate predictions.
+</p>
+
+<p>
+  With this implementation, we’ve built a fully functional Lasso regression model — from initialization to training and inference — without relying on libraries like scikit-learn.
+</p>
+
+
+  <h4 class="mt-4">📊 Train and Evaluate the Model</h4>
+  <pre class="bg-light p-3 rounded"><code>
+from sklearn.metrics import mean_squared_error, r2_score
+
+lasso = LassoRegression(alpha=0.1)
+lasso.fit(X_train_bias, y_train)
+preds = lasso.predict(X_test_bias)
+
+mse = mean_squared_error(y_test, preds)
+r2 = r2_score(y_test, preds)
+
+print("📉 MSE:", round(mse, 4))
+print("📈 R² Score:", round(r2, 4))
+</code></pre>
+<div class="mt-2 mb-4 text-center">
+    <img src="../img/Blog_6_1.png" alt="SGD Regressor Results" class="img-fluid rounded shadow"/>
+  </div>
+
+<h4 class="mt-4">⚖️ Lasso vs Ridge: 5 Key Differences</h4>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Aspect</th>
+        <th>Lasso Regression (L1)</th>
+        <th>Ridge Regression (L2)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Penalty Type</strong></td>
+        <td>L1 (|θ|)</td>
+        <td>L2 (θ²)</td>
+      </tr>
+      <tr>
+        <td><strong>Feature Selection</strong></td>
+        <td>Can eliminate features (sets coefficients to zero)</td>
+        <td>Retains all features (shrinks coefficients but doesn’t zero them)</td>
+      </tr>
+      <tr>
+        <td><strong>Use Cases</strong></td>
+        <td>Best when only a few features are useful</td>
+        <td>Best when most features are relevant</td>
+      </tr>
+      <tr>
+        <td><strong>Sparsity</strong></td>
+        <td>Leads to sparse models with fewer active features</td>
+        <td>Produces dense models (non-zero weights)</td>
+      </tr>
+      <tr>
+        <td><strong>Stability with Correlated Features</strong></td>
+        <td>Less stable</td>
+        <td>More stable</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<h4 class="mt-4">🧭 When to Use Each?</h4>
+<p>
+  Choosing between Lasso and Ridge depends on the nature of your dataset and your modeling goals. 
+  <strong>Use Lasso</strong> when you're working with a high-dimensional dataset and suspect that only a small subset of features truly drives the target variable. 
+  Lasso's ability to shrink some coefficients exactly to zero makes it perfect for automatic feature selection, resulting in simpler and more interpretable models. 
+  It's especially useful when interpretability matters or when you want to reduce overfitting by eliminating irrelevant variables.
+</p>
+<p>
+  <strong>Use Ridge</strong> when your data contains multicollinearity — that is, when features are highly correlated with each other. 
+  Ridge regression is more stable in such cases, as it shrinks all coefficients uniformly without eliminating any. 
+  This makes it ideal when you believe most features contribute some predictive power and you want to retain them all while still controlling model complexity.
+</p>
+
+
+  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <p>
+    Lasso Regression elegantly combines prediction with built-in feature selection. By implementing it from scratch, we gain insight into the math, mechanics, and power of L1 regularization. Keep experimenting with different <code>alpha</code> values to balance simplicity and performance!
+  </p>
+
+  <h4 class="mt-4">🔗 Reference</h4>
+  <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Ridge_Lasso_Regression.ipynb" target="_blank">📓 ridge_lasso_regression.ipynb on GitHub</a></p>
+
+</div>
+</body>
+</html>
