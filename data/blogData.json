@@ -1,5 +1,11 @@
 [
   {
+    "file": "Blog_5.html",
+    "title": "Ridge Regression from Scratch — With Gradient Descent and L2 Regularization",
+    "summary": "Explore how to implement Ridge Regression using gradient descent from scratch. Learn why regularization matters and compare performance against OLS and SGD models.",
+    "date": "May 3, 2025"
+  },
+  {
     "file": "Blog_4.html",
     "title": "Linear Regression from Scratch — With Gradient Descent",
     "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on.",
