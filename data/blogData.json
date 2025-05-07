@@ -13,8 +13,8 @@
   },
   {
     "file": "Blog_7.html",
-    "title": "Decision Tree Regressor from Scratch — Split,Predict,Repeat",
-    "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. From core algorithm to flowchart, this guide walks through a full tree regressor implementation in Python.",
+    "title": "Decision Tree Regressor from Scratch — Split, Predict, Repeat",
+    "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. This guide walks through a full tree regressor implementation in Python.",
     "date": "April 28, 2025"
   },
   {
