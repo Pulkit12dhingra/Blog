@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Building a Decision Tree Regressor from Scratch 🌳</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+  <p class="text-muted">Published: <span id="publish-date">May 7, 2025</span></p>
+  <hr />
+  <div class="container">
+  
+    <p>Decision Trees are one of the most intuitive and interpretable models in machine learning. They work by breaking down a dataset into smaller and smaller subsets, while at the same time an associated decision tree is incrementally developed. For regression tasks, the decision tree assigns a constant prediction value (usually the mean of the outputs) to each region it divides the data into. Let’s unpack how decision tree regression works and how to build one entirely from scratch.</p>
+  
+    <h2>🌱 What Are Decision Trees?</h2>
+    <p>A decision tree is like a flowchart. At each point in the chart, you ask a question about your data: “Is the income greater than $50K?”, “Is the number of rooms less than 6?”, and so on. Based on the answer, the data gets pushed down a branch — left or right. Eventually, you reach a point (called a leaf) where you stop asking questions and just give a prediction. This prediction is often the average of the target values that fall into that leaf.</p>
+  
+    <p>This tree-like logic makes decision trees incredibly interpretable. You can visually trace how a prediction is made, making them popular in applications where transparency is essential.</p>
+  
+    <h2>🌟 Why Use Trees for Regression?</h2>
+    <p>Unlike linear regression models that try to draw a straight line through the data, decision trees don’t assume any mathematical form. They break up the feature space in a way that captures non-linear patterns quite effectively. Trees don’t care if one feature is in the thousands and another in decimal values — they’re not affected by feature scaling. Additionally, decision trees can model interactions between features naturally, are easy to visualize, and robust to outliers. They're also flexible enough to be the backbone of powerful ensemble methods like Random Forests and Gradient Boosting.</p>
+  
+    <h2>⚙️ How Does a Decision Tree Regressor Actually Work?</h2>
+    <p>At the core, a decision tree regressor works by recursively splitting the data in a way that reduces the error in prediction. The quality of a split is typically measured using Mean Squared Error (MSE). For each possible feature and each possible value that feature can take, we calculate how well the split separates the data. The split that results in the lowest MSE is chosen. The process continues until stopping conditions are met — such as reaching a maximum depth or having too few samples to split further.</p>
+  
+    <p>When splitting stops, the node becomes a leaf, and it outputs a constant prediction: usually the average of the target values for the samples in that leaf.</p>
+  
+    <h2>🧪 Using Scikit-Learn’s DecisionTreeRegressor</h2>
+    <p>While building models from scratch teaches us a lot about the underlying mechanics, in practice, we often rely on libraries like scikit-learn to streamline the workflow. Scikit-learn provides a highly optimized and easy-to-use implementation of decision trees for both classification and regression tasks.
+
+        The following code demonstrates how to apply a decision tree regressor on the California Housing dataset, which contains information about housing in California districts such as median income, number of rooms, and house age. The goal is to predict the median house value for a given set of features.
+        
+        We’ll start by loading the dataset, splitting it into training and testing sets, fitting a decision tree regressor, and evaluating the performance using Mean Squared Error (MSE) and R² Score.
+        </p>
+    <pre><code>
+    from sklearn.datasets import fetch_california_housing
+    from sklearn.model_selection import train_test_split
+    from sklearn.tree import DecisionTreeRegressor
+    from sklearn.metrics import mean_squared_error, r2_score
+
+    housing = fetch_california_housing()
+    X, y = housing.data, housing.target
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    regressor = DecisionTreeRegressor(random_state=42)
+    regressor.fit(X_train, y_train)
+
+    y_pred = regressor.predict(X_test)
+    print("Mean Squared Error:", mean_squared_error(y_test, y_pred))
+    print("R² Score:", r2_score(y_test, y_pred))</code></pre>
+  <div class="mt-2 mb-4 text-center">
+    <img src="../img/Blog_7_2.png" alt="Result Decision tree regressor" class="img-fluid rounded shadow"/>
+  </div>
+  <h2>🌳 Visualizing the Tree</h2>
+  <pre><code>
+    from sklearn.tree import plot_tree
+    import matplotlib.pyplot as plt
+
+    regressor_small = DecisionTreeRegressor(max_depth=3, random_state=42)
+    regressor_small.fit(X_train, y_train)
+
+    plt.figure(figsize=(20,10))
+    plot_tree(regressor_small, feature_names=housing.feature_names, filled=True)
+    plt.title("Decision Tree Regressor (max_depth=3)")
+    plt.show()</code></pre>
+<div class="mt-2 mb-4 text-center">
+    <img src="../img/Blog_7_1.png" alt="Decision Tree Sklearn" class="img-fluid rounded shadow"/>
+  </div>
+
+  <h2>🔧 Let’s Build It Ourselves: Decision Tree from Scratch</h2>
+
+<p>Before jumping into the code, let’s break down the algorithm into simple steps. This will help you understand how the tree builds itself recursively by choosing the best splits.</p>
+
+<h4>🪜 Step-by-Step Algorithm</h4>
+
+<ol>
+  <li><strong>Base Case Check:</strong>  
+    If the dataset is too small, all values are the same, or we've reached the maximum tree depth, stop and return the mean of the target values as the prediction.
+  </li>
+
+  <li><strong>Find the Best Split:</strong>  
+    Loop through every feature and try multiple threshold values (midpoints between sorted unique values). For each potential split:
+    <ul>
+      <li>Divide the dataset into left and right subsets.</li>
+      <li>Calculate the <strong>Mean Squared Error (MSE)</strong> for each subset.</li>
+      <li>Compute the <strong>weighted average MSE</strong> and compare it to the best seen so far.</li>
+    </ul>
+  </li>
+
+  <li><strong>Choose the Best Feature & Threshold:</strong>  
+    Pick the split with the lowest weighted MSE. If no valid split is found, return the mean target as a leaf.
+  </li>
+
+  <li><strong>Recurse:</strong>  
+    Apply the same procedure to the left and right subsets, increasing the tree depth by 1.
+  </li>
+
+  <li><strong>Build a Node:</strong>  
+    Return a dictionary representing the current node, which stores the <code>feature</code>, <code>threshold</code>, and the recursively built <code>left</code> and <code>right</code> branches.
+  </li>
+</ol>
+
+<p>This stepwise flow matches how the real scikit-learn decision tree grows its branches — only here, we’re coding it ourselves with full control.</p>
+
+
+  <h4>Calculating MSE</h4>
+  <p>The calculate_mse function computes the average squared difference between each value and the mean, measuring the variance (prediction error) within a node.</p>
+  <pre><code>
+    def calculate_mse(y):
+        if len(y) == 0:
+            return 0
+        mean = np.mean(y)
+        return np.mean((y - mean) ** 2)
+    </code></pre>
+
+    <h4>Splitting the Dataset</h4>
+    <p>
+      This function takes in the feature matrix <code>X</code>, target vector <code>y</code>, a specific <code>feature_idx</code>, and a <code>threshold</code> value. 
+      It then splits the dataset into two parts:
+      samples where the selected feature value is less than or equal to the threshold go to the left, and the rest go to the right.
+      This mimics how a decision tree decides which path each data point follows at a node.
+    </p>
+    <pre><code>
+    def split_dataset(X, y, feature_idx, threshold):
+        left_mask = X[:, feature_idx] <= threshold
+        right_mask = X[:, feature_idx] > threshold
+        return X[left_mask], y[left_mask], X[right_mask], y[right_mask]</code></pre>
+    
+        <h4>Finding the Best Split</h4>
+        <p>
+          This function evaluates all possible splits across every feature to determine the one that minimizes the prediction error.
+          It starts by initializing the best MSE as infinity and iterates through each feature.
+          For each feature, it calculates potential split thresholds (midpoints between unique values).
+          For every threshold, it splits the dataset, computes the weighted average of the MSE for the left and right partitions, 
+          and tracks the combination of feature and threshold that gives the lowest MSE.
+          This selected split becomes the node's decision rule in the tree.
+        </p>
+        <pre><code>
+    def find_best_split(X, y):
+        best_mse = float('inf')
+        best_feature = None
+        best_threshold = None
+    
+        for feature_idx in range(X.shape[1]):
+            values = np.unique(X[:, feature_idx])
+            if len(values) <= 1:
+                continue
+            thresholds = (values[:-1] + values[1:]) / 2
+    
+            for threshold in thresholds:
+                X_left, y_left, X_right, y_right = split_dataset(X, y, feature_idx, threshold)
+                if len(y_left) == 0 or len(y_right) == 0:
+                    continue
+    
+                mse = (len(y_left) * calculate_mse(y_left) + len(y_right) * calculate_mse(y_right)) / len(y)
+                if mse < best_mse:
+                    best_mse = mse
+                    best_feature = feature_idx
+                    best_threshold = threshold
+    
+        return best_feature, best_threshold</code></pre>
+    
+
+            <h4>Recursively Building the Tree</h4>
+            <p>
+              This function constructs the decision tree by recursively selecting the best splits. It starts with the full dataset and, at each level, checks whether it should stop:
+              either due to reaching the maximum depth, having too few samples, or having all identical target values. 
+              If so, it returns the mean of the current targets, which becomes a leaf prediction.
+              Otherwise, it finds the best split, partitions the data accordingly, and calls itself recursively on the left and right subsets.
+              The result is a nested dictionary structure, where each node stores the feature index, split threshold, and its child nodes.
+            </p>
+            <pre><code>
+    def build_tree(X, y, depth=0, max_depth=3, min_samples_split=10):
+        if len(y) == 0:
+            return 0
+    
+        if depth >= max_depth or len(y) < min_samples_split or np.all(y == y[0]):
+            return float(np.mean(y))
+    
+        feature, threshold = find_best_split(X, y)
+        if feature is None:
+            return float(np.mean(y))
+    
+        X_left, y_left, X_right, y_right = split_dataset(X, y, feature, threshold)
+    
+        return {
+            'feature': feature,
+            'threshold': threshold,
+            'left': build_tree(X_left, y_left, depth + 1, max_depth, min_samples_split),
+            'right': build_tree(X_right, y_right, depth + 1, max_depth, min_samples_split)
+        }
+            </code></pre>
+            
+            <h2>🧾 Predicting with the Tree</h2>
+            <p>
+              This function makes a prediction for a single input sample by traversing the tree from root to leaf.
+              At each node, it checks whether the input's feature value is less than or equal to the split threshold.
+              Based on the result, it moves to the left or right subtree. This recursive descent continues until a leaf node is reached,
+              which holds the final predicted value (typically the mean of the training targets in that region).
+            </p>
+            <pre><code>
+    def predict(tree, x):
+        if not isinstance(tree, dict):
+            return tree
+        feature = tree['feature']
+        threshold = tree['threshold']
+        if x[feature] <= threshold:
+            return predict(tree['left'], x)
+        else:
+            return predict(tree['right'], x)
+            </code></pre>
+            
+  
+    <h2>🤖 Comparing Results</h2>
+    <p>Scikit-learn's implementation is fast, scalable, and comes with pruning options. Your hand-coded version is perfect for learning, customization, or academic purposes — and surprisingly close in output for small depths.</p>
+    <div class="mt-2 mb-4 text-center">
+        <img src="../img/Blog_7_3.png" alt="Decision tree comparison" class="img-fluid rounded shadow"/>
+      </div>
+    <h2>🧠 Final Thoughts</h2>
+    <p>Writing a decision tree regressor from scratch demystifies one of the most popular algorithms in machine learning. It’s all about finding the right place to split — again and again — until further splitting no longer helps. With just a bit of math and recursion, we’ve rebuilt a fundamental ML tool from the ground up.</p>
+  </div>
+  <h4 class="mt-4">🔗 Reference</h4>
+  <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Ridge_Lasso_Regression.ipynb" target="_blank">📓 decision_tree.ipynb on GitHub</a></p>
+
+  </div>
+  </body>
+  </html>
+    
