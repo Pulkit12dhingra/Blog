@@ -1,5 +1,11 @@
 [
   {
+    "file": "Blog_8.html",
+    "title": "Setting Up Ollama 🦙",
+    "summary": "Get started with Ollama — a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included.",
+    "date": "May 7, 2025"
+  },
+  {
     "file": "Blog_6.html",
     "title": "Lasso Regression from Scratch — Feature Selection Meets Regularization",
     "summary": "Learn how to implement Lasso Regression using Coordinate Descent from scratch, and explore how L1 regularization leads to feature selection in high-dimensional data.",

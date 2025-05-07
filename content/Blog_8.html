@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+
+<body>
+  <div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+      <h2 class="fw-bold mb-3">Setting Up Ollama 🦙</h2>
+      <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+    </div>
+    <p class="text-muted">Published: <span id="publish-date">May 7, 2025</span></p>
+    <hr />
+
+    <h4 class="mt-4">🤔 What is Ollama?</h4>
+    <p>
+      <strong>Ollama</strong> is a lightweight, local LLM runtime that lets you run models like LLaMA, Mistral, and Gemma directly on your machine — without needing a GPU or even an API token. 
+      It’s perfect for experimentation, prototyping, and even production-grade setups with privacy in mind.
+    </p>
+    <p>
+      Think of it as the “Docker for language models” — download a model once and run it anywhere, completely offline.
+    </p>
+
+    <h4 class="mt-4">✅ Why Ollama?</h4>
+    <ul>
+      <li>No API keys or accounts needed</li>
+      <li>Run popular open-source models locally</li>
+      <li>Easy-to-use CLI</li>
+      <li>Great for testing ideas without cloud dependencies</li>
+    </ul>
+
+    <h4 class="mt-4">⬇️ Downloading and Installing Ollama</h4>
+    <p>You can grab the latest release from the official website: <a href="https://ollama.com/" target="_blank">ollama.com</a>.</p>
+    <ol>
+      <li>Visit <code>https://ollama.com</code></li>
+      <li>Click on <strong>Download</strong></li>
+      <li>Select your operating system (macOS, Windows, or Linux)</li>
+      <li>Once downloaded, run the installer</li>
+      <li>Click through the setup steps (Next → Install)</li>
+      <li>After installation, open your terminal/command prompt</li>
+      <li>Run: <code>ollama --help</code> to verify it’s working</li>
+    </ol>
+
+    <h4 class="mt-4">🛠️ Basic Commands</h4>
+
+    <h5>📥 Pull a model</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama pull gemma3</code></pre>
+    <p>This will download the latest version of the specified model.</p>
+    <div class="mt-2 mb-4 text-center">
+        <img src="../img/Blog_8_1.png" alt="ollama pull" class="img-fluid rounded shadow"/>
+    </div>
+
+    <h5>🚀 Run a model</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama run gemma3</code></pre>
+    <p>Starts an interactive session with the model in your terminal.</p>
+    <div class="mt-2 mb-4 text-center">
+        <img src="../img/Blog_8_2.png" alt="ollama run" class="img-fluid rounded shadow"/>
+    </div>
+
+    <h5>📋 List installed models</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama list</code></pre>
+    <div class="mt-2 mb-4 text-center">
+        <img src="../img/Blog_8_3.png" alt="ollama list" class="img-fluid rounded shadow"/>
+    </div>
+
+    <h5>🗑️ Remove a model</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama rm llama2</code></pre>
+    
+    <h5>🧠 View model info</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama show gemma3</code></pre>
+    <div class="mt-2 mb-4 text-center">
+        <img src="../img/Blog_8_4.png" alt="ollama show" class="img-fluid rounded shadow"/>
+    </div>
+
+    <h5>🖥️ Start the server manually</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama serve</code></pre>
+
+    <h5>🛑 Stop the running model</h5>
+    <pre class="bg-light p-3 rounded"><code>ollama stop</code></pre>
+
+    <h4 class="mt-4">📎 Final Thoughts</h4>
+    <p>
+      Ollama is a fantastic tool if you want local inference without the hassle of API keys or cloud latency. It’s fast, private, and incredibly easy to use. With just a few commands, you’ll have state-of-the-art models running right on your machine.
+    </p>
+    <p class="fw-bold">Give it a try, and see how it fits into your AI workflow! 🧪</p>
+
+    <h4 class="mt-4">🔗 Reference</h4>
+    <p><a href="https://ollama.com/" target="_blank">🌐 ollama.com</a></p>
+  </div>
+</body>
+</html>
