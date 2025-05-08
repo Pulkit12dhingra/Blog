@@ -1,60 +1,60 @@
 [
   {
-    "file": "Blog_10.html",
+    "file": "Building_a_RAG_Pipeline_with_PDFs.html",
     "title": "Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3",
     "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base.",
     "date": "May 9, 2025"
   },
   {
-    "file": "Blog_9.html",
+    "file": "Langchains_with_Ollama.html",
     "title": "LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code 💡",
     "summary": "This blog walks through how to build with LangChain and Ollama — covering chat vs. completion models, prompt templates, and hands-on code to get started fast.",
     "date": "May 8, 2025"
   },
   {
-    "file": "Blog_8.html",
+    "file": "Setting_up_Ollama.html",
     "title": "Setting Up Ollama 🦙",
     "summary": "Get started with Ollama — a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included.",
     "date": "May 7, 2025"
   },
   {
-    "file": "Blog_6.html",
+    "file": "Lasso_Regression_from_Scratch.html",
     "title": "Lasso Regression from Scratch — Feature Selection Meets Regularization",
     "summary": "Learn how to implement Lasso Regression using Coordinate Descent from scratch, and explore how L1 regularization leads to feature selection in high-dimensional data.",
     "date": "May 6, 2025"
   },
   {
-    "file": "Blog_5.html",
+    "file": "Ridge_Regression_from_Scratch.html",
     "title": "Ridge Regression from Scratch — With Gradient Descent and L2 Regularization",
     "summary": "Explore how to implement Ridge Regression using gradient descent from scratch. Learn why regularization matters and compare performance against OLS and SGD models.",
     "date": "May 3, 2025"
   },
   {
-    "file": "Blog_7.html",
+    "file": "Decision_Tree_Regression_from_Scratch.html",
     "title": "Decision Tree Regressor from Scratch — Split, Predict, Repeat",
     "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. This guide walks through a full tree regressor implementation in Python.",
     "date": "April 28, 2025"
   },
   {
-    "file": "Blog_4.html",
+    "file": "Linear_Regression_from_Scratch.html",
     "title": "Linear Regression from Scratch — With Gradient Descent",
     "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on.",
     "date": "April 23, 2025"
   },
   {
-    "file": "Blog_3.html",
+    "file": "Linear_Regression_OLS.html",
     "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
     "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step — from loading data to evaluating model performance.",
     "date": "April 19, 2025"
   },
   {
-    "file": "Blog_2.html",
+    "file": "Python_Setup.html",
     "title": "Setting Up Your Python Environment 🐍",
     "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively.",
     "date": "April 14, 2025"
   },
   {
-    "file": "Blog_1.html",
+    "file": "Hello_World.html",
     "title": "Hello World! 🚀 — My First Blog Post",
     "summary": "Kicking off my blog with excitement and a glimpse of what’s to come. Let the journey begin!",
     "date": "April 14, 2025"
