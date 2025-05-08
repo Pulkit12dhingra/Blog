@@ -1,5 +1,11 @@
 [
   {
+    "file": "Blog_10.html",
+    "title": "Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3",
+    "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base.",
+    "date": "May 9, 2025"
+  },
+  {
     "file": "Blog_9.html",
     "title": "LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code 💡",
     "summary": "This blog walks through how to build with LangChain and Ollama — covering chat vs. completion models, prompt templates, and hands-on code to get started fast.",
