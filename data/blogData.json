@@ -1,5 +1,11 @@
 [
   {
+    "file": "Blog_9.html",
+    "title": "LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code 💡",
+    "summary": "This blog walks through how to build with LangChain and Ollama — covering chat vs. completion models, prompt templates, and hands-on code to get started fast.",
+    "date": "May 8, 2025"
+  },
+  {
     "file": "Blog_8.html",
     "title": "Setting Up Ollama 🦙",
     "summary": "Get started with Ollama — a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included.",
