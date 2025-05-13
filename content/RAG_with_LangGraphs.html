@@ -1,0 +1,381 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Meta for sharing -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Build a Retrieval-Augmented Generation (RAG) pipeline using PDF documents, Chroma DB, and Gemma 3." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Build a Retrieval-Augmented Generation (RAG) pipeline using PDF documents, Chroma DB, and Gemma 3." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- CSS and Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 🧠📄</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+  <p class="text-muted">Published: <span id="publish-date">May 10, 2025</span></p>
+  <hr />
+  <p>
+    <strong>📚 This blog builds on:</strong> 
+    <a href="https://pulkit12dhingra.github.io/Blog/content/Building_a_RAG_Pipeline_with_PDFs.html" target="_blank">
+      Building a RAG Pipeline with PDFs (Original Tutorial)
+    </a>
+  </p>
+
+  
+
+  <h4 class="mt-5">🕸️ Part 2: RAG with LangGraph — Making Pipelines Smarter</h4>
+  <p>
+    In this continuation, we move beyond the linear RAG setup by introducing <strong>LangGraph</strong>: a powerful orchestration library built for LLM apps. Think of it as the glue that connects steps like <code>retrieve</code> and <code>generate</code> into a dynamic, state-driven flow.
+  </p>
+
+  <h5 class="mt-4">🧩 Why LangGraph?</h5>
+  <ul>
+    <li>Define each pipeline step as a node (function)</li>
+    <li>Maintain shared <code>state</code> across steps</li>
+    <li>Visualize and control application logic like a graph</li>
+  </ul>
+
+  <hr class="my-4"/>
+
+  <h5 class="mt-4">📥 Load the PDFs</h5>
+  <p> Let's start by loading in the pdf dataset using langchains. <code>document_loaders</code> extract text 
+    from every PDF file abstracting away the complexity of parsing individual files.</p>
+  <pre class="bg-light p-3 rounded"><code>
+from langchain.document_loaders import PyPDFLoader
+import os
+
+pdf_folder = "data/pdfs"
+all_docs = []
+
+for filename in os.listdir(pdf_folder):
+    if filename.endswith(".pdf"):
+        loader = PyPDFLoader(os.path.join(pdf_folder, filename))
+        all_docs.extend(loader.load())</code></pre>
+
+  <h5 class="mt-4">✂️ Split Text into Chunks</h5>
+<p>
+  In this step, we prepare the raw text for semantic search and generation by <strong>splitting it into manageable chunks</strong>. 
+  Language models like Gemma 3 have context length limits, so feeding them an entire PDF at once isn't practical.
+</p>
+<p>
+  We use LangChain’s <code>RecursiveCharacterTextSplitter</code>, which intelligently splits text into overlapping chunks 
+  of up to <code>1000</code> characters each, with a <code>200</code>-character overlap. This overlap helps maintain context across chunk boundaries,
+  ensuring that no important information is lost when slicing the document.
+</p>
+<p>
+  The resulting <code>chunks</code> list contains smaller document segments that are suitable for vector embedding, retrieval, and input to the LLM.
+</p>
+
+  <pre class="bg-light p-3 rounded"><code>
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+chunks = text_splitter.split_documents(all_docs)</code></pre>
+
+  <h5 class="mt-4">🧠 Define the Embeddings</h5>
+  <p>
+  This step converts each chunk of text into a numerical vector using a pretrained embedding model. 
+  We use the <code>HuggingFaceEmbeddings</code> wrapper with the <code>all-MiniLM-L6-v2</code> model — a lightweight and efficient transformer from the 
+  <a href="https://www.sbert.net/" target="_blank">SentenceTransformers</a> library.
+</p>
+<p>
+  Each vector captures the semantic meaning of its corresponding chunk. These embeddings are crucial for performing <strong>similarity search</strong> in the vector database later on. 
+  When a user asks a question, we’ll compare it against these vectors to retrieve the most relevant pieces of text.
+</p>
+<p>
+  This setup enables our RAG pipeline to reason over large documents by mapping both queries and document chunks into the same embedding space.
+</p>
+
+  <pre class="bg-light p-3 rounded"><code>
+from langchain.embeddings import HuggingFaceEmbeddings
+
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")</code></pre>
+
+  <h5 class="mt-4">💾 Store Chunks in Chroma DB</h5>
+  <p>
+  Now that each text chunk has been converted into a vector, we store them in a vector database — in this case, <strong>Chroma DB</strong>. 
+  A vector database allows us to perform fast and efficient <strong>similarity searches</strong> based on the embeddings.
+</p>
+<p>
+  The function <code>Chroma.from_documents(...)</code> takes in our list of chunks, embeds them using the model we defined earlier, and saves them in a local directory (<code>./chroma_db</code>) for persistence.
+</p>
+<p>
+  This vectorstore acts as the memory for our RAG system. When a user asks a question, we’ll search this database to find the most semantically similar document chunks and use them as context for generating answers.
+</p>
+
+  <pre class="bg-light p-3 rounded"><code>
+from langchain.vectorstores import Chroma
+
+vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")</code></pre>
+
+  <h5 class="mt-4">🦙 Initialize Ollama with Gemma 3</h5>
+  <pre class="bg-light p-3 rounded"><code>
+from langchain.llms import Ollama
+
+llm = Ollama(model="gemma3")</code></pre>
+
+<h4 class="mt-5">Graph-Based RAG with LangGraph</h4>
+<p>This section walks through each part of the LangGraph-powered RAG implementation, explaining every node and design decision in detail.</p>
+
+<h5 class="mt-4">📌 Imports and Definitions</h5>
+<pre class="bg-light p-3 rounded"><code>from langgraph.graph import START, StateGraph
+from typing_extensions import List, TypedDict
+from langchain.prompts import PromptTemplate
+from langchain_core.documents import Document</code></pre>
+<ul>
+  <li><code>START</code>: Defines where the graph begins.</li>
+  <li><code>StateGraph</code>: Constructs the application flow using nodes.</li>
+  <li><code>TypedDict</code>: Allows structured input/output state sharing.</li>
+  <li><code>PromptTemplate</code>: Formats context for the LLM.</li>
+  <li><code>Document</code>: Represents each text chunk retrieved from your vector DB.</li>
+</ul>
+
+<h5 class="mt-4">📦 State Definition</h5>
+<p>
+The shared memory between graph nodes. Each node receives and returns this dictionary-like state.
+</p>
+<pre class="bg-light p-3 rounded"><code>class State(TypedDict):
+    question: str
+    context: List[Document]
+    answer: str</code></pre>
+
+
+<h5 class="mt-4">🧾 Prompt Template</h5>
+<pre class="bg-light p-3 rounded"><code>
+prompt = PromptTemplate.from_template("""
+You are an expert assistant. Use the following context to answer the question.
+If the answer cannot be found in the context, just say you don't know — don't make anything up.
+
+Context:
+{context}
+
+Question: {question}
+Answer:
+""")</code></pre>
+<p>
+This prompt keeps responses grounded and avoids hallucination by instructing the LLM to admit when it doesn't know the answer.
+</p>
+
+<h5 class="mt-4">🔍 Node 1: <code>retrieve</code></h5>
+<p>
+This node performs semantic search using the input question. The top-matching documents are inserted into the <code>context</code>.
+</p>
+<pre class="bg-light p-3 rounded"><code>
+  def retrieve(state: State):
+    retrieved_docs = vectorstore.similarity_search(state["question"])
+    return {"context": retrieved_docs}</code></pre>
+
+
+<h5 class="mt-4">💬 Node 2: <code>generate</code></h5>
+<p>
+This node merges the retrieved docs, formats them using the prompt, and sends it to the LLM to get a final answer.
+</p>
+<pre class="bg-light p-3 rounded"><code>
+  def generate(state: State):
+    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    messages = prompt.invoke({"question": state["question"], "context": docs_content})
+    response = llm.invoke(messages)
+    return {"answer": response}</code></pre>
+
+
+<h5 class="mt-4">🔧 Building the Graph</h5>
+<p>
+This configures your RAG application as a graph, starting from <code>retrieve</code> and flowing into <code>generate</code>. The graph is then compiled for execution.
+</p>
+<pre class="bg-light p-3 rounded"><code>
+graph_builder = StateGraph(State).add_sequence([retrieve, generate])
+graph_builder.add_edge(START, "retrieve")
+graph = graph_builder.compile()</code></pre>
+
+
+<h5 class="mt-4">❓ Running a Query</h5>
+<pre class="bg-light p-3 rounded"><code>response = graph.invoke({"question": "What is my name?"})
+print(response["answer"])</code></pre>
+<p>
+This triggers the entire graph: retrieval ➝ prompt formatting ➝ answer generation — and prints the final result.
+</p>
+
+<h5 class="mt-4">🖼️ Visualizing the Graph</h5>
+<pre class="bg-light p-3 rounded"><code>from IPython.display import Image, display
+display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
+<p>
+This generates a Mermaid-style flowchart image, showing the structure of your application.
+</p>
+  <div class="mb-4">
+    <img src="../img/Blog_11_1.png" alt="embeddings" class="img-fluid rounded shadow" style="max-width: 400px; width: 10%; height: 25%;" />
+</div>
+
+<h5 class="mt-4">🧩 Node Summary</h5>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Node</th>
+        <th>Role</th>
+        <th>Input</th>
+        <th>Output</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>retrieve</code></td>
+        <td>Finds relevant documents</td>
+        <td><code>question</code></td>
+        <td><code>context</code></td>
+      </tr>
+      <tr>
+        <td><code>generate</code></td>
+        <td>Generates final answer using retrieved context</td>
+        <td><code>question + context</code></td>
+        <td><code>answer</code></td>
+      </tr>
+      <tr>
+        <td><code>graph</code></td>
+        <td>Sequences all steps and manages state</td>
+        <td><code>State</code></td>
+        <td><code>Updated State</code></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="fw-bold">
+Each node is modular and self-contained, making your RAG app highly testable, maintainable, and extensible. 🚀
+</p>
+<h4 class="mt-5">📜 Here’s the Complete Code</h4>
+<p>
+  Now that we’ve explored each component step-by-step — from loading PDFs and chunking text, to embedding and retrieval —
+  let’s put it all together using <strong>LangGraph</strong> to orchestrate the flow.
+</p>
+<p>
+  Below is the full working code for building a RAG pipeline that retrieves context from documents and generates answers using <code>Gemma 3</code> via <code>Ollama</code>. 
+  This modular, graph-based setup makes it easy to scale, debug, and extend.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>
+# Load the documents
+import os
+from langchain.document_loaders import PyPDFLoader
+
+# Step 1: Load the pdfs
+pdf_folder = "data/pdfs"
+all_docs = []
+
+for filename in os.listdir(pdf_folder):
+    if filename.endswith(".pdf"):
+        loader = PyPDFLoader(os.path.join(pdf_folder, filename))
+        docs = loader.load()
+        all_docs.extend(docs)
+
+print(f"Total characters: {len(docs[0].page_content)}")
+print(docs[0].page_content[:500])
+
+# Split the text
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+all_splits = text_splitter.split_documents(all_docs)
+
+print(f"Split resume pdfs into {len(all_splits)} sub-documents.")
+
+# Embeddings
+from langchain.embeddings import HuggingFaceEmbeddings
+
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+# Vectorstore
+from langchain.vectorstores import Chroma
+
+vectorstore = Chroma.from_documents(all_splits, embedding=embedding_model, persist_directory="./chroma_db")
+retriever = vectorstore.as_retriever()
+
+document_ids = vectorstore.add_documents(documents=all_splits)
+print(document_ids[:3])
+
+# LLM Initialization
+from langchain.llms import Ollama
+
+llm = Ollama(model="gemma3")
+
+# LangGraph Setup
+from langgraph.graph import START, StateGraph
+from typing_extensions import List, TypedDict
+from langchain_core.documents import Document
+from langchain.prompts import PromptTemplate
+
+prompt = PromptTemplate.from_template(
+    """
+    You are an expert assistant. Use the following context to answer the question.
+    If the answer cannot be found in the context, just say you don't know — don't make anything up.
+
+    Context:
+    {context}
+
+    Question: {question}
+    Answer:
+    """
+)
+
+class State(TypedDict):
+    question: str
+    context: List[Document]
+    answer: str
+
+# Nodes
+def retrieve(state: State):
+    retrieved_docs = vectorstore.similarity_search(state["question"])
+    return {"context": retrieved_docs}
+
+def generate(state: State):
+    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+    messages = prompt.invoke({"question": state["question"], "context": docs_content})
+    response = llm.invoke(messages)
+    return {"answer": response}
+
+# Build and run the graph
+graph_builder = StateGraph(State).add_sequence([retrieve, generate])
+graph_builder.add_edge(START, "retrieve")
+graph = graph_builder.compile()
+
+response = graph.invoke({"question": "What is my name"})
+print(response["answer"])
+
+# Visualize the graph
+from IPython.display import Image, display
+
+display(Image(graph.get_graph().draw_mermaid_png()))
+
+# Additional invocations
+result = graph.invoke({"question": "What is My email?"})
+
+print(f'Context: {result["context"]}\n\n')
+print(f'Answer: {result["answer"]}')
+
+# Streaming responses
+for step in graph.stream(
+    {"question": "Provide"}, stream_mode="updates"
+):
+    print(f"{step}\n\n----------------\n")
+
+</code></pre>
+  <p class="fw-bold">
+    LangGraph gives your RAG pipeline memory, logic, and structure — making it far easier to scale and experiment. More features like streaming and condition-based flows are just a few lines away. 🔄
+  </p>
+</div>
+</body>
+</html>

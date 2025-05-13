@@ -1,5 +1,11 @@
 [
   {
+  "file": "RAG_with_LangGraphs.html",
+  "title": "Graph-Powered RAG with LangChain, Chroma DB, and Gemma 3",
+  "summary": "Build an advanced Retrieval-Augmented Generation (RAG) pipeline using LangGraph and Gemma 3 model — all explained with detailed code and visualization.",
+  "date": "May 10, 2025"
+  },
+  {  
     "file": "Building_a_RAG_Pipeline_with_PDFs.html",
     "title": "Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3",
     "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base.",
