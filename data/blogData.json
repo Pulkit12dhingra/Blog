@@ -1,5 +1,11 @@
 [
   {
+  "file": "Langchain_Document_Loaders.html",
+  "title": "LangChain Document Loaders — A Unified Gateway to Your Data 📄🔗",
+  "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON — all with just a few lines of code.",
+  "date": "May 11, 2025"
+  },
+  {
   "file": "RAG_with_LangGraphs.html",
   "title": "Graph-Powered RAG with LangChain, Chroma DB, and Gemma 3",
   "summary": "Build an advanced Retrieval-Augmented Generation (RAG) pipeline using LangGraph and Gemma 3 model — all explained with detailed code and visualization.",
