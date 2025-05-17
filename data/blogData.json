@@ -1,6 +1,6 @@
 [
   {
-  "file": "Langchain_Document_Loaders.html",
+  "file": "Langchains_Document_Loaders.html",
   "title": "LangChain Document Loaders — A Unified Gateway to Your Data 📄🔗",
   "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON — all with just a few lines of code.",
   "date": "May 11, 2025"
