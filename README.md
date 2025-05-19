@@ -2,10 +2,9 @@
 
 Welcome to the source repository for my technical blog focused on AI, coding tutorials, and hands-on projects. Below is a breakdown of the project structure and how everything fits together.
 
----
+<h2>📁 Directory Structure</h2>
 
-## 📁 Directory Structure
-
+<pre>
 .
 ├── index.html
 ├── /data
@@ -17,6 +16,7 @@ Welcome to the source repository for my technical blog focused on AI, coding tut
 │   └── *.png / *.jpg
 ├── /notebooks
 │   └── *.ipynb
+</pre>
 
 ---
 
