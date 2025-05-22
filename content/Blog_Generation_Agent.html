@@ -1,0 +1,489 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore how to build an AI-powered HTML blog generator using LangChain, a custom LangGraph pipeline, and Ollama." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore how to build an AI-powered HTML blog generator using LangChain, a custom LangGraph pipeline, and Ollama." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">LangGraph Agent to HTML Blog Generator — Building Blogs with AI ✍️🤖</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <p class="text-muted">Published: <span id="publish-date">May 21, 2025</span></p>
+  <hr />
+
+  <p>
+    What if your blog posts could write themselves — directly from a Jupyter notebook? This post walks through an AI-powered pipeline that turns notebook content into HTML blog posts using <strong>LangChain</strong>, <strong>LangGraph</strong>, and <strong>Ollama</strong>.
+  </p>
+
+  <p>
+    👉 Before diving in, make sure you’ve read:
+    <ul>
+      <li>
+        🔧 <a href="https://pulkit12dhingra.github.io/Blog/content/Setting_up_Ollama.html" target="_blank">
+          Setting Up Ollama 🦙
+        </a>
+      </li>
+      <li>
+        🧠 <a href="https://pulkit12dhingra.github.io/Blog/content/RAG_with_LangGraphs.html" target="_blank">
+          Building a RAG Pipeline with LangGraph
+        </a>
+      </li>
+    </ul>
+  </p>
+
+  <h4 class="mt-4">Code Flow Breakdown</h4>
+
+<h5>📥 Load Blog HTML Files from GitHub</h5>
+<p>
+  Let's start by loading HTML files from our previous blog posts. This provides the LLM with contextual examples of how blogs are structured, allowing it to generate content in a consistent format.
+</p>
+<p>
+  We use the GitHub API to access <code>.html</code> files from the blog repository. Each file is loaded and wrapped into a LangChain <code>Document</code> using <code>BSHTMLLoader</code>, preparing them for further chunking and embedding.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>import requests
+from langchain.document_loaders import BSHTMLLoader
+from langchain.schema import Document
+
+# GitHub repo details
+owner = "Pulkit12dhingra"
+repo = "Blog"
+path = "content"
+api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+
+# List files in the content directory
+response = requests.get(api_url)
+response.raise_for_status()
+files = response.json()
+
+# Collect LangChain documents
+documents = []
+
+for file in files:
+    if file["name"].endswith(".html"):
+        print(f"Processing: {file['name']}")
+        raw_url = file["download_url"]
+        html_content = requests.get(raw_url).text
+
+        # Load into LangChain using BSHTMLLoader
+        loader = BSHTMLLoader(file_path=None)
+        # Manually override the content for in-memory loading
+        doc = Document(page_content=html_content, metadata={"source": file["name"]})
+        documents.append(doc)
+
+print(f"\\nLoaded {len(documents)} HTML documents into LangChain.")
+</code></pre>
+
+ <h5>✂️ Split Documents into Chunks</h5>
+<p>
+  Large documents, like full blog posts or notebooks, often exceed the input limits of language models. To handle this, we split them into smaller, manageable pieces called <strong>chunks</strong>. This ensures that each chunk can fit into the model's context window, making it possible to process and retrieve relevant content efficiently.
+</p>
+<p>
+  We use LangChain's <code>RecursiveCharacterTextSplitter</code> to split documents based on sentence and paragraph boundaries — intelligently preserving meaning while respecting size limits.
+</p>
+<p>
+  We also use a <strong>chunk overlap</strong> (e.g., 50 characters) to maintain context across chunk boundaries. This is crucial because important information (like the end of one paragraph and the start of another) often spans across splits. Overlap ensures smoother transitions and reduces the chances of context loss when retrieving or summarizing.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50
+)
+chunks = text_splitter.split_documents(documents)
+</code></pre>
+
+<h5>🧠 Embedding the Chunks</h5>
+<p>
+  Once we have our documents broken into chunks, the next step is to convert them into a numerical format that can be efficiently searched. This process is called <strong>embedding</strong>.
+</p>
+<p>
+  We use a HuggingFace embedding model called <code>intfloat/e5-base-v2</code>, which is designed for general-purpose retrieval tasks. It translates each chunk into a dense vector — a list of floating-point numbers — that captures its semantic meaning.
+</p>
+<p>
+  But since our blog generation pipeline involves both <strong>code snippets</strong> and <strong>natural language explanations</strong> (from Jupyter notebooks), we specifically choose an embedding model that can handle both. Unlike generic sentence embeddings that are trained only on natural language, <code>e5-base-v2</code> is instruction-tuned and performs well across mixed content types — including light code use.
+</p>
+<p>
+  Using a code-aware embedding helps the model:
+  <ul>
+    <li>Understand function and variable semantics</li>
+    <li>Preserve formatting and indentation logic</li>
+    <li>Better align similar code structures across documents</li>
+  </ul>
+  This improves retrieval accuracy when searching for similar content during generation, ultimately leading to better and more coherent blog outputs.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>from langchain.embeddings import HuggingFaceEmbeddings
+
+embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
+</code></pre>
+
+
+<h5>📦 Build the Vectorstore (FAISS)</h5>
+<p>
+  Once we’ve generated embeddings for each document chunk, we need a way to search through them efficiently. This is where a <strong>vector store</strong> comes in. It allows us to perform <strong>similarity search</strong> — retrieving chunks that are most relevant to a given query.
+</p>
+<p>
+  In this project, we use <code>FAISS</code> (Facebook AI Similarity Search), a library built by Meta AI that's optimized for high-speed vector search even on large datasets. It indexes the embeddings using efficient data structures like HNSW or flat L2 indexes, making it possible to quickly find the most semantically similar chunks at runtime.
+</p>
+<p>
+  Vector stores are the backbone of <strong>Retrieval-Augmented Generation (RAG)</strong> pipelines. They give the LLM access to an external knowledge base — in our case, previous blog content — without retraining the model.
+</p>
+<p>
+  Here's how we build it using LangChain:
+</p>
+
+<pre class="bg-light p-3 rounded"><code>from langchain.vectorstores import FAISS
+
+# Create a vectorstore index from the document chunks
+vectorstore = FAISS.from_documents(chunks, embedding=embedding_model)
+
+# Create a retriever interface
+retriever = vectorstore.as_retriever()
+</code></pre>
+
+
+  <h5>5️⃣ Ollama LLM Setup</h5>
+  <p>We use the <code>qwen2.5-coder:7b</code> model from Ollama with a custom streaming callback.</p>
+  <pre class="bg-light p-3 rounded"><code>llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
+
+<h5>🔄 History-Aware Question Rewriting</h5>
+<p>
+  In multi-turn conversations, users often ask follow-up questions like “What about step 2?” or “Can you summarize that again?” These queries rely heavily on previous context and aren’t useful on their own. To make them meaningful to the retriever, we need to transform them into <strong>standalone questions</strong>.
+</p>
+<p>
+  This is exactly what a <strong>history-aware retriever</strong> does — it rewrites the latest user question by using the entire chat history for reference. The new, reformulated question is then used to retrieve documents that are actually relevant, even in the middle of a conversation.
+</p>
+<p>
+  We achieve this using LangChain's <code>create_history_aware_retriever</code> utility. It takes:
+  <ul>
+    <li>An LLM (used to rewrite the question)</li>
+    <li>A retriever (like FAISS)</li>
+    <li>A prompt that explains how to reformulate the question</li>
+  </ul>
+</p>
+<p>
+  Here's how we define and initialize it:
+</p>
+
+<pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.chains import create_history_aware_retriever
+
+# Instruction for the LLM
+retriever_prompt = (
+    "Given a chat history and the latest user question which might reference context in the chat history, "
+    "formulate a standalone question which can be understood without the chat history. "
+    "Do NOT answer the question, just reformulate it if needed and otherwise return it as is."
+)
+
+# Prompt template with placeholders
+contextualize_q_prompt = ChatPromptTemplate.from_messages([
+    ("system", retriever_prompt),
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("human", "{input}")
+])
+
+# Wrap it all into a retriever
+history_aware_retriever = create_history_aware_retriever(
+    llm, retriever, contextualize_q_prompt
+)
+</code></pre>
+
+<p>
+  This component is crucial for making the LangGraph pipeline capable of handling dynamic, back-and-forth interactions while still maintaining high retrieval accuracy.
+</p>
+
+
+  <h5>7️⃣ Graph State Definition</h5>
+  <p>Defines the format and keys of the state that passes through the LangGraph nodes.</p>
+  <pre class="bg-light p-3 rounded"><code>class GraphState(TypedDict):
+    query: str
+    chat_history: List[BaseMessage]
+    documents: List
+    reasoning: str
+    answer: str</code></pre>
+
+  <h4 class="mt-4">🧩 Node Logic Explained</h4>
+
+  <h5>🔹 Input Node</h5>
+<p>
+  The <strong>input node</strong> is the starting point of the LangGraph pipeline. It receives the initial state dictionary, which typically includes:
+  <ul>
+    <li><code>query</code>: the user's question</li>
+    <li><code>chat_history</code>: previous conversational context</li>
+  </ul>
+</p>
+<p>
+  This node doesn’t perform any logic itself — it simply passes the incoming state to the next node in the graph. Think of it as a placeholder that initializes the flow and ensures the state structure is correctly handed over to downstream components like the retriever.
+</p>
+<p>
+  Here’s the minimal function definition:
+</p>
+
+<pre class="bg-light p-3 rounded"><code>def input_node(state: GraphState) -> GraphState:
+    return state
+</code></pre>
+
+<p>
+  You might extend this node later to do tasks like:
+  <ul>
+    <li>Sanitize the input</li>
+    <li>Add timestamps or user metadata</li>
+    <li>Perform lightweight pre-processing (e.g., lowercasing, trimming)</li>
+  </ul>
+  But in most simple pipelines, this node serves as a clean handoff to begin the graph.
+</p>
+
+<h5>🔹 Retrieval Node</h5>
+<p>
+  The <strong>retrieval node</strong> is responsible for fetching relevant context documents based on the user's question. But instead of using the raw query, it first passes the question through the <strong>history-aware retriever</strong> that rewrites it into a standalone version (if needed).
+</p>
+<p>
+  This reformulated question ensures that even if the user asked a follow-up (e.g., “What about step 3?”), the model understands the full context and retrieves the right documents from the vector store.
+</p>
+<p>
+  The documents retrieved are then stored in the shared <code>state</code> dictionary under the <code>"documents"</code> key. These documents are what the model will use later to reason and generate an answer.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>def retrieve_node(state: GraphState) -> GraphState:
+    standalone_question = history_aware_retriever.invoke({
+        "chat_history": state["chat_history"],
+        "input": state["query"]
+    })
+    state["documents"] = standalone_question
+    return state
+</code></pre>
+
+<p>
+  This node bridges the user's intent with the stored knowledge base — allowing the system to retrieve semantically similar content based on meaning, not just keywords.
+</p>
+
+
+<h5>🔹 Self-Reasoning Node</h5>
+<p>
+  The <strong>self-reasoning node</strong> introduces an intermediate thinking step before the final answer is generated. Instead of directly jumping to an output, we ask the language model to explain <em>how</em> it would arrive at the answer using the question and the retrieved documents.
+</p>
+<p>
+  This node uses a custom prompt that instructs the LLM to output a <strong>step-by-step reasoning path</strong>. This is especially valuable for technical content like blog generation from notebooks, where explanations benefit from structure and clarity.
+</p>
+<p>
+  The generated reasoning is then stored in the shared <code>state</code> under the key <code>"reasoning"</code>, which will later be used alongside the retrieved docs to form the final answer.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import PromptTemplate
+
+# Self-reasoning node
+def self_reasoning_node(state: GraphState) -> GraphState:
+    reasoning_prompt = PromptTemplate.from_template(
+        "Given the question: {query}\\nand retrieved docs: {docs}\\nWhat is a step-by-step reasoning path?"
+    )
+    reasoning_chain = reasoning_prompt | llm
+    reasoning = reasoning_chain.invoke({
+        "query": state["query"],
+        "docs": state["documents"]
+    })
+    state["reasoning"] = reasoning
+    return state
+</code></pre>
+
+<p>
+  This pattern — reason first, then answer — improves interpretability and often results in more coherent and grounded responses. It's inspired by the <strong>Chain-of-Thought prompting</strong> technique.
+</p>
+
+
+<h5>🔹 Answer Generation Node</h5>
+<p>
+  This node is where the final answer is created. It combines the output of the <code>self_reasoning_node</code> (the step-by-step thought process) and the original retrieved documents to give the LLM a complete context for generation.
+</p>
+<p>
+  Instead of relying on the retrieved documents alone, the answer prompt explicitly includes the model’s own reasoning. This helps reinforce the logic path and produces more coherent, grounded, and context-aware responses.
+</p>
+<p>
+  The formatted prompt is passed to the language model, and the resulting answer is stored in the shared <code>state</code> under the key <code>"answer"</code>.
+</p>
+
+<pre class="bg-light p-3 rounded"><code># Answer generation node
+def generate_answer_node(state: GraphState) -> GraphState:
+    full_context = f"{state['reasoning']}\n\n{state['documents']}"
+    final_prompt = PromptTemplate.from_template(
+        "Answer the question: {query}\\nUse context:\\n{context}"
+    )
+    answer_chain = final_prompt | llm
+    answer = answer_chain.invoke({
+        "query": state["query"],
+        "context": full_context
+    })
+    state["answer"] = answer
+    return state
+</code></pre>
+
+<p>
+  This final generation step mirrors how a human would approach writing: first understand, then plan, then articulate — using all available context.
+</p>
+
+
+<h5>🔹 Output Node</h5>
+<p>
+  The <strong>output node</strong> marks the end of the LangGraph execution. Its job is simple: return the current state object, which now contains the final answer alongside all intermediate data like the question, documents, and reasoning.
+</p>
+<p>
+  This node acts as the <em>finish point</em> in the graph, ensuring that the result of the computation is returned cleanly to the caller — for display, storage, or further processing.
+</p>
+
+<pre class="bg-light p-3 rounded"><code># Output node
+def output_node(state: GraphState) -> GraphState:
+    return state
+</code></pre>
+
+<p>
+  While this node doesn’t perform any logic on its own, it’s a useful place to:
+  <ul>
+    <li>Log results</li>
+    <li>Post-process output</li>
+    <li>Trigger downstream integrations (e.g., saving to file or publishing)</li>
+  </ul>
+  For now, it simply finalizes the graph flow by returning everything the pipeline has produced.
+</p>
+
+
+<h4 class="mt-4">🕸️ Graph Construction</h4>
+<p>
+  After defining all the individual nodes — <code>input</code>, <code>retrieve</code>, <code>reason</code>, <code>generate</code>, and <code>output</code> — we use LangChain's <code>StateGraph</code> to assemble them into an executable graph.
+</p>
+<p>
+  The graph determines the <strong>flow of execution</strong> — how state transitions from one node to the next, and in what order. This modular approach allows each step to be isolated, testable, and reusable.
+</p>
+<p>
+  Below is the code that constructs and wires the graph together:
+</p>
+
+<pre class="bg-light p-3 rounded"><code>graph = StateGraph(GraphState)
+
+# Add all nodes
+graph.add_node("input", input_node)
+graph.add_node("retrieve", retrieve_node)
+graph.add_node("reason", self_reasoning_node)
+graph.add_node("generate", generate_answer_node)
+graph.add_node("output", output_node)
+
+# Define the entry and exit points
+graph.set_entry_point("input")
+graph.set_finish_point("output")
+</code></pre>
+
+<p>
+  This setup tells LangGraph:
+  <ul>
+    <li>Where to start (<code>input</code> node)</li>
+    <li>How to transition from one node to the next</li>
+    <li>Where to end (<code>output</code> node)</li>
+  </ul>
+</p>
+
+<p>
+  Once constructed, this graph is compiled and invoked with a user query — powering the entire blog-generation workflow.
+</p>
+
+<h4 class="mt-4">🚀 Running an Example: From Notebook to Blog</h4>
+<p>
+  Now that the LangGraph pipeline is ready, let's see it in action by feeding it a real Jupyter notebook and asking it to generate a blog post.
+</p>
+
+<h5>📘 Step 1: Load a Notebook</h5>
+<p>
+  We use LangChain's <code>NotebookLoader</code> to read the contents of a Jupyter notebook. This includes both code and output (like print statements and plots), which will be passed into the graph as context.
+</p>
+<pre class="bg-light p-3 rounded"><code>from langchain_community.document_loaders import NotebookLoader
+
+notebook_loader = NotebookLoader(
+    "sample_notebook.ipynb",     # Replace with your notebook path
+    include_outputs=True,
+    max_output_length=20,
+    remove_newline=True
+)
+
+notebook_docs = notebook_loader.load()
+notebook_text = notebook_docs[0].page_content
+</code></pre>
+
+<h5>🧩 Step 2: Provide an HTML Template</h5>
+<p>
+  To make sure the generated blog has the correct metadata and structure, we provide a reference <code>&lt;head&gt;</code> section from a previous blog post. This tells the model exactly how to format the result.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>example_head = \"\"\"&lt;head&gt;
+  &lt;meta charset="UTF-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+  &lt;title&gt;Byte-Sized-Brilliance-AI&lt;/title&gt;
+  ...
+  &lt;/head&gt;\"\"\"
+</code></pre>
+
+<h5>📝 Step 3: Create the Query</h5>
+<p>
+  The query instructs the model to use the notebook content to write a full HTML blog, starting from the provided <code>&lt;head&gt;</code> section and embedding code explanations throughout.
+</p>
+<pre class="bg-light p-3 rounded"><code>example_query = (
+    "Based on the following Jupyter notebook python code, generate a sample HTML blog "
+    "that explains all the code in the notebook content. "
+    "Make sure to add all the code references that you are explaining along with the text\\n"
+    "In the head section of the blog update the &lt;place holder for description&gt; "
+    "section with a short description of the blog\\n"
+    "Don't provide any other explanation or detail in the reply, only provide the html code "
+    "starting from the head section\\n"
+    "Make sure the &lt;head&gt; section of the blog is exactly the same as this one:\\n"
+    f"{example_head}\\n\\n"
+    "Notebook content:\\n"
+    f"{notebook_text}"
+)</code></pre>
+
+<h5>▶️ Step 4: Invoke the Graph</h5>
+<p>
+  Finally, we invoke the compiled LangGraph app with our query. The graph processes it through all nodes — retrieval, reasoning, and generation — and produces a ready-to-publish HTML blog.
+</p>
+
+<pre class="bg-light p-3 rounded"><code>result = app.invoke({
+    "query": example_query,
+    "chat_history": []
+})
+
+# Print the generated HTML
+print("\\n\\nFinal Answer:\\n", result["answer"])
+</code></pre>
+
+<p>
+  The output will be a complete blog — including code explanations and correct HTML structure — that you can save and publish directly.
+</p>
+
+
+  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <p>
+    This LangGraph pipeline is an elegant example of chaining reasoning and retrieval into a practical application — automatic blog generation from notebooks. 
+    It reflects how LLMs can go beyond Q&A and participate in structured, multi-step reasoning workflows.
+  </p>
+
+  <h4 class="mt-4">🔗 Reference</h4>
+  <p>
+    Explore the full notebook used in this blog:
+    <a href="https://github.com/Pulkit12dhingra/langchain-agent-app/blob/master/agent.ipynb" target="_blank">📓 agent.ipynb on GitHub</a>
+  </p>
+</div>
+</body>
+</html>

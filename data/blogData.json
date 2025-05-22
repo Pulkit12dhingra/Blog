@@ -1,5 +1,11 @@
 [
   {
+  "file": "Blog_Generation_Agent.html",
+  "title": "LangGraph Agent to HTML Blog Generator — Building Blogs with AI ✍️🤖",
+  "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline.",
+  "date": "May 21, 2025"
+  },
+  {
   "file": "LangChain_Document_Loaders.html",
   "title": "LangChain Document Loaders — A Unified Gateway to Your Data 📄🔗",
   "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON — all with just a few lines of code.",
