@@ -1,5 +1,11 @@
 [
   {
+  "file": "Wiki_Hindi_scrapper.html",
+  "title": "Deep Dive: Functions in Our Hindi Wikipedia Scraper 🕸️",
+  "summary": "Have you ever wondered how to automatically retrieve and clean Hindi text from Wikipedia? This post walks through the requests and BeautifulSoup modules and explains each function in a reusable scraper class, ending with the full ready-to-run code.",
+  "date": "May 20, 2025"
+  },
+  {
   "file": "Blog_Generation_Agent.html",
   "title": "LangGraph Agent to HTML Blog Generator — Building Blogs with AI ✍️🤖",
   "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline.",

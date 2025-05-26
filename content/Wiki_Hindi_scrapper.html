@@ -1,0 +1,185 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+      <h2 class="fw-bold mb-3">Deep Dive: Functions in Our Hindi Wikipedia Scraper 🕸️</h2>
+      <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+    </div>
+    <p class="text-muted">Published: <span id="publish-date">May 20, 2025</span></p>
+    <hr />
+
+    <p>
+      Have you ever wondered how we can automatically retrieve information from URLs? Places like Wikipedia contain vast amounts of text that can power fine-tuning models on specific topics or languages. In this blog post, we’ll see how to scrape Wikipedia for Hindi text specifically, then break down each function in our scraper class to understand how it works.
+    </p>
+
+    <h4 class="mt-4">📦 The <code>requests</code> Module</h4>
+    <p>
+      The <code>requests</code> library is Python’s standard for HTTP communication. It abstracts away lower-level networking details, allowing you to send GET, POST, and other HTTP requests with ease.
+    </p>
+    <pre class="bg-light p-3 rounded"><code>import requests</code></pre>
+    <p>
+      <strong>Key features:</strong>
+    </p>
+    <ul>
+      <li><code>requests.get(url, params)</code> – sends a GET request and returns a Response object.</li>
+      <li><code>requests.post(url, data)</code> – sends form-encoded data in a POST request.</li>
+      <li>Handles sessions, headers, cookies, and automatic content decoding.</li>
+    </ul>
+
+    <h4 class="mt-4">🍲 The <code>BeautifulSoup</code> Module</h4>
+    <p>
+      <code>BeautifulSoup</code> from the <code>bs4</code> package parses HTML or XML documents into a navigable tree structure. You can search, traverse, and modify elements easily.
+    </p>
+    <pre class="bg-light p-3 rounded"><code>from bs4 import BeautifulSoup</code></pre>
+    <p>
+      <strong>Common usage:</strong>
+    </p>
+    <pre class="bg-light p-3 rounded"><code>html_content = response.text
+soup = BeautifulSoup(html_content, 'html.parser')
+title = soup.find('title').get_text()</code></pre>
+
+    <h4 class="mt-4">🔹 <code>__init__()</code> — Initializing the Scraper</h4>
+    <p>
+      The constructor sets up the scraper with the target URL. It runs once when you create your scraper object.
+    </p>
+    <pre class="bg-light p-3 rounded"><code>def __init__(self, url):
+    self.url = url</code></pre>
+    <ul>
+      <li><strong>Parameter:</strong> <code>url</code> (string) — the full web address of the Wikipedia page you want to scrape.</li>
+      <li><strong>Action:</strong> stores it in <code>self.url</code> for later use by other methods.</li>
+    </ul>
+
+    <h4 class="mt-4">🔹 <code>scrape()</code> — Fetching & Parsing Content</h4>
+    <p>
+      This method does the heavy lifting: it downloads the page, parses the HTML, extracts and cleans text.
+    </p>
+    <pre class="bg-light p-3 rounded"><code>def scrape(self):
+    response = requests.get(self.url)
+    response.encoding = 'utf-8'
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch page: {response.status_code}")
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    content_div = soup.find('div', {'class': 'mw-parser-output'})
+    if not content_div:
+        raise Exception("Content div not found.")
+
+    paragraphs = content_div.find_all('p')
+    lines = []
+    for p in paragraphs:
+        text = p.get_text(separator=" ", strip=True)
+        text = re.sub(r'\[\d+\]', '', text)
+        if text:
+            lines.append(text)
+    return '\n\n'.join(lines).strip()</code></pre>
+    <ul>
+      <li><strong>HTTP GET:</strong> <code>requests.get(self.url)</code> retrieves the page.</li>
+      <li><strong>Encoding:</strong> forces UTF-8 for proper Hindi characters.</li>
+      <li><strong>Status Check:</strong> non-200 codes raise an exception, stopping execution early.</li>
+      <li><strong>Parsing:</strong> <code>BeautifulSoup(..., 'html.parser')</code> builds a navigable HTML tree.</li>
+      <li><strong>Finding Content:</strong> locates the main article container <code>div.mw-parser-output</code>.</li>
+      <li><strong>Extracting Text:</strong> loops over all `<p>` tags, pulls text, strips citation numbers with a regex, and collects non-empty paragraphs.</li>
+      <li><strong>Output:</strong> joins cleaned paragraphs with double newlines for readability.</li>
+    </ul>
+
+    <h4 class="mt-4">🔹 <code>save()</code> — Writing to File</h4>
+    <p>
+      After scraping, <code>save()</code> persists the text to disk so you can process or analyze it offline.
+    </p>
+    <pre class="bg-light p-3 rounded"><code>def save(self, text, filename="hindi_text.txt"):
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"✅ Text saved to {filename}")</code></pre>
+    <ul>
+      <li><strong>Parameters:</strong></li>
+      <ul>
+        <li><code>text</code> — the string returned by <code>scrape()</code>.</li>
+        <li><code>filename</code> — optional, default <code>"hindi_text.txt"</code>.</li>
+      </ul>
+      <li><strong>Action:</strong> opens (or creates) the file in write mode with UTF-8 encoding, writes the content, and closes it.</li>
+      <li><strong>Feedback:</strong> prints a green checkmark and file path for confirmation.</li>
+    </ul>
+
+    <h4 class="mt-4">✅ Complete Class: All Functions Together</h4>
+    <p>
+      Here’s the full, ready-to-run <code>HindiWikipediaScraper</code> combining all three methods. Copy, paste, and execute!
+    </p>
+    <pre class="bg-light p-3 rounded"><code>import requests
+from bs4 import BeautifulSoup
+import re
+
+class HindiWikipediaScraper:
+    def __init__(self, url):
+        self.url = url
+
+    def scrape(self):
+        response = requests.get(self.url)
+        response.encoding = 'utf-8'
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch page: {response.status_code}")
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        content_div = soup.find('div', {'class': 'mw-parser-output'})
+        if not content_div:
+            raise Exception("Content div not found.")
+
+        paragraphs = content_div.find_all('p')
+        lines = []
+        for p in paragraphs:
+            text = p.get_text(separator=" ", strip=True)
+            text = re.sub(r'\[\d+\]', '', text)
+            if text:
+                lines.append(text)
+        return '\n\n'.join(lines).strip()
+
+    def save(self, text, filename="hindi_text.txt"):
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"✅ Text saved to {filename}")
+
+# Usage
+url = "https://hi.wikipedia.org/wiki/%E0%A4%AE%E0%A5%81%E0%A4%96%E0%A4%AA%E0%A5%83%E0%A4%B7%E0%A5%8D%E0%A4%A0"
+scraper = HindiWikipediaScraper(url)
+text = scraper.scrape()
+scraper.save(text)</code></pre>
+
+    <p class="mt-4">Complete dataset can be found at <a href="https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi" target="_blank">https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi</a>.</p>
+
+  </div>
+</body>
+</html>
