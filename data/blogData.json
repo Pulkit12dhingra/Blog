@@ -1,5 +1,11 @@
 [
   {
+  "file": "Tree.html",
+  "title": "Binary Search Trees in Python — From Scratch 🌲",
+  "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization.",
+  "date": "June 26, 2025"
+  },
+  {
   "file": "Sorting_algos.html",
   "title": "Sorting Algorithms Demystified 🔢 — Visualized and Benchmarked in Python",
   "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis.",
