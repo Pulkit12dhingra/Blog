@@ -1,5 +1,11 @@
 [
   {
+  "file": "Sorting_algos.html",
+  "title": "Sorting Algorithms Demystified 🔢 — Visualized and Benchmarked in Python",
+  "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis.",
+  "date": "June 26, 2025"
+  },
+  {
   "file": "Searching_algos.html",
   "title": "Exploring Search Algorithms — From Linear to Binary 🚀",
   "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison.",

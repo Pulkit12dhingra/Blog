@@ -1,0 +1,160 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Sorting Algorithms Demystified 🔢 — Visualized and Benchmarked in Python</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <p class="text-muted">Published: <span id="publish-date">June 26, 2025</span></p>
+  <hr />
+
+  <p>Sorting algorithms are fundamental to computer science. Whether you’re arranging numbers in ascending order or organizing names alphabetically, sorting is everywhere. In this post, we’ll explore and compare popular sorting algorithms like <strong>Bubble Sort</strong>, <strong>Insertion Sort</strong>, <strong>Selection Sort</strong>, <strong>Merge Sort</strong>, and <strong>Quick Sort</strong>.</p>
+
+  <h4 class="mt-4">🔍 Problem Setup</h4>
+  <p>We’ll generate a random array of integers and apply each sorting algorithm. The goal is to analyze performance through benchmarking and visualize how each method behaves on the same dataset.</p>
+
+  <h5>Generate Test Data</h5>
+  <pre class="bg-light p-3 rounded"><code>import random
+array = random.sample(range(1, 1001), 1000)</code></pre>
+
+  <h4 class="mt-4">🔄 Sorting Algorithms</h4>
+
+  <h5>1️⃣ Bubble Sort</h5>
+  <pre class="bg-light p-3 rounded"><code>def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]</code></pre>
+
+  <h5>2️⃣ Insertion Sort</h5>
+  <pre class="bg-light p-3 rounded"><code>def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key</code></pre>
+
+  <h5>3️⃣ Selection Sort</h5>
+  <pre class="bg-light p-3 rounded"><code>def selection_sort(arr):
+    for i in range(len(arr)):
+        min_idx = i
+        for j in range(i+1, len(arr)):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]</code></pre>
+
+  <h5>4️⃣ Merge Sort</h5>
+  <pre class="bg-light p-3 rounded"><code>def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        left = arr[:mid]
+        right = arr[mid:]
+        merge_sort(left)
+        merge_sort(right)
+
+        i = j = k = 0
+        while i < len(left) and j < len(right):
+            if left[i] < right[j]:
+                arr[k] = left[i]
+                i += 1
+            else:
+                arr[k] = right[j]
+                j += 1
+            k += 1
+
+        arr[k:] = left[i:] + right[j:]</code></pre>
+
+  <h5>5️⃣ Quick Sort</h5>
+  <pre class="bg-light p-3 rounded"><code>def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[0]
+    less = [x for x in arr[1:] if x <= pivot]
+    greater = [x for x in arr[1:] if x > pivot]
+    return quick_sort(less) + [pivot] + quick_sort(greater)</code></pre>
+
+  <h4 class="mt-4">⏱️ Benchmarking the Algorithms</h4>
+  <p>We’ll time how long each algorithm takes to sort the same array.</p>
+  <pre class="bg-light p-3 rounded"><code>import time
+
+algorithms = {
+    "Bubble": bubble_sort,
+    "Insertion": insertion_sort,
+    "Selection": selection_sort,
+    "Merge": merge_sort,
+    "Quick": lambda x: quick_sort(x)  # returns new array
+}
+
+for name, func in algorithms.items():
+    test = array.copy()
+    start = time.time()
+    if name == "Quick":
+        func(test)  # return value not stored
+    else:
+        func(test)
+    duration = time.time() - start
+    print(f"{name} Sort took {duration:.4f} seconds")</code></pre>
+
+  <div class="mt-2 mb-4 text-center">
+    <img src="../img/Blog_16_1.png" alt="Benchmark Results" class="img-fluid rounded shadow"/>
+  </div>
+
+  <h4 class="mt-4">📈 Time Complexities</h4>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Algorithm</th>
+        <th>Best</th>
+        <th>Average</th>
+        <th>Worst</th>
+        <th>Stable?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>Yes</td></tr>
+      <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>Yes</td></tr>
+      <tr><td>Selection Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>No</td></tr>
+      <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>Yes</td></tr>
+      <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>No</td></tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <p>Different sorting algorithms shine in different scenarios. For smaller arrays, simple algorithms like insertion sort are often sufficient. For larger datasets, merge and quick sort outperform significantly. Understanding these trade-offs is key when optimizing performance.</p>
+
+  <h4 class="mt-4">🔗 Reference</h4>
+  <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/sorting_algos.ipynb" target="_blank">
+    📓 sorting_algos.ipynb on GitHub
+  </a></p>
+</div>
+</body>
+</html>
