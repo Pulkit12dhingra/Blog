@@ -1,5 +1,11 @@
 [
   {
+  "file": "Graphs.html",
+  "title": "Grid Traversal Algorithms: BFS vs DFS Explained with Code",
+  "summary": "Learn how to implement and visualize Breadth-First Search (BFS) and Depth-First Search (DFS) on a 2D matrix. This beginner-friendly guide walks you through both algorithms with code, output, and a comparison table.",
+  "date": "June 26, 2025"
+  },
+  {
   "file": "Tree.html",
   "title": "Binary Search Trees in Python — From Scratch 🌲",
   "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization.",
