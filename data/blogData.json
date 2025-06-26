@@ -3,25 +3,25 @@
   "file": "Graphs.html",
   "title": "Grid Traversal Algorithms: BFS vs DFS Explained with Code",
   "summary": "Learn how to implement and visualize Breadth-First Search (BFS) and Depth-First Search (DFS) on a 2D matrix. This beginner-friendly guide walks you through both algorithms with code, output, and a comparison table.",
-  "date": "June 26, 2025"
+  "date": "June 20, 2025"
   },
   {
   "file": "Tree.html",
   "title": "Binary Search Trees in Python — From Scratch 🌲",
   "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization.",
-  "date": "June 26, 2025"
+  "date": "June 15, 2025"
   },
   {
   "file": "Sorting_algos.html",
   "title": "Sorting Algorithms Demystified 🔢 — Visualized and Benchmarked in Python",
   "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis.",
-  "date": "June 26, 2025"
+  "date": "June 3, 2025"
   },
   {
   "file": "Searching_algos.html",
   "title": "Exploring Search Algorithms — From Linear to Binary 🚀",
   "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison.",
-  "date": "June 26, 2025"
+  "date": "May 26, 2025"
   },
   {
   "file": "Wiki_Hindi_scrapper.html",
