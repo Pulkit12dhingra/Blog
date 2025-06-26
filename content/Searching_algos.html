@@ -1,0 +1,109 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Exploring Search Algorithms — From Linear to Binary 🚀</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <p class="text-muted">Published: <span id="publish-date">June 26, 2025</span></p>
+  <hr />
+
+  <p>
+    Whether you're just getting started with data structures or brushing up for coding interviews, understanding search algorithms is fundamental.
+    In this blog, we break down two essential techniques: <strong>Linear Search</strong> and <strong>Binary Search</strong>. We’ll walk through their logic, time complexity, and implement them step-by-step in Python. Let’s dive in! 🏊
+  </p>
+
+  <h4 class="mt-4">🔍 Linear Search — The Brute Force Hero</h4>
+  <p>
+    Linear search is the simplest way to find an element in a list: go through each element one by one until you find the target — or exhaust the list.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1</code></pre>
+  <p><strong>Time Complexity:</strong> O(n)</p>
+  <p><strong>Best Case:</strong> Element at the beginning</p>
+  <p><strong>Worst Case:</strong> Element at the end or not found</p>
+
+  <h4 class="mt-4">⚡ Binary Search — Divide and Conquer</h4>
+  <p>
+    Binary search is a much faster method — but only works on sorted arrays. It repeatedly divides the search interval in half.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1</code></pre>
+  <p><strong>Time Complexity:</strong> O(log n)</p>
+  <p><strong>Best Case:</strong> Middle element</p>
+  <p><strong>Worst Case:</strong> Element not in the list</p>
+
+  <h4 class="mt-4">🧪 Let’s Test Them!</h4>
+  <p>We’ll use a sample array and search for a number using both methods.</p>
+  <pre class="bg-light p-3 rounded"><code>arr = [2, 4, 6, 8, 10, 12, 14, 16]
+target = 10
+
+print("Linear Search:", linear_search(arr, target))
+print("Binary Search:", binary_search(arr, target))</code></pre>
+
+  <h4 class="mt-4">📊 When Should You Use Which?</h4>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Criteria</th>
+          <th>Linear Search</th>
+          <th>Binary Search</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Data Requirement</td><td>Unsorted</td><td>Sorted only</td></tr>
+        <tr><td>Time Complexity</td><td>O(n)</td><td>O(log n)</td></tr>
+        <tr><td>Implementation</td><td>Very simple</td><td>Requires more logic</td></tr>
+        <tr><td>Use Case</td><td>Small or unsorted data</td><td>Large, sorted data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <p>
+    Understanding these core algorithms sets a strong foundation for tackling more complex problems. While linear search is versatile, binary search’s efficiency shines in sorted data scenarios. Master both — they’re classic interview staples!
+  </p>
+
+  <h4 class="mt-4">🔗 Reference</h4>
+  <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/searching_algos.ipynb" target="_blank">📓 searching_algos.ipynb on GitHub</a></p>
+</div>
+</body>
+</html>

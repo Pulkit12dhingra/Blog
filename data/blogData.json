@@ -1,5 +1,11 @@
 [
   {
+  "file": "Searching_algos.html",
+  "title": "Exploring Search Algorithms — From Linear to Binary 🚀",
+  "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison.",
+  "date": "June 26, 2025"
+  },
+  {
   "file": "Wiki_Hindi_scrapper.html",
   "title": "Deep Dive: Functions in Our Hindi Wikipedia Scraper 🕸️",
   "summary": "Have you ever wondered how to automatically retrieve and clean Hindi text from Wikipedia? This post walks through the requests and BeautifulSoup modules and explains each function in a reusable scraper class, ending with the full ready-to-run code.",
