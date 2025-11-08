@@ -2,111 +2,133 @@
   {
     "file": "Blog_Generation_Agent.html",
     "title": "LangGraph Agent to HTML Blog Generator: Building Blogs with AI",
-    "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline."
+    "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline.",
+    "tags": ["AI", "LangChain", "LangGraph", "Ollama", "Agent", "Automation", "NLP"]
   },
   {
     "file": "RAG_with_LangGraphs.html",
     "title": "Graph-Powered RAG with LangChain, Chroma DB, and Gemma 3",
-    "summary": "Build an advanced Retrieval-Augmented Generation (RAG) pipeline using LangGraph and Gemma 3 model with detailed code and visualization."
+    "summary": "Build an advanced Retrieval-Augmented Generation (RAG) pipeline using LangGraph and Gemma 3 model with detailed code and visualization.",
+    "tags": ["AI", "RAG", "LangChain", "LangGraph", "ChromaDB", "LLM", "Vector Database"]
   },
   {  
     "file": "Building_a_RAG_Pipeline_with_PDFs.html",
     "title": "Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3",
-    "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base."
+    "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base.",
+    "tags": ["AI", "RAG", "LangChain", "PDF", "Embeddings", "HuggingFace", "LLM"]
   },
   {
     "file": "LangChain_Document_Loaders.html",
     "title": "LangChain Document Loaders: A Unified Gateway to Your Data",
-    "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON with just a few lines of code."
+    "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON with just a few lines of code.",
+    "tags": ["AI", "LangChain", "Data Processing", "PDF", "Web Scraping", "Python"]
   },
   {
     "file": "Langchains_with_Ollama.html",
     "title": "LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code",
-    "summary": "This blog walks through how to build with LangChain and Ollama covering chat vs. completion models, prompt templates, and hands-on code to get started fast."
+    "summary": "This blog walks through how to build with LangChain and Ollama covering chat vs. completion models, prompt templates, and hands-on code to get started fast.",
+    "tags": ["AI", "LangChain", "Ollama", "LLM", "Python", "Local Models"]
   },
   {
     "file": "Decision_Tree_Regression_from_Scratch.html",
     "title": "Decision Tree Regressor from Scratch: Split, Predict, Repeat",
-    "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. This guide walks through a full tree regressor implementation in Python."
+    "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. This guide walks through a full tree regressor implementation in Python.",
+    "tags": ["Machine Learning", "Python", "Decision Trees", "Regression", "Algorithms", "From Scratch"]
   },
   {
     "file": "Lasso_Regression_from_Scratch.html",
     "title": "Lasso Regression from Scratch: Feature Selection Meets Regularization",
-    "summary": "Learn how to implement Lasso Regression using Coordinate Descent from scratch, and explore how L1 regularization leads to feature selection in high-dimensional data."
+    "summary": "Learn how to implement Lasso Regression using Coordinate Descent from scratch, and explore how L1 regularization leads to feature selection in high-dimensional data.",
+    "tags": ["Machine Learning", "Python", "Regression", "Lasso", "Regularization", "From Scratch"]
   },
   {
     "file": "Ridge_Regression_from_Scratch.html",
     "title": "Ridge Regression from Scratch: With Gradient Descent and L2 Regularization",
-    "summary": "Explore how to implement Ridge Regression using gradient descent from scratch. Learn why regularization matters and compare performance against OLS and SGD models."
+    "summary": "Explore how to implement Ridge Regression using gradient descent from scratch. Learn why regularization matters and compare performance against OLS and SGD models.",
+    "tags": ["Machine Learning", "Python", "Regression", "Ridge", "Gradient Descent", "From Scratch"]
   },
   {
     "file": "Linear_Regression_from_Scratch.html",
     "title": "Linear Regression from Scratch: With Gradient Descent",
-    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on."
+    "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on.",
+    "tags": ["Machine Learning", "Python", "Regression", "Gradient Descent", "From Scratch", "Beginner"]
   },
   {
     "file": "Linear_Regression_OLS.html",
     "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
-    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step from loading data to evaluating model performance."
+    "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step from loading data to evaluating model performance.",
+    "tags": ["Machine Learning", "Python", "Regression", "OLS", "Data Science", "Tutorial"]
   },
   {
     "file": "Tree.html",
     "title": "Binary Search Trees in Python: From Scratch",
-    "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization."
+    "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization.",
+    "tags": ["Data Structures", "Python", "Trees", "BST", "Algorithms", "From Scratch"]
   },
   {
     "file": "Graphs.html",
     "title": "Grid Traversal Algorithms: BFS vs DFS Explained with Code",
-    "summary": "Learn how to implement and visualize Breadth-First Search (BFS) and Depth-First Search (DFS) on a 2D matrix. This beginner-friendly guide walks you through both algorithms with code, output, and a comparison table."
+    "summary": "Learn how to implement and visualize Breadth-First Search (BFS) and Depth-First Search (DFS) on a 2D matrix. This beginner-friendly guide walks you through both algorithms with code, output, and a comparison table.",
+    "tags": ["Algorithms", "Python", "BFS", "DFS", "Graph Traversal", "Data Structures"]
   },
   {
     "file": "Wiki_Hindi_scrapper.html",
     "title": "Deep Dive: Functions in Our Hindi Wikipedia Scraper",
-    "summary": "Have you ever wondered how to automatically retrieve and clean Hindi text from Wikipedia? This post walks through the requests and BeautifulSoup modules and explains each function in a reusable scraper class, ending with the full ready-to-run code."
+    "summary": "Have you ever wondered how to automatically retrieve and clean Hindi text from Wikipedia? This post walks through the requests and BeautifulSoup modules and explains each function in a reusable scraper class, ending with the full ready-to-run code.",
+    "tags": ["Web Scraping", "Python", "BeautifulSoup", "Wikipedia", "Hindi", "Automation"]
   },
   {
     "file": "Pyproject_TOML_Guide.html",
     "title": "Understanding pyproject.toml: The Modern Python Project Configuration File",
-    "summary": "Master pyproject.toml - the unified configuration standard for Python projects. Learn structure, benefits, tool configurations, migration from setup.py, and best practices."
+    "summary": "Master pyproject.toml - the unified configuration standard for Python projects. Learn structure, benefits, tool configurations, migration from setup.py, and best practices.",
+    "tags": ["Python", "Configuration", "TOML", "Project Setup", "Best Practices", "Tools"]
   },
   {
     "file": "Pytest_Decorators_Guide.html",
     "title": "Mastering Pytest: A Deep Dive into Decorators and Advanced Testing",
-    "summary": "Unlock the full power of pytest by mastering its decorator system. Learn @pytest.mark.parametrize, @pytest.fixture, custom markers, and 10+ essential decorators with practical examples."
+    "summary": "Unlock the full power of pytest by mastering its decorator system. Learn @pytest.mark.parametrize, @pytest.fixture, custom markers, and 10+ essential decorators with practical examples.",
+    "tags": ["Python", "Testing", "Pytest", "Decorators", "Unit Testing", "Tutorial"]
   },
   {
     "file": "Ruff_Linter_Formatter.html",
     "title": "Ruff: The Blazingly Fast Python Linter and Formatter",
-    "summary": "Master Ruff, the all-in-one Python linting and formatting tool that's 10-100x faster than traditional tools. Learn how to replace Flake8, Black, isort, and more with a single command."
+    "summary": "Master Ruff, the all-in-one Python linting and formatting tool that's 10-100x faster than traditional tools. Learn how to replace Flake8, Black, isort, and more with a single command.",
+    "tags": ["Python", "Linting", "Formatting", "Ruff", "Code Quality", "Tools"]
   },
   {
     "file": "UV_Package_Manager.html",
     "title": "UV: The Lightning-Fast Python Package Manager",
-    "summary": "Discover UV, the blazingly fast Python package manager built in Rust. Learn how it's 10-100x faster than pip and why it's becoming the go-to tool for modern Python development."
+    "summary": "Discover UV, the blazingly fast Python package manager built in Rust. Learn how it's 10-100x faster than pip and why it's becoming the go-to tool for modern Python development.",
+    "tags": ["Python", "Package Manager", "UV", "Rust", "Tools", "Performance"]
   },
   {
     "file": "Sorting_algos.html",
     "title": "Sorting Algorithms Demystified: Visualized and Benchmarked in Python",
-    "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis."
+    "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis.",
+    "tags": ["Algorithms", "Python", "Sorting", "Visualization", "Performance", "Data Structures"]
   },
   {
     "file": "Searching_algos.html",
     "title": "Exploring Search Algorithms: From Linear to Binary",
-    "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison."
+    "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison.",
+    "tags": ["Algorithms", "Python", "Search", "Binary Search", "Linear Search", "Beginner"]
   },
   {
     "file": "Setting_up_Ollama.html",
     "title": "Setting Up Ollama",
-    "summary": "Get started with Ollama, a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included."
+    "summary": "Get started with Ollama, a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included.",
+    "tags": ["AI", "Ollama", "LLM", "Setup", "Local Models", "Tutorial"]
   },
   {
     "file": "Python_Setup.html",
     "title": "Setting Up Your Python Environment",
-    "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively."
+    "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively.",
+    "tags": ["Python", "Setup", "Virtual Environment", "Beginner", "pip", "Tutorial"]
   },
   {
     "file": "Hello_World.html",
     "title": "Hello World! My First Blog Post",
-    "summary": "Kicking off my blog with excitement and a glimpse of what's to come. Let the journey begin!"
+    "summary": "Kicking off my blog with excitement and a glimpse of what's to come. Let the journey begin!",
+    "tags": ["Blog", "Introduction", "Hello World"]
   }
 ]

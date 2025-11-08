@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-8JMS98M7C7');
-  </script>
-  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Byte-Sized-Brilliance-AI: Explore tutorials, projects, and insights into AI, machine learning, Python programming, data science, and software development by Pulkit Dhingra." />
   <title>Byte-Sized-Brilliance-AI</title>
   <link rel="icon" type="image/png" href="img/icon.png" />
+
+  <!-- Preconnect to external domains for faster loading -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="dns-prefetch" href="https://upload.wikimedia.org">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Pulkit's Blog" />
@@ -28,24 +25,54 @@
   <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
   <meta name="twitter:image" content="img/social-preview.jpg" />
   
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
   
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
 
   <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
+    crossorigin="anonymous"
   />
+  
   <!-- Bootstrap Icons -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
     rel="stylesheet"
+    crossorigin="anonymous"
   />
 
-  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <!-- Font Awesome -->
   <link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  rel="stylesheet"
-/>
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- Deferred Google Analytics - loads after page is interactive -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
 </head>
 <body>
 
@@ -94,40 +121,40 @@
     <div class="sidebar text-center" id="sidebar">
       <img src="img/profile.jpeg" class="rounded-circle mb-3 profile" alt="Profile" />
       <h4 class="fw-bold">Pulkit Dhingra</h4>
-      <p class="text-muted small">code / Artificial Intelligence / Software Dev / Cloud + Computing</p>
+      <p class="text-muted small">Code / Artificial Intelligence / Software Dev / Cloud + Computing</p>
       <p class="text-muted">
         <i class="bi bi-geo-alt-fill me-1"></i> Cambridge, United Kingdom
       </p>
       <div class="text-start">
         <div class="d-flex align-items-center mb-2">
           <i class="bi bi-envelope-fill me-2"></i>
-          <a href="mailto:pulkit12dhingra@gmail.com" target="_blank">Email</a>
+          <a href="mailto:pulkit12dhingra@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
         </div>
         
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-link-45deg me-2"></i><a target="_blank" href="https://pulkit12dhingra.github.io/portfolio/">Website</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-link-45deg me-2"></i><a target="_blank" rel="noopener noreferrer" href="https://pulkit12dhingra.github.io/portfolio/">Website</a></div>
         <div class="d-flex align-items-center mb-2">
             <i class="fab fa-kaggle me-2"></i>
-            <a target="_blank" href="https://www.kaggle.com/pulkit12dhingra">Kaggle</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://www.kaggle.com/pulkit12dhingra">Kaggle</a>
           </div>
           
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-linkedin me-2"></i><a target="_blank" href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/">LinkedIn</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-linkedin me-2"></i><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/">LinkedIn</a></div>
         <div class="d-flex align-items-center mb-2">
             <i class="fas fa-chart-pie me-2"></i>
-            <a target="_blank" href="https://public.tableau.com/app/profile/pulkit.dhingra/vizzes#!/?newProfile=&activeTab=0">Tableau</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://public.tableau.com/app/profile/pulkit.dhingra/vizzes#!/?newProfile=&activeTab=0">Tableau</a>
           </div>
           
-        <div class="d-flex align-items-center mb-2"><i class="bi bi-github me-2"></i><a target="_blank" href="https://github.com/Pulkit12dhingra">GitHub</a></div>
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-github me-2"></i><a target="_blank" rel="noopener noreferrer" href="https://github.com/Pulkit12dhingra">GitHub</a></div>
         <div class="d-flex align-items-center mb-2">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" width="20" class="me-2" alt="GfG" />
-            <a target="_blank" href="https://www.geeksforgeeks.org/user/pulkit12dhingra/contributions/?type=articles">GeeksforGeeks Articles</a>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" width="20" class="me-2" alt="GfG" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <a target="_blank" rel="noopener noreferrer" href="https://www.geeksforgeeks.org/user/pulkit12dhingra/contributions/?type=articles">GeeksforGeeks Articles</a>
           </div>
           <div class="d-flex align-items-center mb-2">
             <i class="bi bi-journal-text me-2"></i>
-            <a href="http://ijsret.com/wp-content/uploads/2022/07/IJSRET_V8_issue4_461.pdf" target="_blank">Paper 1: Sketch to Image Generation</a>
+            <a href="https://ijsret.com/wp-content/uploads/2022/07/IJSRET_V8_issue4_461.pdf" target="_blank" rel="noopener noreferrer">Paper 1: Sketch to Image Generation</a>
           </div>
           <div class="d-flex align-items-center mb-2">
             <i class="bi bi-journal-text me-2"></i>
-            <a href="https://ijsret.com/wp-content/uploads/2021/07/IJSRET_V7_issue4_579.pdf" target="_blank">Paper 2: Gradient Boosting Glass Identification</a>
+            <a href="https://ijsret.com/wp-content/uploads/2021/07/IJSRET_V7_issue4_579.pdf" target="_blank" rel="noopener noreferrer">Paper 2: Gradient Boosting Glass Identification</a>
           </div>          
       </div>
 
@@ -151,6 +178,17 @@
     const mainContent = document.getElementById("main-content");
     const toggleBtn = document.getElementById("toggle-sidebar");
     const sidebar = document.getElementById("sidebar");
+
+    // HTML Sanitization - Prevent XSS attacks
+    function escapeHtml(unsafe) {
+      if (typeof unsafe !== 'string') return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
     // Toggle Sidebar
     function toggleSidebar() {
@@ -183,22 +221,27 @@
       } else {
         html += "<div class='list-group'>";
         data.forEach((post) => {
-          // html += `
-          //   <a href="#" class="list-group-item list-group-item-action mb-2" data-file="${post.file}">
-          //     <h5 class="mb-1">${post.title}</h5>
-          //     <p class="mb-1">${post.summary}</p>
-          //   </a>`;
-          html += `
-            <a href="content/${post.file}" class="list-group-item list-group-item-action mb-2">
+          // Sanitize user data to prevent XSS
+          const safeTitle = escapeHtml(post.title);
+          const safeSummary = escapeHtml(post.summary);
+          const safeFile = escapeHtml(post.file);
+          
+            const tagsHtml = post.tags 
+              ? `<div class="mt-2">
+                  ${post.tags.map(tag => `<span class="badge bg-secondary me-1">${escapeHtml(tag)}</span>`).join('')}
+                 </div>`
+              : '';
+            
+            html += `
+            <a href="content/${safeFile}" class="list-group-item list-group-item-action mb-2">
               <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <h5 class="mb-1">${post.title}</h5>
-                  <p class="mb-1">${post.summary}</p>
+                <div class="w-100">
+                  <h3 class="mb-1 h5">${safeTitle}</h3>
+                  <p class="mb-1">${safeSummary}</p>
+                  ${tagsHtml}
                 </div>
               </div>
-            </a>`;
-
-        });
+            </a>`;        });
         html += "</div>";
       }
       mainContent.innerHTML = html;
@@ -262,18 +305,31 @@
     const searchForm = document.querySelector("form[role='search']");
     const searchInput = searchForm.querySelector("input[type='search']");
 
-    searchForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+    // Function to perform search
+    function performSearch() {
       const query = searchInput.value.trim().toLowerCase();
       if (query === "") {
         renderBlogList(cachedBlogData);
         return;
       }
-      const filtered = cachedBlogData.filter((post) =>
-        post.title.toLowerCase().includes(query) ||
-        post.summary.toLowerCase().includes(query)
-      );
+      const filtered = cachedBlogData.filter((post) => {
+        const titleMatch = post.title.toLowerCase().includes(query);
+        const summaryMatch = post.summary.toLowerCase().includes(query);
+        const tagMatch = post.tags && post.tags.some(tag => tag.toLowerCase().includes(query));
+        return titleMatch || summaryMatch || tagMatch;
+      });
       renderBlogList(filtered);
+    }
+
+    // Search on form submit (when user presses Enter)
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      performSearch();
+    });
+
+    // Dynamic search as user types
+    searchInput.addEventListener("input", function () {
+      performSearch();
     });
   </script> 
   
