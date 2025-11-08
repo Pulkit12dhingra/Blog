@@ -27,11 +27,10 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Lasso Regression from Scratch — Feature Selection Meets Regularization 🧠</h2>
+    <h2 class="fw-bold mb-3">Lasso Regression from Scratch — Feature Selection Meets Regularization </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
-  <p class="text-muted">Published: <span id="publish-date">May 6, 2025</span></p>
   <hr />
 
   <h4 class="mt-4">📌 What is Lasso Regression?</h4>
@@ -82,7 +81,7 @@ X_train_bias = np.c_[np.ones((X_train_scaled.shape[0], 1)), X_train_scaled]
 X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]
 </code></pre>
 
-<h4 class="mt-4">🧠 Lasso Regression (Coordinate Descent)</h4>
+<h4 class="mt-4"> Lasso Regression (Coordinate Descent)</h4>
 <p>
   To truly understand Lasso, we’re implementing it from scratch using the <strong>Coordinate Descent</strong> algorithm — a simple yet powerful technique well-suited for models with L1 regularization. Unlike gradient descent, which updates all weights simultaneously, coordinate descent updates one parameter at a time while keeping the others fixed. This approach is especially effective for optimizing Lasso’s non-differentiable L1 penalty.
 </p>
@@ -159,7 +158,7 @@ class LassoRegression:
 </p>
 
 
-  <h4 class="mt-4">📊 Train and Evaluate the Model</h4>
+  <h4 class="mt-4"> Train and Evaluate the Model</h4>
   <pre class="bg-light p-3 rounded"><code>
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -170,14 +169,14 @@ preds = lasso.predict(X_test_bias)
 mse = mean_squared_error(y_test, preds)
 r2 = r2_score(y_test, preds)
 
-print("📉 MSE:", round(mse, 4))
-print("📈 R² Score:", round(r2, 4))
+print(" MSE:", round(mse, 4))
+print(" R² Score:", round(r2, 4))
 </code></pre>
 <div class="mt-2 mb-4 text-center">
     <img src="../img/Blog_6_1.png" alt="SGD Regressor Results" class="img-fluid rounded shadow"/>
   </div>
 
-<h4 class="mt-4">⚖️ Lasso vs Ridge: 5 Key Differences</h4>
+<h4 class="mt-4"> Lasso vs Ridge: 5 Key Differences</h4>
 <div class="table-responsive">
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
@@ -232,12 +231,12 @@ print("📈 R² Score:", round(r2, 4))
 </p>
 
 
-  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <h4 class="mt-4"> Final Thoughts</h4>
   <p>
     Lasso Regression elegantly combines prediction with built-in feature selection. By implementing it from scratch, we gain insight into the math, mechanics, and power of L1 regularization. Keep experimenting with different <code>alpha</code> values to balance simplicity and performance!
   </p>
 
-  <h4 class="mt-4">🔗 Reference</h4>
+  <h4 class="mt-4"> Reference</h4>
   <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Ridge_Lasso_Regression.ipynb" target="_blank">📓 ridge_lasso_regression.ipynb on GitHub</a></p>
 
 </div>

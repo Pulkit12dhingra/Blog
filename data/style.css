@@ -120,7 +120,7 @@ html, body {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   }
   
-  /* ✅ More breathing room on wider screens */
+  /* More breathing room on wider screens */
   @media (min-width: 992px) {
     #main-content {
       margin-left: 2rem;
@@ -128,7 +128,7 @@ html, body {
     }
   }
   
-  /* ✅ Add padding inside the content for mobile too */
+  /* Add padding inside the content for mobile too */
   @media (max-width: 767px) {
     #main-content {
       padding-left: 1rem;

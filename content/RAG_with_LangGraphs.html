@@ -24,13 +24,12 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 🧠📄</h2>
+    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
-  <p class="text-muted">Published: <span id="publish-date">May 10, 2025</span></p>
   <hr />
   <p>
-    <strong>📚 This blog builds on:</strong> 
+    <strong> This blog builds on:</strong> 
     <a href="https://pulkit12dhingra.github.io/Blog/content/Building_a_RAG_Pipeline_with_PDFs.html" target="_blank">
       Building a RAG Pipeline with PDFs (Original Tutorial)
     </a>
@@ -38,7 +37,7 @@
 
   
 
-  <h4 class="mt-5">🕸️ Part 2: RAG with LangGraph — Making Pipelines Smarter</h4>
+  <h4 class="mt-5"> Part 2: RAG with LangGraph — Making Pipelines Smarter</h4>
   <p>
     In this continuation, we move beyond the linear RAG setup by introducing <strong>LangGraph</strong>: a powerful orchestration library built for LLM apps. Think of it as the glue that connects steps like <code>retrieve</code> and <code>generate</code> into a dynamic, state-driven flow.
   </p>
@@ -67,7 +66,7 @@ for filename in os.listdir(pdf_folder):
         loader = PyPDFLoader(os.path.join(pdf_folder, filename))
         all_docs.extend(loader.load())</code></pre>
 
-  <h5 class="mt-4">✂️ Split Text into Chunks</h5>
+  <h5 class="mt-4"> Split Text into Chunks</h5>
 <p>
   In this step, we prepare the raw text for semantic search and generation by <strong>splitting it into manageable chunks</strong>. 
   Language models like Gemma 3 have context length limits, so feeding them an entire PDF at once isn't practical.
@@ -87,7 +86,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = text_splitter.split_documents(all_docs)</code></pre>
 
-  <h5 class="mt-4">🧠 Define the Embeddings</h5>
+  <h5 class="mt-4"> Define the Embeddings</h5>
   <p>
   This step converts each chunk of text into a numerical vector using a pretrained embedding model. 
   We use the <code>HuggingFaceEmbeddings</code> wrapper with the <code>all-MiniLM-L6-v2</code> model — a lightweight and efficient transformer from the 
@@ -123,7 +122,7 @@ from langchain.vectorstores import Chroma
 
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")</code></pre>
 
-  <h5 class="mt-4">🦙 Initialize Ollama with Gemma 3</h5>
+  <h5 class="mt-4"> Initialize Ollama with Gemma 3</h5>
   <pre class="bg-light p-3 rounded"><code>
 from langchain.llms import Ollama
 
@@ -145,7 +144,7 @@ from langchain_core.documents import Document</code></pre>
   <li><code>Document</code>: Represents each text chunk retrieved from your vector DB.</li>
 </ul>
 
-<h5 class="mt-4">📦 State Definition</h5>
+<h5 class="mt-4"> State Definition</h5>
 <p>
 The shared memory between graph nodes. Each node receives and returns this dictionary-like state.
 </p>
@@ -171,7 +170,7 @@ Answer:
 This prompt keeps responses grounded and avoids hallucination by instructing the LLM to admit when it doesn't know the answer.
 </p>
 
-<h5 class="mt-4">🔍 Node 1: <code>retrieve</code></h5>
+<h5 class="mt-4"> Node 1: <code>retrieve</code></h5>
 <p>
 This node performs semantic search using the input question. The top-matching documents are inserted into the <code>context</code>.
 </p>
@@ -193,7 +192,7 @@ This node merges the retrieved docs, formats them using the prompt, and sends it
     return {"answer": response}</code></pre>
 
 
-<h5 class="mt-4">🔧 Building the Graph</h5>
+<h5 class="mt-4"> Building the Graph</h5>
 <p>
 This configures your RAG application as a graph, starting from <code>retrieve</code> and flowing into <code>generate</code>. The graph is then compiled for execution.
 </p>
@@ -210,7 +209,7 @@ print(response["answer"])</code></pre>
 This triggers the entire graph: retrieval ➝ prompt formatting ➝ answer generation — and prints the final result.
 </p>
 
-<h5 class="mt-4">🖼️ Visualizing the Graph</h5>
+<h5 class="mt-4"> Visualizing the Graph</h5>
 <pre class="bg-light p-3 rounded"><code>from IPython.display import Image, display
 display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
 <p>
@@ -255,7 +254,7 @@ This generates a Mermaid-style flowchart image, showing the structure of your ap
 </div>
 
 <p class="fw-bold">
-Each node is modular and self-contained, making your RAG app highly testable, maintainable, and extensible. 🚀
+Each node is modular and self-contained, making your RAG app highly testable, maintainable, and extensible. 
 </p>
 <h4 class="mt-5">📜 Here’s the Complete Code</h4>
 <p>

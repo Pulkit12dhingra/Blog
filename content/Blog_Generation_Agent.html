@@ -20,11 +20,10 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">LangGraph Agent to HTML Blog Generator — Building Blogs with AI ✍️🤖</h2>
+    <h2 class="fw-bold mb-3">LangGraph Agent to HTML Blog Generator — Building Blogs with AI </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
-  <p class="text-muted">Published: <span id="publish-date">May 18, 2025</span></p>
   <hr />
 
   <p>
@@ -35,12 +34,12 @@
     👉 Before diving in, make sure you’ve read:
     <ul>
       <li>
-        🔧 <a href="https://pulkit12dhingra.github.io/Blog/content/Setting_up_Ollama.html" target="_blank">
-          Setting Up Ollama 🦙
+         <a href="https://pulkit12dhingra.github.io/Blog/content/Setting_up_Ollama.html" target="_blank">
+          Setting Up Ollama 
         </a>
       </li>
       <li>
-        🧠 <a href="https://pulkit12dhingra.github.io/Blog/content/RAG_with_LangGraphs.html" target="_blank">
+         <a href="https://pulkit12dhingra.github.io/Blog/content/RAG_with_LangGraphs.html" target="_blank">
           Building a RAG Pipeline with LangGraph
         </a>
       </li>
@@ -90,7 +89,7 @@ for file in files:
 print(f"\\nLoaded {len(documents)} HTML documents into LangChain.")
 </code></pre>
 
- <h5>✂️ Split Documents into Chunks</h5>
+ <h5> Split Documents into Chunks</h5>
 <p>
   Large documents, like full blog posts or notebooks, often exceed the input limits of language models. To handle this, we split them into smaller, manageable pieces called <strong>chunks</strong>. This ensures that each chunk can fit into the model's context window, making it possible to process and retrieve relevant content efficiently.
 </p>
@@ -110,7 +109,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 chunks = text_splitter.split_documents(documents)
 </code></pre>
 
-<h5>🧠 Embedding the Chunks</h5>
+<h5> Embedding the Chunks</h5>
 <p>
   Once we have our documents broken into chunks, the next step is to convert them into a numerical format that can be efficiently searched. This process is called <strong>embedding</strong>.
 </p>
@@ -136,7 +135,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
 </code></pre>
 
 
-<h5>📦 Build the Vectorstore (FAISS)</h5>
+<h5> Build the Vectorstore (FAISS)</h5>
 <p>
   Once we’ve generated embeddings for each document chunk, we need a way to search through them efficiently. This is where a <strong>vector store</strong> comes in. It allows us to perform <strong>similarity search</strong> — retrieving chunks that are most relevant to a given query.
 </p>
@@ -160,7 +159,7 @@ retriever = vectorstore.as_retriever()
 </code></pre>
 
 
-  <h5>5️⃣ Ollama LLM Setup</h5>
+  <h5> Ollama LLM Setup</h5>
   <p>We use the <code>qwen2.5-coder:7b</code> model from Ollama with a custom streaming callback.</p>
   <pre class="bg-light p-3 rounded"><code>llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
 
@@ -211,7 +210,7 @@ history_aware_retriever = create_history_aware_retriever(
 </p>
 
 
-  <h5>7️⃣ Graph State Definition</h5>
+  <h5> Graph State Definition</h5>
   <p>Defines the format and keys of the state that passes through the LangGraph nodes.</p>
   <pre class="bg-light p-3 rounded"><code>class GraphState(TypedDict):
     query: str
@@ -363,7 +362,7 @@ def output_node(state: GraphState) -> GraphState:
 </p>
 
 
-<h4 class="mt-4">🕸️ Graph Construction</h4>
+<h4 class="mt-4"> Graph Construction</h4>
 <p>
   After defining all the individual nodes — <code>input</code>, <code>retrieve</code>, <code>reason</code>, <code>generate</code>, and <code>output</code> — we use LangChain's <code>StateGraph</code> to assemble them into an executable graph.
 </p>
@@ -401,7 +400,7 @@ graph.set_finish_point("output")
   Once constructed, this graph is compiled and invoked with a user query — powering the entire blog-generation workflow.
 </p>
 
-<h4 class="mt-4">🚀 Running an Example: From Notebook to Blog</h4>
+<h4 class="mt-4"> Running an Example: From Notebook to Blog</h4>
 <p>
   Now that the LangGraph pipeline is ready, let's see it in action by feeding it a real Jupyter notebook and asking it to generate a blog post.
 </p>
@@ -436,7 +435,7 @@ notebook_text = notebook_docs[0].page_content
   &lt;/head&gt;\"\"\"
 </code></pre>
 
-<h5>📝 Step 3: Create the Query</h5>
+<h5> Step 3: Create the Query</h5>
 <p>
   The query instructs the model to use the notebook content to write a full HTML blog, starting from the provided <code>&lt;head&gt;</code> section and embedding code explanations throughout.
 </p>
@@ -454,7 +453,7 @@ notebook_text = notebook_docs[0].page_content
     f"{notebook_text}"
 )</code></pre>
 
-<h5>▶️ Step 4: Invoke the Graph</h5>
+<h5> Step 4: Invoke the Graph</h5>
 <p>
   Finally, we invoke the compiled LangGraph app with our query. The graph processes it through all nodes — retrieval, reasoning, and generation — and produces a ready-to-publish HTML blog.
 </p>
@@ -473,13 +472,13 @@ print("\\n\\nFinal Answer:\\n", result["answer"])
 </p>
 
 
-  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <h4 class="mt-4"> Final Thoughts</h4>
   <p>
     This LangGraph pipeline is an elegant example of chaining reasoning and retrieval into a practical application — automatic blog generation from notebooks. 
     It reflects how LLMs can go beyond Q&A and participate in structured, multi-step reasoning workflows.
   </p>
 
-  <h4 class="mt-4">🔗 Reference</h4>
+  <h4 class="mt-4"> Reference</h4>
   <p>
     Explore the full notebook used in this blog:
     <a href="https://github.com/Pulkit12dhingra/langchain-agent-app/blob/master/agent.ipynb" target="_blank">📓 agent.ipynb on GitHub</a>

@@ -28,14 +28,13 @@
     <h2 class="fw-bold mb-3">Grid Search Algorithms: BFS vs DFS Explained with Code 🌐</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
-  <p class="text-muted">Published: <span id="publish-date">June 20, 2025</span></p>
   <hr />
 
   <p>
     Traversing graphs is a foundational skill in computer science — and one of the best places to learn it is with a 2D grid. In this post, we’ll implement <strong>Breadth-First Search (BFS)</strong> and <strong>Depth-First Search (DFS)</strong> on a matrix, understand their differences, and see when to use which.
   </p>
 
-  <h4>🔢 The Matrix</h4>
+  <h4> The Matrix</h4>
   <p>We’ll work with a 5×5 binary grid where 1s represent paths and 0s represent walls.</p>
   <pre class="bg-light p-3 rounded"><code>matrix = [[1,1,0,0,0],
           [0,1,0,1,0],
@@ -44,7 +43,7 @@
           [0,0,0,0,0]]</code></pre>
   <p>Our goal: visit all connected 1s starting from <code>(0, 0)</code>.</p>
 
-  <h3 class="mt-4">🚶 Part 1: Breadth-First Search (BFS)</h3>
+  <h3 class="mt-4"> Part 1: Breadth-First Search (BFS)</h3>
   <p>BFS visits nodes layer by layer. It uses a <strong>queue</strong> to explore all neighbors before moving deeper.</p>
   <pre class="bg-light p-3 rounded"><code>from collections import deque
 
@@ -96,7 +95,7 @@ def bfs(matrix, start):
     <img src="../img/Blog_18_2.png" alt="DFS" class="img-fluid rounded shadow"/>
   </div>
 
-  <h3 class="mt-4">⚖️ BFS vs DFS: Key Differences</h3>
+  <h3 class="mt-4"> BFS vs DFS: Key Differences</h3>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead class="table-dark">
@@ -109,22 +108,22 @@ def bfs(matrix, start):
       <tbody>
         <tr><td>Data Structure</td><td>Queue (FIFO)</td><td>Stack (LIFO)</td></tr>
         <tr><td>Search Strategy</td><td>Layer by layer</td><td>Path by path</td></tr>
-        <tr><td>Shortest Path</td><td>✅ Guaranteed</td><td>❌ Not guaranteed</td></tr>
+        <tr><td>Shortest Path</td><td> Guaranteed</td><td> Not guaranteed</td></tr>
         <tr><td>Space Usage</td><td>Higher (stores layers)</td><td>Lower (deeper first)</td></tr>
         <tr><td>Traversal Order</td><td>Broad → Deep</td><td>Deep → Broad</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h4>✅ Final Thoughts</h4>
+  <h4> Final Thoughts</h4>
   <ul>
     <li>Use <strong>BFS</strong> when you care about finding the shortest path or nearest result.</li>
     <li>Use <strong>DFS</strong> when memory is tight or you want to explore deeply (like solving mazes).</li>
   </ul>
 
-  <p class="fw-bold">Mastering these two opens the door to algorithms like Dijkstra, A*, flood fill, and more. Happy traversing! 🚀</p>
+  <p class="fw-bold">Mastering these two opens the door to algorithms like Dijkstra, A*, flood fill, and more. Happy traversing! </p>
 
-  <h4 class="mt-4">🔗 Reference</h4>
+  <h4 class="mt-4"> Reference</h4>
   <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/graph.ipynb" target="_blank">📓 graph.ipynb on GitHub</a></p>
 </div>
 </body>

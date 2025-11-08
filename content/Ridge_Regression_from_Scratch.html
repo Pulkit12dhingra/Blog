@@ -44,7 +44,6 @@
               ← Back to Home
             </a>
           </div>
-          <p class="text-muted">Published: <span id="publish-date">May 3, 2025</span></p>
           <hr />
         
           <h4 class="mt-4">📌 What is Regularization?</h4>
@@ -99,7 +98,7 @@
         X_train_bias = np.c_[np.ones((X_train_scaled.shape[0], 1)), X_train_scaled]
         X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]</code></pre>
         
-          <h4 class="mt-4">🧠 Ridge Regression (Gradient Descent Implementation)</h4>
+          <h4 class="mt-4"> Ridge Regression (Gradient Descent Implementation)</h4>
           <pre class="bg-light p-3 rounded"><code>
         class RidgeRegressionGD:
             def __init__(self, alpha=1.0, learning_rate=0.01, n_iterations=1000):
@@ -119,7 +118,7 @@
             def predict(self, X):
                 return X @ self.weights</code></pre>
         
-          <h4 class="mt-4">📊 Train and Evaluate the Model</h4>
+          <h4 class="mt-4"> Train and Evaluate the Model</h4>
           <pre class="bg-light p-3 rounded"><code>
         from sklearn.metrics import mean_squared_error, r2_score
         
@@ -130,13 +129,13 @@
         mse = mean_squared_error(y_test, preds)
         r2 = r2_score(y_test, preds)
         
-        print("📉 Ridge Regression (Gradient Descent):")
+        print(" Ridge Regression (Gradient Descent):")
         print(f"MSE: {mse:.4f}")
         print(f"R² Score: {r2:.4f}")</code></pre>
         <div class="mt-2 mb-4 text-center">
             <img src="../img/Blog_5_1.png" alt="Ridge Gradient Descent Results" class="img-fluid rounded shadow"/>
           </div>
-          <h4 class="mt-4">⚖️ Compare with OLS and SGD Regressor</h4>
+          <h4 class="mt-4"> Compare with OLS and SGD Regressor</h4>
         
           <h5>OLS (LinearRegression)</h5>
           <pre class="bg-light p-3 rounded"><code>
@@ -165,16 +164,16 @@
             <img src="../img/Blog_5_3.png" alt="SGD Regressor Results" class="img-fluid rounded shadow"/>
           </div>
 
-          <h4 class="mt-4">📈 Results Comparison</h4>
+          <h4 class="mt-4"> Results Comparison</h4>
           <ul>
             <li><strong>OLS</strong>: MSE ≈ <code>0.5559</code>, R² ≈ <code>0.5758</code></li>
             <li><strong>Ridge GD</strong>: MSE ≈ <code>0.5559</code>, R² ≈ <code>0.5758</code></li>
             <li><strong>SGD</strong>: MSE ≈ <code>0.5506</code>, R² ≈ <code>0.5798</code></li>
           </ul>
         
-          <p>🎯 Ridge with gradient descent provides flexibility (custom learning schedules, mini-batching, etc.) while keeping regularization in play.</p>
+          <p> Ridge with gradient descent provides flexibility (custom learning schedules, mini-batching, etc.) while keeping regularization in play.</p>
         
-          <h4 class="mt-4">🔗 Reference</h4>
+          <h4 class="mt-4"> Reference</h4>
           <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Ridge_Lasso_Regression.ipynb" target="_blank">
             📓 ridge_lasso_reg.ipynb on GitHub
           </a></p>

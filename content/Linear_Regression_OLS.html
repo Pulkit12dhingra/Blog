@@ -46,14 +46,13 @@
       </a>
     </div>
     
-    <p class="text-muted">Published: <span id="publish-date">April 19, 2025</span></p>
     <hr />
 
     <p>When you think about prediction in data science, linear regression is often the first technique that pops up. It’s simple, powerful, and forms the backbone of more complex machine learning models.</p>
 
     <p>In this blog, we’ll explore <strong>Ordinary Least Squares (OLS)</strong> linear regression — not just by theory but by walking through a real-world dataset step-by-step. And what better way to do that than using the <strong>California Housing Dataset</strong> from <code>scikit-learn</code>?</p>
 
-    <h4 class="mt-4">🧠 What is OLS?</h4>
+    <h4 class="mt-4"> What is OLS?</h4>
     <p>OLS is a mathematical method to determine the "best-fitting" line through a dataset. It works by minimizing the <strong>sum of squared errors</strong> between actual values and the values predicted by the model.</p>
 
     <p>Mathematically, the optimal weight vector \( \theta \) is calculated using:</p>
@@ -64,7 +63,7 @@
     <p>This is known as the <strong>Normal Equation</strong>. It avoids iteration (like in gradient descent) and directly gives us the best solution — if (XᵀX) is invertible.</p>
 
     
-<h4 class="mt-4">📊 Dataset Overview: California Housing</h4>
+<h4 class="mt-4"> Dataset Overview: California Housing</h4>
 <p>For this tutorial, we’re using the <strong>California Housing Dataset</strong> from scikit-learn. It's a classic regression dataset used for predicting the median house value across various districts in California.</p>
 
 <p>📌 <strong>Dataset Details:</strong></p>
@@ -75,7 +74,7 @@
   <li><strong>Target:</strong> Median house value (in $100,000s)</li>
 </ul>
 
-<p>🔍 <strong>Features:</strong></p>
+<p> <strong>Features:</strong></p>
 <ul>
   <li>longitude</li>
   <li>latitude</li>
@@ -87,12 +86,12 @@
   <li>median_income</li>
 </ul>
 
-<p>🎯 <strong>Target Variable:</strong> <code>median_house_value</code></p>
+<p> <strong>Target Variable:</strong> <code>median_house_value</code></p>
 
 
-<h4 class="mt-4">📦 Step-by-Step Implementation</h4>
+<h4 class="mt-4"> Step-by-Step Implementation</h4>
 
-    <h5>1️⃣ Load the California Housing Dataset</h5>
+    <h5> Load the California Housing Dataset</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.datasets import fetch_california_housing
 
 housing = fetch_california_housing()
@@ -107,7 +106,7 @@ print("Target shape:", y.shape)</code></pre>
 </div>
 
 
-    <h5>2️⃣ Split the Data into Train and Test Sets</h5>
+    <h5> Split the Data into Train and Test Sets</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -121,7 +120,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 </div>
 
 
-    <h5>3️⃣ Add Bias Term (Intercept)</h5>
+    <h5> Add Bias Term (Intercept)</h5>
     <pre class="bg-light p-3 rounded"><code>import numpy as np
 
 X_train_bias = np.c_[np.ones((X_train.shape[0], 1)), X_train]
@@ -134,7 +133,7 @@ X_test_bias = np.c_[np.ones((X_test.shape[0], 1)), X_test]</code></pre>
 To include this, we prepend a column of 1s to the feature matrix using <code>np.ones()</code>. This new column represents the bias term, and its coefficient is learned just like the other feature weights.</p>
 
 
-<h5>4️⃣ Apply the OLS Formula</h5>
+<h5> Apply the OLS Formula</h5>
     <pre class="bg-light p-3 rounded"><code>theta_best = np.linalg.inv(X_train_bias.T.dot(X_train_bias)).dot(X_train_bias.T).dot(y_train)</code></pre>
 
 
@@ -152,12 +151,12 @@ To include this, we prepend a column of 1s to the feature matrix using <code>np.
 <p><strong>Note:</strong> If the matrix is non-invertible (singular), this will throw an error — that’s when SVD or regularized methods come in handy.</p>
 
 
-<h5>5️⃣ Make Predictions</h5>
+<h5> Make Predictions</h5>
     <pre class="bg-light p-3 rounded"><code>y_pred = X_test_bias.dot(theta_best)</code></pre>
 
 
 
-    <h5>6️⃣ Evaluate Model Performance</h5>
+    <h5> Evaluate Model Performance</h5>
     <pre class="bg-light p-3 rounded"><code>from sklearn.metrics import mean_squared_error, r2_score
 
 mse = mean_squared_error(y_test, y_pred)
@@ -173,7 +172,7 @@ print("R^2 Score:", r2)</code></pre>
 
     <p>These metrics help us understand model accuracy. A higher R² and lower MSE means a better fit.</p>
 
-    <h4 class="mt-4">⚠️ What if (XᵀX) is Not Invertible?</h4>
+    <h4 class="mt-4"> What if (XᵀX) is Not Invertible?</h4>
     <p>If the matrix is singular (due to multicollinearity), we can’t compute the inverse directly. This is where <strong>SVD (Singular Value Decomposition)</strong> helps:</p>
     <pre class="bg-light p-3 rounded"><code>from numpy.linalg import svd
 
@@ -204,7 +203,7 @@ U, s, Vt = svd(X_train_bias)</code></pre>
 
 
     
-<h4 class="mt-4">🤖 Comparing with scikit-learn's LinearRegression</h4>
+<h4 class="mt-4"> Comparing with scikit-learn's LinearRegression</h4>
 <p>We can validate our manual OLS implementation by comparing it with scikit-learn’s built-in <code>LinearRegression</code> model:</p>
 
 <pre class="bg-light p-3 rounded"><code>from sklearn.linear_model import LinearRegression
@@ -243,7 +242,7 @@ r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
 
 
 
-<h4 class="mt-4">✅ Wrapping Up</h4>
+<h4 class="mt-4"> Wrapping Up</h4>
     <p>OLS linear regression might look like just a formula — but when you apply it to a real dataset, each step teaches something new:</p>
     <ul>
         <li>Data preprocessing</li>
@@ -252,9 +251,9 @@ r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
         <li>Handling numerical instability</li>
     </ul>
 
-    <p class="fw-bold">This is just the beginning. We’ll dive deeper into Ridge, Lasso, and more in upcoming blogs. Stay tuned! 🙌</p>
+    <p class="fw-bold">This is just the beginning. We’ll dive deeper into Ridge, Lasso, and more in upcoming blogs. Stay tuned! </p>
 
-<h4 class="mt-4">🔗 Reference</h4>
+<h4 class="mt-4"> Reference</h4>
 <p>You can explore the full notebook used to generate this blog on GitHub:</p>
 <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Linear_Regression_OLS.ipynb" target="_blank">
   📓 Linear_Regression_OLS.ipynb on GitHub

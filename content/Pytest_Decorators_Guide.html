@@ -1,0 +1,627 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+  
+  
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  rel="stylesheet"
+/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-0">Mastering Pytest: A Deep Dive into Decorators and Advanced Testing</h2>
+    <a href="../index.html" class="btn btn-primary">
+      ← Back to Home
+    </a>
+  </div>
+  <hr />
+
+  <p>
+    Testing is crucial for maintaining code quality, and <strong>pytest</strong> is the de facto standard for Python testing. While many developers know the basics, pytest's decorator system unlocks powerful testing capabilities that can dramatically improve your test suite's efficiency and clarity.
+  </p>
+
+  <h4 class="mt-4">What is Pytest?</h4>
+  <p>
+    Pytest is a mature, feature-rich testing framework for Python that makes it easy to write small, readable tests while scaling to support complex functional testing. Unlike unittest, pytest requires minimal boilerplate and offers a more Pythonic approach to testing.
+  </p>
+
+  <h4 class="mt-4">Installation</h4>
+  <pre class="bg-light p-3 rounded"><code># Using pip
+pip install pytest
+
+# Using UV
+uv pip install pytest
+
+# Verify installation
+pytest --version</code></pre>
+
+  <h4 class="mt-4">Basic Test Structure</h4>
+  <p>Before diving into decorators, let's look at a simple test:</p>
+  <pre class="bg-light p-3 rounded"><code># test_example.py
+def add(a, b):
+    return a + b
+
+def test_add():
+    assert add(2, 3) == 5
+    assert add(-1, 1) == 0
+    assert add(0, 0) == 0</code></pre>
+
+  <p>Run with:</p>
+  <pre class="bg-light p-3 rounded"><code>pytest test_example.py</code></pre>
+
+  <h4 class="mt-4">Pytest Decorators: The Power Tools</h4>
+  <p>Now let's explore the decorators that make pytest truly powerful.</p>
+
+  <h5 class="mt-4">1. @pytest.mark.parametrize - The DRY Principle for Tests</h5>
+  <p>
+    Instead of writing multiple similar tests, parametrize allows you to run the same test with different inputs.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>import pytest
+
+@pytest.mark.parametrize("a, b, expected", [
+    (2, 3, 5),
+    (-1, 1, 0),
+    (0, 0, 0),
+    (100, 200, 300),
+])
+def test_add_parametrized(a, b, expected):
+    assert add(a, b) == expected</code></pre>
+
+  <p>This runs 4 test cases with a single function! You can also parametrize with multiple arguments:</p>
+
+  <pre class="bg-light p-3 rounded"><code>@pytest.mark.parametrize("x", [1, 2, 3])
+@pytest.mark.parametrize("y", [10, 20])
+def test_multiplication(x, y):
+    # This creates 6 test combinations (3 * 2)
+    assert x * y == x * y  # Your actual test logic</code></pre>
+
+  <h5 class="mt-4">2. @pytest.mark.skip - Skip Tests Conditionally</h5>
+  <p>Skip tests that aren't ready or aren't relevant:</p>
+
+  <pre class="bg-light p-3 rounded"><code>import pytest
+
+@pytest.mark.skip(reason="Feature not implemented yet")
+def test_future_feature():
+    assert False
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="Requires Python 3.10+")
+def test_new_syntax():
+    match 42:
+        case 42:
+            assert True</code></pre>
+
+  <h5 class="mt-4">3. @pytest.mark.xfail - Expected Failures</h5>
+  <p>Mark tests that are expected to fail (useful for known bugs):</p>
+
+  <pre class="bg-light p-3 rounded"><code>@pytest.mark.xfail(reason="Known bug in division by zero handling")
+def test_division_by_zero():
+    assert 1 / 0 == float('inf')
+
+@pytest.mark.xfail(sys.platform == "win32", reason="Fails on Windows")
+def test_unix_specific():
+    assert os.fork() > 0  # fork() not available on Windows</code></pre>
+
+  <h5 class="mt-4">4. @pytest.fixture - Setup and Teardown Done Right</h5>
+  <p>Fixtures provide a way to set up test dependencies. They're more powerful than traditional setup/teardown:</p>
+
+  <pre class="bg-light p-3 rounded"><code>import pytest
+import tempfile
+import os
+
+@pytest.fixture
+def temp_file():
+    """Create a temporary file for testing"""
+    # Setup
+    fd, path = tempfile.mkstemp()
+    os.write(fd, b"test data")
+    os.close(fd)
+    
+    yield path  # This is what the test receives
+    
+    # Teardown
+    os.unlink(path)
+
+def test_file_reading(temp_file):
+    with open(temp_file, 'rb') as f:
+        assert f.read() == b"test data"</code></pre>
+
+  <h5 class="mt-4">5. @pytest.fixture with Scopes</h5>
+  <p>Control how often fixtures are created:</p>
+
+  <pre class="bg-light p-3 rounded"><code>@pytest.fixture(scope="function")  # Default: new for each test
+def function_fixture():
+    return "new each time"
+
+@pytest.fixture(scope="class")  # Shared across test class
+def class_fixture():
+    return "shared in class"
+
+@pytest.fixture(scope="module")  # Shared across file
+def module_fixture():
+    return "shared in module"
+
+@pytest.fixture(scope="session")  # Shared across entire test session
+def session_fixture():
+    return "shared everywhere"</code></pre>
+
+  <h5 class="mt-4">6. @pytest.fixture with autouse</h5>
+  <p>Automatically apply fixtures without explicitly requesting them:</p>
+
+  <pre class="bg-light p-3 rounded"><code>@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    """Runs before and after every test automatically"""
+    print("\\nSetup before test")
+    yield
+    print("\\nTeardown after test")
+
+def test_something():
+    assert True  # setup_and_teardown runs automatically</code></pre>
+
+  <h5 class="mt-4">7. @pytest.mark.usefixtures - Apply Fixtures to Classes</h5>
+  <pre class="bg-light p-3 rounded"><code>@pytest.fixture
+def database():
+    db = Database()
+    db.connect()
+    yield db
+    db.disconnect()
+
+@pytest.mark.usefixtures("database")
+class TestDatabase:
+    def test_query(self):
+        # database fixture is automatically available
+        pass
+    
+    def test_insert(self):
+        pass</code></pre>
+
+  <h5 class="mt-4">8. @pytest.mark.timeout - Prevent Hanging Tests</h5>
+  <p>Requires pytest-timeout plugin:</p>
+
+  <pre class="bg-light p-3 rounded"><code>pip install pytest-timeout
+
+@pytest.mark.timeout(5)  # Fail if test takes more than 5 seconds
+def test_slow_operation():
+    result = complex_calculation()
+    assert result is not None</code></pre>
+
+  <h5 class="mt-4">9. Custom Markers - Organize Your Tests</h5>
+  <p>Create custom markers to categorize tests:</p>
+
+  <pre class="bg-light p-3 rounded"><code># pytest.ini or pyproject.toml
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "smoke: marks tests as smoke tests",
+]
+
+# In your tests
+@pytest.mark.slow
+def test_heavy_computation():
+    pass
+
+@pytest.mark.integration
+def test_api_integration():
+    pass
+
+@pytest.mark.smoke
+def test_critical_path():
+    pass</code></pre>
+
+  <p>Run specific markers:</p>
+  <pre class="bg-light p-3 rounded"><code># Run only smoke tests
+pytest -m smoke
+
+# Run everything except slow tests
+pytest -m "not slow"
+
+# Run integration OR smoke tests
+pytest -m "integration or smoke"</code></pre>
+
+  <h5 class="mt-4">10. @pytest.mark.dependency - Control Test Order</h5>
+  <p>Requires pytest-dependency plugin:</p>
+
+  <pre class="bg-light p-3 rounded"><code>pip install pytest-dependency
+
+@pytest.mark.dependency()
+def test_database_connection():
+    assert db.connect()
+
+@pytest.mark.dependency(depends=["test_database_connection"])
+def test_database_query():
+    assert db.query("SELECT 1")  # Only runs if connection test passes</code></pre>
+
+  <h4 class="mt-4">Advanced Decorator Patterns</h4>
+
+  <h5 class="mt-3">Combining Multiple Decorators</h5>
+  <pre class="bg-light p-3 rounded"><code>@pytest.mark.slow
+@pytest.mark.parametrize("x", [1, 2, 3])
+@pytest.mark.skipif(sys.platform == "win32", reason="Unix only")
+def test_complex(x):
+    assert x > 0</code></pre>
+
+  <h5 class="mt-3">Fixture with Parametrization</h5>
+  <pre class="bg-light p-3 rounded"><code>@pytest.fixture(params=["sqlite", "postgres", "mysql"])
+def database_connection(request):
+    """Test with multiple database backends"""
+    db_type = request.param
+    connection = connect_to_database(db_type)
+    yield connection
+    connection.close()
+
+def test_database_operations(database_connection):
+    # This test runs 3 times, once for each database type
+    assert database_connection.execute("SELECT 1")</code></pre>
+
+  <h5 class="mt-3">Conditional Fixtures</h5>
+  <pre class="bg-light p-3 rounded"><code>@pytest.fixture
+def api_key():
+    key = os.getenv("API_KEY")
+    if not key:
+        pytest.skip("API_KEY environment variable not set")
+    return key
+
+def test_api_call(api_key):
+    response = make_api_call(api_key)
+    assert response.status_code == 200</code></pre>
+
+  <h4 class="mt-4">Practical Examples</h4>
+
+  <h5 class="mt-3">Example 1: Testing a Calculator Class</h5>
+  <pre class="bg-light p-3 rounded"><code>import pytest
+
+class Calculator:
+    def add(self, a, b):
+        return a + b
+    
+    def divide(self, a, b):
+        if b == 0:
+            raise ValueError("Cannot divide by zero")
+        return a / b
+
+@pytest.fixture
+def calc():
+    return Calculator()
+
+class TestCalculator:
+    @pytest.mark.parametrize("a, b, expected", [
+        (2, 3, 5),
+        (-1, 1, 0),
+        (0, 0, 0),
+    ])
+    def test_add(self, calc, a, b, expected):
+        assert calc.add(a, b) == expected
+    
+    def test_divide_success(self, calc):
+        assert calc.divide(10, 2) == 5
+    
+    def test_divide_by_zero(self, calc):
+        with pytest.raises(ValueError, match="Cannot divide by zero"):
+            calc.divide(10, 0)</code></pre>
+
+  <h5 class="mt-3">Example 2: Testing Async Code</h5>
+  <pre class="bg-light p-3 rounded"><code>pip install pytest-asyncio
+
+import pytest
+import asyncio
+
+@pytest.mark.asyncio
+async def test_async_function():
+    result = await async_operation()
+    assert result == "success"
+
+@pytest.fixture
+async def async_client():
+    client = AsyncClient()
+    await client.connect()
+    yield client
+    await client.disconnect()
+
+@pytest.mark.asyncio
+async def test_with_async_fixture(async_client):
+    response = await async_client.get("/api/data")
+    assert response.status == 200</code></pre>
+
+  <h5 class="mt-3">Example 3: Testing with Mock Data</h5>
+  <pre class="bg-light p-3 rounded"><code>import pytest
+from unittest.mock import Mock, patch
+
+@pytest.fixture
+def mock_database():
+    db = Mock()
+    db.query.return_value = [{"id": 1, "name": "test"}]
+    return db
+
+def test_with_mock(mock_database):
+    result = mock_database.query("SELECT * FROM users")
+    assert len(result) == 1
+    assert result[0]["name"] == "test"
+    mock_database.query.assert_called_once()
+
+@patch('requests.get')
+def test_api_call(mock_get):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {"data": "test"}
+    
+    response = make_api_request()
+    assert response == {"data": "test"}</code></pre>
+
+  <h4 class="mt-4">Configuration: pytest.ini vs pyproject.toml</h4>
+
+  <h5 class="mt-3">Using pytest.ini</h5>
+  <pre class="bg-light p-3 rounded"><code>[pytest]
+minversion = 6.0
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+markers =
+    slow: marks tests as slow
+    integration: marks integration tests
+    unit: marks unit tests
+addopts = -v --strict-markers --tb=short</code></pre>
+
+  <h5 class="mt-3">Using pyproject.toml</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks integration tests",
+    "unit: marks unit tests",
+]
+addopts = "-v --strict-markers --tb=short"</code></pre>
+
+  <h4 class="mt-4">Useful Pytest Plugins</h4>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Plugin</th>
+        <th>Purpose</th>
+        <th>Install</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>pytest-cov</td>
+        <td>Code coverage reports</td>
+        <td><code>pip install pytest-cov</code></td>
+      </tr>
+      <tr>
+        <td>pytest-xdist</td>
+        <td>Run tests in parallel</td>
+        <td><code>pip install pytest-xdist</code></td>
+      </tr>
+      <tr>
+        <td>pytest-asyncio</td>
+        <td>Test async code</td>
+        <td><code>pip install pytest-asyncio</code></td>
+      </tr>
+      <tr>
+        <td>pytest-mock</td>
+        <td>Enhanced mocking</td>
+        <td><code>pip install pytest-mock</code></td>
+      </tr>
+      <tr>
+        <td>pytest-timeout</td>
+        <td>Timeout for hanging tests</td>
+        <td><code>pip install pytest-timeout</code></td>
+      </tr>
+      <tr>
+        <td>pytest-django</td>
+        <td>Django testing support</td>
+        <td><code>pip install pytest-django</code></td>
+      </tr>
+      <tr>
+        <td>pytest-bdd</td>
+        <td>Behavior-driven development</td>
+        <td><code>pip install pytest-bdd</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Common Pytest Commands</h4>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Command</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>pytest</code></td>
+        <td>Run all tests</td>
+      </tr>
+      <tr>
+        <td><code>pytest test_file.py</code></td>
+        <td>Run specific file</td>
+      </tr>
+      <tr>
+        <td><code>pytest test_file.py::test_func</code></td>
+        <td>Run specific test</td>
+      </tr>
+      <tr>
+        <td><code>pytest -v</code></td>
+        <td>Verbose output</td>
+      </tr>
+      <tr>
+        <td><code>pytest -s</code></td>
+        <td>Show print statements</td>
+      </tr>
+      <tr>
+        <td><code>pytest -x</code></td>
+        <td>Stop after first failure</td>
+      </tr>
+      <tr>
+        <td><code>pytest --lf</code></td>
+        <td>Run last failed tests</td>
+      </tr>
+      <tr>
+        <td><code>pytest --ff</code></td>
+        <td>Run failures first</td>
+      </tr>
+      <tr>
+        <td><code>pytest -k "test_name"</code></td>
+        <td>Run tests matching pattern</td>
+      </tr>
+      <tr>
+        <td><code>pytest -m slow</code></td>
+        <td>Run tests with marker</td>
+      </tr>
+      <tr>
+        <td><code>pytest --cov</code></td>
+        <td>Show coverage report</td>
+      </tr>
+      <tr>
+        <td><code>pytest -n auto</code></td>
+        <td>Run tests in parallel</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Best Practices</h4>
+  <ul>
+    <li><strong>Keep tests isolated:</strong> Each test should be independent</li>
+    <li><strong>Use fixtures for setup:</strong> Avoid duplication with well-designed fixtures</li>
+    <li><strong>Parametrize instead of loops:</strong> Use @pytest.mark.parametrize for clearer test reports</li>
+    <li><strong>Name tests descriptively:</strong> test_add_positive_numbers() is better than test_add()</li>
+    <li><strong>Use markers strategically:</strong> Organize tests by category (unit, integration, slow)</li>
+    <li><strong>Test one thing at a time:</strong> Multiple asserts in one test is okay, but focus on one concept</li>
+    <li><strong>Use pytest.raises for exceptions:</strong> Explicitly test expected failures</li>
+    <li><strong>Mock external dependencies:</strong> Don't hit real APIs or databases in unit tests</li>
+    <li><strong>Run tests in CI/CD:</strong> Automate testing in your pipeline</li>
+    <li><strong>Measure coverage:</strong> Use pytest-cov to ensure comprehensive testing</li>
+  </ul>
+
+  <h4 class="mt-4">Complete Example: Testing a REST API Client</h4>
+  <pre class="bg-light p-3 rounded"><code>import pytest
+from unittest.mock import Mock, patch
+import requests
+
+class APIClient:
+    def __init__(self, base_url, api_key):
+        self.base_url = base_url
+        self.api_key = api_key
+    
+    def get_user(self, user_id):
+        response = requests.get(
+            f"{self.base_url}/users/{user_id}",
+            headers={"Authorization": f"Bearer {self.api_key}"}
+        )
+        response.raise_for_status()
+        return response.json()
+
+# Fixtures
+@pytest.fixture
+def api_key():
+    return "test-api-key-123"
+
+@pytest.fixture
+def base_url():
+    return "https://api.example.com"
+
+@pytest.fixture
+def client(base_url, api_key):
+    return APIClient(base_url, api_key)
+
+@pytest.fixture
+def mock_response():
+    mock = Mock()
+    mock.status_code = 200
+    mock.json.return_value = {"id": 1, "name": "John Doe"}
+    return mock
+
+# Tests
+class TestAPIClient:
+    @patch('requests.get')
+    def test_get_user_success(self, mock_get, client, mock_response):
+        mock_get.return_value = mock_response
+        
+        user = client.get_user(1)
+        
+        assert user["id"] == 1
+        assert user["name"] == "John Doe"
+        mock_get.assert_called_once()
+    
+    @patch('requests.get')
+    def test_get_user_not_found(self, mock_get, client):
+        mock_get.return_value.status_code = 404
+        mock_get.return_value.raise_for_status.side_effect = requests.HTTPError()
+        
+        with pytest.raises(requests.HTTPError):
+            client.get_user(999)
+    
+    @pytest.mark.parametrize("user_id", [1, 2, 3, 100])
+    @patch('requests.get')
+    def test_get_user_multiple_ids(self, mock_get, client, mock_response, user_id):
+        mock_get.return_value = mock_response
+        
+        user = client.get_user(user_id)
+        
+        assert "id" in user
+        assert "name" in user</code></pre>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    Pytest's decorator system transforms testing from a chore into an elegant, expressive process. By mastering decorators like <code>@pytest.mark.parametrize</code>, <code>@pytest.fixture</code>, and custom markers, you can write tests that are:
+  </p>
+  <ul>
+    <li>More maintainable (less duplication)</li>
+    <li>More readable (clear intent)</li>
+    <li>More efficient (run only what you need)</li>
+    <li>More powerful (advanced testing patterns)</li>
+  </ul>
+
+  <p class="fw-bold">
+    Start incorporating these decorators into your test suite today, and watch your testing workflow become more productive and enjoyable!
+  </p>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <strong>Resources:</strong><br />
+    <a href="https://docs.pytest.org/" target="_blank">Official Pytest Documentation</a><br />
+    <a href="https://docs.pytest.org/en/stable/how-to/mark.html" target="_blank">Pytest Markers Guide</a><br />
+    <a href="https://docs.pytest.org/en/stable/how-to/fixtures.html" target="_blank">Pytest Fixtures Guide</a><br />
+    <a href="https://docs.pytest.org/en/stable/reference/plugin_list.html" target="_blank">Pytest Plugin List</a>
+  </p>
+
+</div>
+</body>
+</html>

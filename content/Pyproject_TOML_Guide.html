@@ -1,0 +1,671 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+  
+  
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  rel="stylesheet"
+/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-0">Understanding pyproject.toml: The Modern Python Project Configuration File</h2>
+    <a href="../index.html" class="btn btn-primary">
+      ← Back to Home
+    </a>
+  </div>
+  <hr />
+
+  <p>
+    If you've been working with Python projects lately, you've probably noticed a <code>pyproject.toml</code> file appearing in repositories. This file has become the standard way to configure Python projects, replacing the old <code>setup.py</code> and various scattered configuration files. Let's dive into what it is, why it matters, and how to use it effectively.
+  </p>
+
+  <h4 class="mt-4">What is pyproject.toml?</h4>
+  <p>
+    <code>pyproject.toml</code> is a configuration file format defined in <strong>PEP 518</strong> and extended in <strong>PEP 621</strong>. It uses the TOML (Tom's Obvious, Minimal Language) format to store project metadata, build system requirements, dependencies, and tool configurations in a single, standardized location.
+  </p>
+
+  <h4 class="mt-4">Why pyproject.toml Matters</h4>
+  
+  <h5 class="mt-3">Before pyproject.toml: The Fragmented Era</h5>
+  <p>Previously, Python projects had configuration scattered across multiple files:</p>
+  <ul>
+    <li><code>setup.py</code> - Package metadata and dependencies</li>
+    <li><code>setup.cfg</code> - Additional setuptools configuration</li>
+    <li><code>requirements.txt</code> - Runtime dependencies</li>
+    <li><code>MANIFEST.in</code> - Files to include in distributions</li>
+    <li><code>pytest.ini</code> - Pytest configuration</li>
+    <li><code>.flake8</code> - Flake8 linter configuration</li>
+    <li><code>mypy.ini</code> - MyPy type checker configuration</li>
+    <li>And many more...</li>
+  </ul>
+
+  <h5 class="mt-3">After pyproject.toml: Unified Configuration</h5>
+  <p>Now, one file can contain:</p>
+  <ul>
+    <li>Project metadata (name, version, authors, license)</li>
+    <li>Dependencies and optional dependencies</li>
+    <li>Build system requirements</li>
+    <li>Configuration for multiple tools (pytest, ruff, mypy, black, etc.)</li>
+    <li>Script entry points</li>
+    <li>Package discovery settings</li>
+  </ul>
+
+  <h4 class="mt-4">Basic Structure</h4>
+  <p>Here's a minimal <code>pyproject.toml</code> example:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "myproject"
+version = "0.1.0"
+description = "A brief description of my project"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "requests>=2.28.0",
+    "pandas>=2.0.0",
+]</code></pre>
+
+  <h4 class="mt-4">Key Sections Explained</h4>
+
+  <h5 class="mt-3">1. [build-system] - Build Requirements</h5>
+  <p>Specifies which build backend to use:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"</code></pre>
+
+  <p>Common build backends:</p>
+  <ul>
+    <li><code>setuptools.build_meta</code> - Traditional setuptools</li>
+    <li><code>hatchling.build</code> - Modern Hatch backend</li>
+    <li><code>poetry.core.masonry.api</code> - Poetry backend</li>
+    <li><code>flit_core.buildapi</code> - Flit backend</li>
+  </ul>
+
+  <h5 class="mt-3">2. [project] - Project Metadata</h5>
+  <p>Core information about your project:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[project]
+name = "myproject"
+version = "0.1.0"
+description = "A modern Python project"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = ["python", "example", "tutorial"]
+authors = [
+    {name = "John Doe", email = "john@example.com"}
+]
+maintainers = [
+    {name = "Jane Smith", email = "jane@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]</code></pre>
+
+  <h5 class="mt-3">3. Dependencies</h5>
+  <p>Specify your project's dependencies:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[project]
+dependencies = [
+    "requests>=2.28.0",
+    "pandas>=2.0.0,<3.0.0",
+    "numpy~=1.24.0",  # Compatible release
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+]
+docs = [
+    "sphinx>=5.0",
+    "sphinx-rtd-theme>=1.2",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "hypothesis>=6.0",
+]</code></pre>
+
+  <p>Install with optional dependencies:</p>
+  <pre class="bg-light p-3 rounded"><code># Install with dev dependencies
+pip install -e ".[dev]"
+
+# Install with multiple groups
+pip install -e ".[dev,docs,test]"</code></pre>
+
+  <h5 class="mt-3">4. Scripts and Entry Points</h5>
+  <p>Define command-line scripts:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[project.scripts]
+myapp = "myproject.cli:main"
+myproject-admin = "myproject.admin:run"
+
+[project.gui-scripts]
+myapp-gui = "myproject.gui:main"
+
+[project.entry-points."console_scripts"]
+special-command = "myproject.special:execute"</code></pre>
+
+  <h5 class="mt-3">5. URLs</h5>
+  <p>Project-related URLs:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[project.urls]
+Homepage = "https://example.com"
+Documentation = "https://docs.example.com"
+Repository = "https://github.com/user/project"
+"Bug Tracker" = "https://github.com/user/project/issues"
+Changelog = "https://github.com/user/project/blob/main/CHANGELOG.md"</code></pre>
+
+  <h4 class="mt-4">Tool Configuration</h4>
+  <p>One of the biggest benefits: configure all your development tools in one place!</p>
+
+  <h5 class="mt-3">Ruff Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "I", "B", "C4", "UP"]
+ignore = ["E501"]
+exclude = [".git", "__pycache__", "dist", "build"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.isort]
+known-first-party = ["myproject"]</code></pre>
+
+  <h5 class="mt-3">Pytest Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--cov=myproject",
+    "--cov-report=html",
+    "--cov-report=term",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]</code></pre>
+
+  <h5 class="mt-3">MyPy Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false</code></pre>
+
+  <h5 class="mt-3">Coverage Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.coverage.run]
+source = ["myproject"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]</code></pre>
+
+  <h5 class="mt-3">Black Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''</code></pre>
+
+  <h4 class="mt-4">Complete Real-World Example</h4>
+  <p>Here's a comprehensive example for a modern Python project:</p>
+
+  <pre class="bg-light p-3 rounded"><code>[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "awesome-ml-project"
+version = "1.2.0"
+description = "An awesome machine learning project"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+keywords = ["machine-learning", "python", "data-science"]
+authors = [
+    {name = "Data Scientist", email = "ds@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scikit-learn>=1.3.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "black>=23.7.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "myst-parser>=2.0.0",
+]
+ml = [
+    "torch>=2.0.0",
+    "transformers>=4.30.0",
+]
+
+[project.scripts]
+train-model = "awesome_ml.train:main"
+evaluate = "awesome_ml.evaluate:main"
+
+[project.urls]
+Homepage = "https://github.com/user/awesome-ml"
+Documentation = "https://awesome-ml.readthedocs.io"
+Repository = "https://github.com/user/awesome-ml"
+"Bug Tracker" = "https://github.com/user/awesome-ml/issues"
+
+# Ruff configuration
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = ["E501", "B008"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = [
+    "-v",
+    "--cov=awesome_ml",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: integration tests",
+]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["awesome_ml"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false</code></pre>
+
+  <h4 class="mt-4">Benefits of Using pyproject.toml</h4>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Benefit</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Standardization</td>
+        <td>One standard file format across all Python projects</td>
+      </tr>
+      <tr>
+        <td>Centralization</td>
+        <td>All configurations in one place instead of scattered files</td>
+      </tr>
+      <tr>
+        <td>Tool Support</td>
+        <td>Modern tools like UV, Ruff, and Poetry use it natively</td>
+      </tr>
+      <tr>
+        <td>Readability</td>
+        <td>TOML format is more readable than setup.py Python code</td>
+      </tr>
+      <tr>
+        <td>Version Control</td>
+        <td>Easier to track changes in configuration</td>
+      </tr>
+      <tr>
+        <td>Build System Agnostic</td>
+        <td>Supports multiple build backends (setuptools, hatch, poetry)</td>
+      </tr>
+      <tr>
+        <td>PEP Compliance</td>
+        <td>Follows official Python Enhancement Proposals</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Migration from setup.py</h4>
+
+  <h5 class="mt-3">Old Way (setup.py)</h5>
+  <pre class="bg-light p-3 rounded"><code>from setuptools import setup, find_packages
+
+setup(
+    name="myproject",
+    version="1.0.0",
+    author="Your Name",
+    author_email="you@example.com",
+    description="A sample project",
+    packages=find_packages(),
+    install_requires=[
+        "requests>=2.28.0",
+        "pandas>=2.0.0",
+    ],
+    extras_require={
+        "dev": ["pytest>=7.0", "black>=23.0"],
+    },
+    python_requires=">=3.8",
+)</code></pre>
+
+  <h5 class="mt-3">New Way (pyproject.toml)</h5>
+  <pre class="bg-light p-3 rounded"><code>[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "myproject"
+version = "1.0.0"
+authors = [{name = "Your Name", email = "you@example.com"}]
+description = "A sample project"
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.28.0",
+    "pandas>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "black>=23.0"]
+
+[tool.setuptools]
+packages = ["myproject"]</code></pre>
+
+  <h4 class="mt-4">Common Use Cases</h4>
+
+  <h5 class="mt-3">1. Simple Library</h5>
+  <pre class="bg-light p-3 rounded"><code>[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-simple-lib"
+version = "0.1.0"
+description = "A simple Python library"
+authors = [{name = "Developer"}]
+requires-python = ">=3.8"
+dependencies = []</code></pre>
+
+  <h5 class="mt-3">2. Application with CLI</h5>
+  <pre class="bg-light p-3 rounded"><code>[project]
+name = "myapp"
+version = "1.0.0"
+dependencies = ["click>=8.0", "rich>=13.0"]
+
+[project.scripts]
+myapp = "myapp.cli:main"
+myapp-config = "myapp.config:configure"</code></pre>
+
+  <h5 class="mt-3">3. Data Science Project</h5>
+  <pre class="bg-light p-3 rounded"><code>[project]
+name = "ds-project"
+version = "0.1.0"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "matplotlib>=3.7",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+notebooks = ["jupyter>=1.0", "ipykernel>=6.0"]
+viz = ["seaborn>=0.12", "plotly>=5.0"]</code></pre>
+
+  <h4 class="mt-4">Best Practices</h4>
+
+  <ol>
+    <li><strong>Use semantic versioning:</strong> Follow major.minor.patch format</li>
+    <li><strong>Specify Python version requirements:</strong> Use <code>requires-python</code> to set minimum Python version</li>
+    <li><strong>Pin major versions only:</strong> Use <code>package>=1.0,<2.0</code> for flexibility</li>
+    <li><strong>Organize optional dependencies:</strong> Group by purpose (dev, test, docs)</li>
+    <li><strong>Include all tool configs:</strong> Centralize pytest, ruff, mypy, etc.</li>
+    <li><strong>Document URLs:</strong> Always include repository and documentation links</li>
+    <li><strong>Use classifiers:</strong> Help users find your package on PyPI</li>
+    <li><strong>Keep it updated:</strong> Regularly update dependency versions</li>
+  </ol>
+
+  <h4 class="mt-4">Working with Different Tools</h4>
+
+  <h5 class="mt-3">Installing Your Project</h5>
+  <pre class="bg-light p-3 rounded"><code># Install in development mode
+pip install -e .
+
+# Install with optional dependencies
+pip install -e ".[dev]"
+
+# Using UV (faster)
+uv pip install -e ".[dev]"</code></pre>
+
+  <h5 class="mt-3">Building Your Project</h5>
+  <pre class="bg-light p-3 rounded"><code># Using build
+pip install build
+python -m build
+
+# Creates dist/ directory with .tar.gz and .whl files</code></pre>
+
+  <h5 class="mt-3">Publishing to PyPI</h5>
+  <pre class="bg-light p-3 rounded"><code># Install twine
+pip install twine
+
+# Upload to PyPI
+twine upload dist/*
+
+# Upload to TestPyPI first
+twine upload --repository testpypi dist/*</code></pre>
+
+  <h4 class="mt-4">Troubleshooting</h4>
+
+  <h5 class="mt-3">Common Issues</h5>
+
+  <p><strong>Issue: "No module named build_meta"</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Solution: Update pip and setuptools
+pip install --upgrade pip setuptools</code></pre>
+
+  <p><strong>Issue: Package not found after installation</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Solution: Specify package discovery
+[tool.setuptools]
+packages = ["myproject"]
+
+# Or use find
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["myproject*"]</code></pre>
+
+  <p><strong>Issue: Dependencies not installing</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Solution: Check dependency format
+# Correct:
+dependencies = ["package>=1.0"]
+
+# Incorrect:
+dependencies = ["package>=1.0,"]  # No trailing comma!</code></pre>
+
+  <h4 class="mt-4">Tool Support Comparison</h4>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>pyproject.toml Support</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>setuptools</td>
+        <td>Full (v61+)</td>
+        <td>Native support for [project] section</td>
+      </tr>
+      <tr>
+        <td>Poetry</td>
+        <td>Full</td>
+        <td>Uses [tool.poetry] section</td>
+      </tr>
+      <tr>
+        <td>Hatch</td>
+        <td>Full</td>
+        <td>Modern build system</td>
+      </tr>
+      <tr>
+        <td>Ruff</td>
+        <td>Full</td>
+        <td>[tool.ruff] configuration</td>
+      </tr>
+      <tr>
+        <td>Pytest</td>
+        <td>Full</td>
+        <td>[tool.pytest.ini_options]</td>
+      </tr>
+      <tr>
+        <td>Black</td>
+        <td>Full</td>
+        <td>[tool.black] configuration</td>
+      </tr>
+      <tr>
+        <td>MyPy</td>
+        <td>Full</td>
+        <td>[tool.mypy] configuration</td>
+      </tr>
+      <tr>
+        <td>UV</td>
+        <td>Full</td>
+        <td>Native support</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    The <code>pyproject.toml</code> file represents a significant step forward in Python project management. By centralizing configuration and metadata in a single, standardized file, it simplifies project setup, improves maintainability, and makes collaboration easier.
+  </p>
+
+  <p>
+    Whether you're starting a new project or migrating an existing one, adopting <code>pyproject.toml</code> is a worthwhile investment. Modern tools like UV, Ruff, and Hatch have embraced it, and it's quickly becoming the expected standard in the Python ecosystem.
+  </p>
+
+  <p class="fw-bold">
+    Start using <code>pyproject.toml</code> in your next project and experience the benefits of unified, standardized configuration!
+  </p>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <strong>Resources:</strong><br />
+    <a href="https://peps.python.org/pep-0518/" target="_blank">PEP 518 - Specifying Build System Requirements</a><br />
+    <a href="https://peps.python.org/pep-0621/" target="_blank">PEP 621 - Storing Project Metadata</a><br />
+    <a href="https://packaging.python.org/en/latest/guides/writing-pyproject-toml/" target="_blank">PyPA - Writing pyproject.toml Guide</a><br />
+    <a href="https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html" target="_blank">Setuptools pyproject.toml Documentation</a>
+  </p>
+
+</div>
+</body>
+</html>

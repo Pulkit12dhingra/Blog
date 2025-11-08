@@ -1,0 +1,530 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pulkit's Blog" />
+  <meta property="og:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pulkit's Blog" />
+  <meta name="twitter:description" content="Explore tutorials, projects, and insights into AI, coding, and more." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+  
+  
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="data/style.css?v=1.0.0" />
+  <link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  rel="stylesheet"
+/>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-0">Ruff: The Blazingly Fast Python Linter and Formatter</h2>
+    <a href="../index.html" class="btn btn-primary">
+      ← Back to Home
+    </a>
+  </div>
+  <hr />
+
+  <p>
+    If you're tired of slow linting tools and want a single tool that does it all, <strong>Ruff</strong> is about to become your new best friend. Written in Rust, Ruff is an extremely fast Python linter and code formatter that can replace Flake8, Black, isort, pyupgrade, and more — all while being 10-100x faster.
+  </p>
+
+  <h4 class="mt-4">What is Ruff?</h4>
+  <p>
+    Ruff is an all-in-one Python linting and formatting tool built for speed and comprehensiveness. It implements over 700 lint rules from popular tools like:
+  </p>
+  <ul>
+    <li>Flake8 and its plugins</li>
+    <li>pylint</li>
+    <li>pycodestyle</li>
+    <li>pyflakes</li>
+    <li>isort (import sorting)</li>
+    <li>pydocstyle (docstring checks)</li>
+    <li>pyupgrade (syntax modernization)</li>
+    <li>And many more...</li>
+  </ul>
+
+  <h4 class="mt-4">Why Choose Ruff?</h4>
+  <ul>
+    <li><strong>Speed:</strong> 10-100x faster than traditional linters (written in Rust)</li>
+    <li><strong>All-in-One:</strong> Combines linting, formatting, and import sorting</li>
+    <li><strong>700+ Rules:</strong> Comprehensive checks covering style, bugs, and best practices</li>
+    <li><strong>Auto-Fix:</strong> Automatically fixes many issues with <code>--fix</code></li>
+    <li><strong>IDE Integration:</strong> Works with VS Code, PyCharm, Vim, and more</li>
+    <li><strong>Drop-in Replacement:</strong> Compatible with existing configurations</li>
+  </ul>
+
+  <h4 class="mt-4">Installation</h4>
+  <p>Install Ruff using pip or UV:</p>
+  <pre class="bg-light p-3 rounded"><code># Using pip
+pip install ruff
+
+# Using UV (even faster!)
+uv pip install ruff
+
+# Or add to your project
+uv add ruff --dev</code></pre>
+
+  <h4 class="mt-4">Basic Usage</h4>
+
+  <h5 class="mt-3">Linting Your Code</h5>
+  <p>Run Ruff on your Python files or directories:</p>
+  <pre class="bg-light p-3 rounded"><code># Lint a single file
+ruff check script.py
+
+# Lint entire directory
+ruff check .
+
+# Lint with auto-fix
+ruff check . --fix
+
+# Show all violations (including fixed)
+ruff check . --fix --show-fixes</code></pre>
+
+  <h5 class="mt-3">Formatting Your Code</h5>
+  <p>Ruff includes a formatter compatible with Black:</p>
+  <pre class="bg-light p-3 rounded"><code># Format files
+ruff format .
+
+# Check formatting without changes
+ruff format . --check
+
+# Format specific file
+ruff format script.py</code></pre>
+
+  <h5 class="mt-3">Running Both Together</h5>
+  <pre class="bg-light p-3 rounded"><code># Lint and format in one go
+ruff check . --fix && ruff format .</code></pre>
+
+  <h4 class="mt-4">Configuration</h4>
+  <p>Configure Ruff using <code>pyproject.toml</code>, <code>ruff.toml</code>, or <code>.ruff.toml</code>:</p>
+
+  <h5 class="mt-3">Basic Configuration (pyproject.toml)</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+# Set line length
+line-length = 88
+
+# Enable specific rule sets
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+
+# Ignore specific rules
+ignore = ["E501"]  # Line too long
+
+# Exclude directories
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+# Fix automatically when possible
+fix = true
+
+[tool.ruff.format]
+# Use double quotes
+quote-style = "double"
+
+# Indent with spaces
+indent-style = "space"</code></pre>
+
+  <h4 class="mt-4">Rule Categories</h4>
+  <p>Ruff organizes rules into categories. Here are the most common ones:</p>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Category</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>E</code></td>
+        <td>pycodestyle errors</td>
+        <td>Style violations and errors</td>
+      </tr>
+      <tr>
+        <td><code>W</code></td>
+        <td>pycodestyle warnings</td>
+        <td>Style warnings</td>
+      </tr>
+      <tr>
+        <td><code>F</code></td>
+        <td>Pyflakes</td>
+        <td>Logical errors, unused imports</td>
+      </tr>
+      <tr>
+        <td><code>I</code></td>
+        <td>isort</td>
+        <td>Import sorting and organization</td>
+      </tr>
+      <tr>
+        <td><code>N</code></td>
+        <td>pep8-naming</td>
+        <td>Naming conventions</td>
+      </tr>
+      <tr>
+        <td><code>D</code></td>
+        <td>pydocstyle</td>
+        <td>Docstring conventions</td>
+      </tr>
+      <tr>
+        <td><code>UP</code></td>
+        <td>pyupgrade</td>
+        <td>Upgrade syntax to modern Python</td>
+      </tr>
+      <tr>
+        <td><code>B</code></td>
+        <td>flake8-bugbear</td>
+        <td>Bug and design problems</td>
+      </tr>
+      <tr>
+        <td><code>A</code></td>
+        <td>flake8-builtins</td>
+        <td>Shadowing Python builtins</td>
+      </tr>
+      <tr>
+        <td><code>C4</code></td>
+        <td>flake8-comprehensions</td>
+        <td>List/dict comprehension issues</td>
+      </tr>
+      <tr>
+        <td><code>SIM</code></td>
+        <td>flake8-simplify</td>
+        <td>Code simplification suggestions</td>
+      </tr>
+      <tr>
+        <td><code>RUF</code></td>
+        <td>Ruff-specific</td>
+        <td>Ruff's own rules</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Common Use Cases</h4>
+
+  <h5 class="mt-3">1. Replacing Flake8 + Black + isort</h5>
+  <p>Before (multiple tools):</p>
+  <pre class="bg-light p-3 rounded"><code>flake8 .
+black .
+isort .</code></pre>
+
+  <p>After (just Ruff):</p>
+  <pre class="bg-light p-3 rounded"><code>ruff check . --fix
+ruff format .</code></pre>
+
+  <h5 class="mt-3">2. Pre-commit Hook</h5>
+  <p>Add to <code>.pre-commit-config.yaml</code>:</p>
+  <pre class="bg-light p-3 rounded"><code>repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+      # Run the formatter
+      - id: ruff-format</code></pre>
+
+  <h5 class="mt-3">3. CI/CD Integration</h5>
+  <p>GitHub Actions example:</p>
+  <pre class="bg-light p-3 rounded"><code>- name: Install Ruff
+  run: pip install ruff
+
+- name: Run Ruff linter
+  run: ruff check .
+
+- name: Run Ruff formatter check
+  run: ruff format . --check</code></pre>
+
+  <h5 class="mt-3">4. VS Code Integration</h5>
+  <p>Install the Ruff extension and add to <code>settings.json</code>:</p>
+  <pre class="bg-light p-3 rounded"><code>{
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": true
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  }
+}</code></pre>
+
+  <h4 class="mt-4">Advanced Features</h4>
+
+  <h5 class="mt-3">Ignoring Violations</h5>
+  <p>Ignore specific lines or blocks:</p>
+  <pre class="bg-light p-3 rounded"><code># Ignore entire file
+# ruff: noqa
+
+# Ignore specific line
+x = some_long_function_call()  # noqa: E501
+
+# Ignore specific rule on line
+import os  # noqa: F401
+
+# Ignore multiple rules
+result = eval(user_input)  # noqa: S307, E501</code></pre>
+
+  <h5 class="mt-3">Per-File Configuration</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]  # Unused imports OK in __init__
+"tests/*" = ["S101"]      # Assert statements OK in tests</code></pre>
+
+  <h5 class="mt-3">Custom Import Order</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff.isort]
+known-first-party = ["myapp"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder"
+]</code></pre>
+
+  <h5 class="mt-3">Docstring Checks</h5>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+select = ["D"]  # Enable docstring checks
+
+[tool.ruff.pydocstyle]
+convention = "google"  # or "numpy", "pep257"</code></pre>
+
+  <h4 class="mt-4">Performance Comparison</h4>
+  <p>Real-world benchmarks on a medium-sized project (10,000 lines):</p>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Time</th>
+        <th>Speedup</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Flake8</td>
+        <td>~8.5s</td>
+        <td>1x (baseline)</td>
+      </tr>
+      <tr>
+        <td>pylint</td>
+        <td>~45s</td>
+        <td>0.2x (slower)</td>
+      </tr>
+      <tr>
+        <td>Flake8 + Black + isort</td>
+        <td>~12s</td>
+        <td>0.7x</td>
+      </tr>
+      <tr>
+        <td><strong>Ruff (lint + format)</strong></td>
+        <td><strong>~0.15s</strong></td>
+        <td><strong>57x faster</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Practical Examples</h4>
+
+  <h5 class="mt-3">Example 1: Unused Imports</h5>
+  <p>Before:</p>
+  <pre class="bg-light p-3 rounded"><code>import os
+import sys
+import pandas as pd  # unused
+
+def main():
+    print("Hello World")</code></pre>
+
+  <p>Ruff will detect and can auto-remove:</p>
+  <pre class="bg-light p-3 rounded"><code>$ ruff check . --fix
+Fixed 1 error:
+- F401 [*] `pandas` imported but unused</code></pre>
+
+  <h5 class="mt-3">Example 2: Import Sorting</h5>
+  <p>Before:</p>
+  <pre class="bg-light p-3 rounded"><code>from myapp import utils
+import sys
+from typing import List
+import os</code></pre>
+
+  <p>After Ruff format:</p>
+  <pre class="bg-light p-3 rounded"><code>import os
+import sys
+from typing import List
+
+from myapp import utils</code></pre>
+
+  <h5 class="mt-3">Example 3: Code Modernization</h5>
+  <p>Before (Python 3.7 style):</p>
+  <pre class="bg-light p-3 rounded"><code>from typing import List
+
+def process(items: List[str]) -> None:
+    pass</code></pre>
+
+  <p>After Ruff with pyupgrade:</p>
+  <pre class="bg-light p-3 rounded"><code>def process(items: list[str]) -> None:
+    pass</code></pre>
+
+  <h4 class="mt-4">Common Ruff Commands</h4>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Command</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ruff check .</code></td>
+        <td>Lint all files</td>
+      </tr>
+      <tr>
+        <td><code>ruff check . --fix</code></td>
+        <td>Lint and auto-fix issues</td>
+      </tr>
+      <tr>
+        <td><code>ruff format .</code></td>
+        <td>Format all files</td>
+      </tr>
+      <tr>
+        <td><code>ruff format . --check</code></td>
+        <td>Check formatting without changes</td>
+      </tr>
+      <tr>
+        <td><code>ruff check . --select F</code></td>
+        <td>Run only Pyflakes rules</td>
+      </tr>
+      <tr>
+        <td><code>ruff check . --ignore E501</code></td>
+        <td>Ignore specific rule</td>
+      </tr>
+      <tr>
+        <td><code>ruff rule E501</code></td>
+        <td>Show details about a rule</td>
+      </tr>
+      <tr>
+        <td><code>ruff --version</code></td>
+        <td>Check Ruff version</td>
+      </tr>
+      <tr>
+        <td><code>ruff clean</code></td>
+        <td>Clear Ruff cache</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-4">Best Practices</h4>
+  <ul>
+    <li><strong>Start gradually:</strong> Enable basic rules first (E, F, W), then add more</li>
+    <li><strong>Use in CI/CD:</strong> Run Ruff checks in your pipeline to catch issues early</li>
+    <li><strong>Configure per-project:</strong> Customize rules based on team preferences</li>
+    <li><strong>Auto-fix in dev:</strong> Use <code>--fix</code> locally, check-only in CI</li>
+    <li><strong>IDE integration:</strong> Set up format-on-save for instant feedback</li>
+    <li><strong>Document exceptions:</strong> Use <code>noqa</code> comments with explanations</li>
+    <li><strong>Keep updated:</strong> Ruff is actively developed, update regularly</li>
+  </ul>
+
+  <h4 class="mt-4">Migration Guide</h4>
+
+  <h5 class="mt-3">From Flake8</h5>
+  <p>Most Flake8 configuration translates directly:</p>
+  <pre class="bg-light p-3 rounded"><code># Old: .flake8 or setup.cfg
+[flake8]
+max-line-length = 88
+ignore = E203, W503
+exclude = .git,__pycache__
+
+# New: pyproject.toml
+[tool.ruff]
+line-length = 88
+ignore = ["E203", "W503"]
+exclude = [".git", "__pycache__"]</code></pre>
+
+  <h5 class="mt-3">From Black + isort</h5>
+  <pre class="bg-light p-3 rounded"><code># Old: multiple tools
+black .
+isort .
+
+# New: just Ruff
+ruff format .
+ruff check . --select I --fix  # Import sorting</code></pre>
+
+  <h4 class="mt-4">Troubleshooting</h4>
+
+  <h5 class="mt-3">Too Many Errors?</h5>
+  <p>Start with minimal rules and gradually enable more:</p>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+select = ["E4", "E7", "E9", "F"]  # Critical errors only</code></pre>
+
+  <h5 class="mt-3">False Positives?</h5>
+  <p>Ignore specific rules or files:</p>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+ignore = ["E501"]  # Ignore line length
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["S101"]  # Allow asserts in tests</code></pre>
+
+  <h5 class="mt-3">Conflicts with Black?</h5>
+  <p>Ruff's formatter is Black-compatible, but if needed:</p>
+  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+# Ignore rules that conflict with Black
+ignore = ["E501", "W505"]</code></pre>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    Ruff represents a paradigm shift in Python tooling. By combining multiple tools into one extremely fast package, it simplifies your development workflow and saves valuable time. The speed improvement alone is worth the switch — imagine running your linter 50x faster!
+  </p>
+
+  <p>
+    Whether you're working on a small script or a large production codebase, Ruff scales beautifully. Its comprehensive rule set catches bugs, enforces style, and helps maintain code quality without slowing you down.
+  </p>
+
+  <p class="fw-bold">
+    Start using Ruff today and experience the future of Python linting and formatting. Your codebase (and your CI pipeline) will thank you!
+  </p>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <strong>Resources:</strong><br />
+    <a href="https://docs.astral.sh/ruff/" target="_blank">Official Ruff Documentation</a><br />
+    <a href="https://github.com/astral-sh/ruff" target="_blank">Ruff GitHub Repository</a><br />
+    <a href="https://docs.astral.sh/ruff/rules/" target="_blank">Complete Rule Reference</a><br />
+    <a href="https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff" target="_blank">VS Code Extension</a>
+  </p>
+
+</div>
+</body>
+</html>

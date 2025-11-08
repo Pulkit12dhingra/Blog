@@ -27,16 +27,15 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Sorting Algorithms Demystified 🔢 — Visualized and Benchmarked in Python</h2>
+    <h2 class="fw-bold mb-3">Sorting Algorithms Demystified  — Visualized and Benchmarked in Python</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
-  <p class="text-muted">Published: <span id="publish-date">June 3, 2025</span></p>
   <hr />
 
   <p>Sorting algorithms are fundamental to computer science. Whether you’re arranging numbers in ascending order or organizing names alphabetically, sorting is everywhere. In this post, we’ll explore and compare popular sorting algorithms like <strong>Bubble Sort</strong>, <strong>Insertion Sort</strong>, <strong>Selection Sort</strong>, <strong>Merge Sort</strong>, and <strong>Quick Sort</strong>.</p>
 
-  <h4 class="mt-4">🔍 Problem Setup</h4>
+  <h4 class="mt-4"> Problem Setup</h4>
   <p>We’ll generate a random array of integers and apply each sorting algorithm. The goal is to analyze performance through benchmarking and visualize how each method behaves on the same dataset.</p>
 
   <h5>Generate Test Data</h5>
@@ -45,7 +44,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
 
   <h4 class="mt-4">🔄 Sorting Algorithms</h4>
 
-  <h5>1️⃣ Bubble Sort</h5>
+  <h5> Bubble Sort</h5>
   <pre class="bg-light p-3 rounded"><code>def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
@@ -53,7 +52,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]</code></pre>
 
-  <h5>2️⃣ Insertion Sort</h5>
+  <h5> Insertion Sort</h5>
   <pre class="bg-light p-3 rounded"><code>def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -63,7 +62,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
             j -= 1
         arr[j + 1] = key</code></pre>
 
-  <h5>3️⃣ Selection Sort</h5>
+  <h5> Selection Sort</h5>
   <pre class="bg-light p-3 rounded"><code>def selection_sort(arr):
     for i in range(len(arr)):
         min_idx = i
@@ -72,7 +71,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
                 min_idx = j
         arr[i], arr[min_idx] = arr[min_idx], arr[i]</code></pre>
 
-  <h5>4️⃣ Merge Sort</h5>
+  <h5> Merge Sort</h5>
   <pre class="bg-light p-3 rounded"><code>def merge_sort(arr):
     if len(arr) > 1:
         mid = len(arr) // 2
@@ -93,7 +92,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
 
         arr[k:] = left[i:] + right[j:]</code></pre>
 
-  <h5>5️⃣ Quick Sort</h5>
+  <h5> Quick Sort</h5>
   <pre class="bg-light p-3 rounded"><code>def quick_sort(arr):
     if len(arr) <= 1:
         return arr
@@ -102,7 +101,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
     greater = [x for x in arr[1:] if x > pivot]
     return quick_sort(less) + [pivot] + quick_sort(greater)</code></pre>
 
-  <h4 class="mt-4">⏱️ Benchmarking the Algorithms</h4>
+  <h4 class="mt-4"> Benchmarking the Algorithms</h4>
   <p>We’ll time how long each algorithm takes to sort the same array.</p>
   <pre class="bg-light p-3 rounded"><code>import time
 
@@ -128,7 +127,7 @@ for name, func in algorithms.items():
     <img src="../img/Blog_16_1.png" alt="Benchmark Results" class="img-fluid rounded shadow"/>
   </div>
 
-  <h4 class="mt-4">📈 Time Complexities</h4>
+  <h4 class="mt-4"> Time Complexities</h4>
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
@@ -148,10 +147,10 @@ for name, func in algorithms.items():
     </tbody>
   </table>
 
-  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <h4 class="mt-4"> Final Thoughts</h4>
   <p>Different sorting algorithms shine in different scenarios. For smaller arrays, simple algorithms like insertion sort are often sufficient. For larger datasets, merge and quick sort outperform significantly. Understanding these trade-offs is key when optimizing performance.</p>
 
-  <h4 class="mt-4">🔗 Reference</h4>
+  <h4 class="mt-4"> Reference</h4>
   <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/sorting_algos.ipynb" target="_blank">
     📓 sorting_algos.ipynb on GitHub
   </a></p>

@@ -37,19 +37,18 @@
 <body>
   <div class="container mt-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-      <h2 class="fw-bold mb-3">LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code 💡</h2>
+      <h2 class="fw-bold mb-3">LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code </h2>
       <a href="../index.html" class="btn btn-primary">← Back to Home</a>
     </div>
-    <p class="text-muted">Published: <span id="publish-date">May 8, 2025</span></p>
     <hr />
     <p><strong>👉 New to Ollama?</strong> Before diving in, make sure you’ve got it set up locally. Follow this guide first:  
         <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_8.html" target="_blank">
-          How to Setup Ollama on Your Machine 🚀
+          How to Setup Ollama on Your Machine 
         </a>
       </p>
     <p>LangChain is a powerful framework that simplifies the development of applications powered by large language models (LLMs). Whether you're building agents, chatbots, or assistants, LangChain gives you building blocks for <strong>development</strong>, <strong>monitoring</strong>, and <strong>deployment</strong>.</p>
 
-    <h4>🧠 Why LangChain?</h4>
+    <h4> Why LangChain?</h4>
     <p>LangChain simplifies every stage of the LLM application lifecycle:</p>
     <ul>
       <li><strong>Development:</strong> Build apps with open-source components, or create stateful agents using <code>LangGraph</code>.</li>
@@ -62,7 +61,7 @@
       </div>
       
 
-    <h4>🛠️ Two Ways to Use the Ollama Model</h4>
+    <h4> Two Ways to Use the Ollama Model</h4>
     <p>LangChain supports Ollama models — and there are two primary interfaces depending on your use case.</p>
 
     <h5>🧪 Option 1: Plain Completion</h5>
@@ -97,7 +96,7 @@ model.invoke("Hello, world!")</code></pre>
         <tbody>
           <tr><td>Input</td><td>Text string</td><td>Message objects (e.g., HumanMessage)</td></tr>
           <tr><td>Output</td><td>Text completion</td><td>Chat message (.content)</td></tr>
-          <tr><td>Roles</td><td>❌ Not supported</td><td>✅ Supported (system, user, assistant)</td></tr>
+          <tr><td>Roles</td><td> Not supported</td><td> Supported (system, user, assistant)</td></tr>
           <tr><td>Best For</td><td>One-shot prompts</td><td>Multi-turn chat, assistants</td></tr>
           <tr><td>Integrations</td><td>PromptTemplate, LLMChain</td><td>ChatPromptTemplate, ChatChain</td></tr>
         </tbody>
@@ -126,7 +125,7 @@ model.invoke(messages)</code></pre>
     <h4>🧱 Prompt Templates: The Real Superpower</h4>
     <p>Prompt templates modularize input to LLMs and come in two main forms:</p>
 
-    <h5>✏️ String PromptTemplate</h5>
+    <h5> String PromptTemplate</h5>
     <pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import PromptTemplate
 
 prompt_template = PromptTemplate.from_template("Tell me a joke about {topic}")
@@ -169,7 +168,7 @@ print(response.content)</code></pre>
 <div class="mb-4">
     <img src="../img/Blog_9_6.png" alt="Chat" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
-    <h4>✅ Final Thoughts</h4>
+    <h4> Final Thoughts</h4>
     <p>LangChain isn’t just another Python wrapper — it's a modular, scalable toolkit for building full-fledged LLM-powered applications. With Ollama support, you can even run models locally. Whether you’re exploring prompt templates or building conversational agents, LangChain makes the process simple and production-ready.</p>
   </div>
 </body>

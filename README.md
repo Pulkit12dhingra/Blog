@@ -1,8 +1,8 @@
-# Byte-Sized Brilliance Blog — Project Structure 🧠📚
+# Byte-Sized Brilliance Blog: Project Structure
 
 Welcome to the source repository for my technical blog focused on AI, coding tutorials, and hands-on projects. Below is a breakdown of the project structure and how everything fits together.
 
-<h2>📁 Directory Structure</h2>
+<h2>Directory Structure</h2>
 
 <pre>
 .
@@ -20,7 +20,7 @@ Welcome to the source repository for my technical blog focused on AI, coding tut
 
 ---
 
-## 🧩 File & Folder Descriptions
+## File & Folder Descriptions
 
 ### `index.html`
 This is the main landing page for the blog. It loads blog summaries dynamically using JavaScript and `blogData.json` as the source of truth. Includes the structure and layout logic for displaying blog tiles and navigation.
@@ -29,7 +29,7 @@ This is the main landing page for the blog. It loads blog summaries dynamically 
 
 ### `/data`
 
-#### ✅ `blogData.json`
+#### `blogData.json`
 This JSON file acts as a lightweight "database" that maintains metadata for all published blogs. It's used by `index.html` to dynamically list and render blogs on the homepage.
 
 **Example entry:**
@@ -48,7 +48,7 @@ This JSON file acts as a lightweight "database" that maintains metadata for all 
 - `summary`: Short description used in the preview.
 - `date`: Used to sort and display publication dates.
 
-#### 🎨 `style.css`
+#### `style.css`
 This is the main stylesheet that overrides and extends the base Bootstrap 5 styles. It provides custom theming, layout tweaks, and component adjustments for a consistent blog look.
 
 ---
@@ -72,7 +72,7 @@ Contains Jupyter Notebooks used in blog tutorials. These are referenced via GitH
 
 ---
 
-## 🚀 How It Works
+## How It Works
 - Blog metadata lives in blogData.json.
 - index.html uses JS to render blog tiles based on this metadata.
 - Clicking a tile links to the corresponding file in /content.
@@ -80,19 +80,19 @@ Contains Jupyter Notebooks used in blog tutorials. These are referenced via GitH
 
 ---
 
-## 📌 Notes
+## Notes
 - Bootstrap 5 and FontAwesome are included via CDN.
 - Open Graph + Twitter meta tags are embedded in each blog for better sharing.
-- Blogs are statically linked — no backend required.
+- Blogs are statically linked with no backend required.
 
 ---
 
-## 💡 Tip
+## Tip
 If you're adding a new blog:
 1. Create Blog_N.html inside /content.
 2. Add an image (if any) in /img.
 3. Append a new object to blogData.json with title, file, summary, and date.
 4. You're done!
 
-Enjoy reading and happy coding! 🚀
+Enjoy reading and happy coding!
 * https://pulkit12dhingra.github.io/Blog/

@@ -33,7 +33,6 @@
     <h2 class="fw-bold mb-3">Building a Decision Tree Regressor from Scratch 🌳</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
-  <p class="text-muted">Published: <span id="publish-date">April 28, 2025</span></p>
   <hr />
   <div class="container">
   
@@ -44,10 +43,10 @@
   
     <p>This tree-like logic makes decision trees incredibly interpretable. You can visually trace how a prediction is made, making them popular in applications where transparency is essential.</p>
   
-    <h2>🌟 Why Use Trees for Regression?</h2>
+    <h2> Why Use Trees for Regression?</h2>
     <p>Unlike linear regression models that try to draw a straight line through the data, decision trees don’t assume any mathematical form. They break up the feature space in a way that captures non-linear patterns quite effectively. Trees don’t care if one feature is in the thousands and another in decimal values — they’re not affected by feature scaling. Additionally, decision trees can model interactions between features naturally, are easy to visualize, and robust to outliers. They're also flexible enough to be the backbone of powerful ensemble methods like Random Forests and Gradient Boosting.</p>
   
-    <h2>⚙️ How Does a Decision Tree Regressor Actually Work?</h2>
+    <h2> How Does a Decision Tree Regressor Actually Work?</h2>
     <p>At the core, a decision tree regressor works by recursively splitting the data in a way that reduces the error in prediction. The quality of a split is typically measured using Mean Squared Error (MSE). For each possible feature and each possible value that feature can take, we calculate how well the split separates the data. The split that results in the lowest MSE is chosen. The process continues until stopping conditions are met — such as reaching a maximum depth or having too few samples to split further.</p>
   
     <p>When splitting stops, the node becomes a leaf, and it outputs a constant prediction: usually the average of the target values for the samples in that leaf.</p>
@@ -95,7 +94,7 @@
     <img src="../img/Blog_7_1.png" alt="Decision Tree Sklearn" class="img-fluid rounded shadow"/>
   </div>
 
-  <h2>🔧 Let’s Build It Ourselves: Decision Tree from Scratch</h2>
+  <h2> Let’s Build It Ourselves: Decision Tree from Scratch</h2>
 
 <p>Before jumping into the code, let’s break down the algorithm into simple steps. This will help you understand how the tree builds itself recursively by choosing the best splits.</p>
 
@@ -239,15 +238,15 @@
             </code></pre>
             
   
-    <h2>🤖 Comparing Results</h2>
+    <h2> Comparing Results</h2>
     <p>Scikit-learn's implementation is fast, scalable, and comes with pruning options. Your hand-coded version is perfect for learning, customization, or academic purposes — and surprisingly close in output for small depths.</p>
     <div class="mt-2 mb-4 text-center">
         <img src="../img/Blog_7_3.png" alt="Decision tree comparison" class="img-fluid rounded shadow"/>
       </div>
-    <h2>🧠 Final Thoughts</h2>
+    <h2> Final Thoughts</h2>
     <p>Writing a decision tree regressor from scratch demystifies one of the most popular algorithms in machine learning. It’s all about finding the right place to split — again and again — until further splitting no longer helps. With just a bit of math and recursion, we’ve rebuilt a fundamental ML tool from the ground up.</p>
   </div>
-  <h4 class="mt-4">🔗 Reference</h4>
+  <h4 class="mt-4"> Reference</h4>
   <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/decision_tree.ipynb" target="_blank">📓 decision_tree.ipynb on GitHub</a></p>
 
   </div>

@@ -24,17 +24,16 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 🧠📄</h2>
+    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
-  <p class="text-muted">Published: <span id="publish-date">May 9, 2025</span></p>
   <hr />
   <h4 class="mt-4">🧩 Why LangChain?</h4>
     <p>
     LangChain is a powerful framework designed to connect large language models (LLMs) to external data sources, tools, and APIs. 
     If you're just getting started, I recently covered the fundamentals in this post: 
-    <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_9.html" target="_blank">Intro to LangChain 🔗</a>.
+    <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_9.html" target="_blank">Intro to LangChain </a>.
     It simplifies workflows like Retrieval-Augmented Generation (RAG), allowing you to load documents, embed them, and query intelligently — all in just a few lines of code.
     </p>
 
@@ -45,12 +44,12 @@
     <img src="../img/Blog_10_2.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
   </div>
   <p>
-    In this tutorial, we’ll build a RAG pipeline using <strong>PDF documents</strong>, store chunked embeddings in <strong>Chroma DB</strong>, and query them using <strong>Ollama with the Gemma 3 model</strong>. Let’s go step-by-step! 🔍
+    In this tutorial, we’ll build a RAG pipeline using <strong>PDF documents</strong>, store chunked embeddings in <strong>Chroma DB</strong>, and query them using <strong>Ollama with the Gemma 3 model</strong>. Let’s go step-by-step! 
   </p>
   <div class="text-center mb-4">
     <img src="../img/Blog_10_3.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
   </div>
-  <h5 class="mt-4">📄 PDF Source</h5>
+  <h5 class="mt-4"> PDF Source</h5>
 <p>
   For this tutorial, the document used for retrieval is my own resume. You can view it here:  
   <a href="https://pulkit12dhingra.github.io/portfolio/resume/Pulkit_Resume.pdf" target="_blank">
@@ -72,7 +71,7 @@ documents = loader.load()
     We use <code>PyPDFDirectoryLoader</code> to load all PDFs in the <code>./data</code> directory. Each PDF gets parsed into a text document.
   </p>
 
-  <h4 class="mt-4">✂️ Step 2: Split Text into Chunks</h4>
+  <h4 class="mt-4"> Step 2: Split Text into Chunks</h4>
   <p>
     Language models have input size limitations, so feeding them entire documents isn't feasible. That’s where chunking comes in. 
     Using LangChain’s <code>RecursiveCharacterTextSplitter</code>, we break down long documents into manageable segments — or “chunks” — 
@@ -87,7 +86,7 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = text_splitter.split_documents(documents)
 print(len(chunks))
   </code></pre>
-  <h4 class="mt-4">🧠 Step 3: Define Embeddings</h4>
+  <h4 class="mt-4"> Step 3: Define Embeddings</h4>
   <p>
     Instead of using an external hosted model, we leverage a local embedding model from HuggingFace: 
     <code>sentence-transformers/all-MiniLM-L6-v2</code>. This model is lightweight, fast, and delivers surprisingly strong performance 
@@ -121,7 +120,7 @@ vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_d
 retriever = vectorstore.as_retriever()
   </code></pre>
 
-  <h4 class="mt-4">🔧 Step 5: Initialize Ollama with Gemma 3</h4>
+  <h4 class="mt-4"> Step 5: Initialize Ollama with Gemma 3</h4>
   <p>
     Now we initialize our LLM. <strong>Gemma 3B</strong> is a lightweight and capable model that will be used for the generation step in RAG.
   </p>
@@ -133,7 +132,7 @@ llm = Ollama(model="gemma3")
   </code></pre>
 
 
-  <h4 class="mt-4">🔗 Step 6: Create the RAG Pipeline</h4>
+  <h4 class="mt-4"> Step 6: Create the RAG Pipeline</h4>
   <p>
     This step combines the retriever and the LLM into a unified RAG chain. When queried, it retrieves the most relevant chunks and generates an answer.
   </p>
@@ -167,13 +166,13 @@ Pulkit has worked on AWS. Specifically, the Nagarro DevOps Engineer role involve
     Boom! 💥 Now you can ask questions and receive answers grounded in your PDF documents.
   </p>
 
-  <h4 class="mt-4">✅ Final Thoughts</h4>
+  <h4 class="mt-4"> Final Thoughts</h4>
   <p>
     We’ve just built a full RAG pipeline — from loading PDFs to querying with Gemma 3. This approach gives your LLM access to custom knowledge, perfect for chatbots, document search, internal tools, and more.
   </p>
 
   <p class="fw-bold">
-    Next up: RAG with streaming, multi-turn memory, and UI integration. Stay tuned! 🧠💬
+    Next up: RAG with streaming, multi-turn memory, and UI integration. Stay tuned! 💬
   </p>
 
 </div>
