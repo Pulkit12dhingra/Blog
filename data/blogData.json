@@ -1,5 +1,17 @@
 [
   {
+    "file": "GitHub_Basics.html",
+    "title": "GitHub Basics: Mastering Version Control and Collaboration",
+    "summary": "Master the fundamentals of Git and GitHub: version control, repositories, branches, commits, pull requests, staging area, and essential CLI commands for modern development.",
+    "tags": ["Git", "GitHub", "Version Control", "CLI", "Collaboration", "Tutorial", "Beginner"]
+  },
+  {
+    "file": "GitHub_Advanced.html",
+    "title": "GitHub Advanced: Actions, Workflows, and Open Source Contribution",
+    "summary": "Master advanced Git and GitHub: GitHub Actions, CI/CD workflows, .gitignore, pre-commit hooks, contributing to open source, releases, tags, and GitHub Packages.",
+    "tags": ["Git", "GitHub", "GitHub Actions", "CI/CD", "Open Source", "Automation", "DevOps"]
+  },
+  {
     "file": "Blog_Generation_Agent.html",
     "title": "LangGraph Agent to HTML Blog Generator: Building Blogs with AI",
     "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline.",

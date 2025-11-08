@@ -1,0 +1,760 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master advanced Git and GitHub: GitHub Actions, CI/CD workflows, .gitignore, pre-commit hooks, contributing to open source, releases, tags, and GitHub Packages." />
+  <title>GitHub Advanced: Actions, Workflows, and Open Source Contribution | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="GitHub Advanced: Actions, Workflows, and Open Source Contribution" />
+  <meta property="og:description" content="Master advanced Git and GitHub: GitHub Actions, CI/CD workflows, .gitignore, pre-commit hooks, contributing to open source, releases, tags, and GitHub Packages." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GitHub Advanced: Actions, Workflows, and Open Source Contribution" />
+  <meta name="twitter:description" content="Master advanced Git and GitHub: GitHub Actions, CI/CD workflows, .gitignore, pre-commit hooks, contributing to open source, releases, tags, and GitHub Packages." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">GitHub Advanced: Actions, Workflows, and Open Source Contribution</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>📖 New to Git?</strong> Start with 
+    <a href="GitHub_Basics.html" class="alert-link">GitHub Basics: Mastering Version Control and Collaboration</a> 
+    to learn fundamentals like branches, commits, and pull requests.
+  </div>
+
+  <h4 class="mt-4">🚫 Setting Up .gitignore</h4>
+  
+  <p>
+    A <code>.gitignore</code> file tells Git which files and directories to ignore. This prevents sensitive data, build artifacts, and unnecessary files from being committed to your repository.
+  </p>
+
+  <h5 class="mt-3">Why You Need .gitignore</h5>
+  <ul>
+    <li><strong>Security:</strong> Keep API keys, credentials, and secrets out of version control</li>
+    <li><strong>Cleanliness:</strong> Exclude build outputs, dependencies, and temporary files</li>
+    <li><strong>Performance:</strong> Smaller repos are faster to clone and sync</li>
+    <li><strong>Relevance:</strong> Only track source code, not generated files</li>
+  </ul>
+
+  <h5 class="mt-3">Creating a .gitignore File</h5>
+  <pre class="bg-light p-3 rounded"><code># Create .gitignore in your repository root
+touch .gitignore
+
+# Or use GitHub's template when creating a new repo
+# (GitHub offers language-specific templates)</code></pre>
+
+  <h5 class="mt-3">Common .gitignore Patterns</h5>
+  <p><strong>Python Example:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># .gitignore for Python projects
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log</code></pre>
+
+  <p><strong>Node.js Example:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># .gitignore for Node.js projects
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/</code></pre>
+
+  <h5 class="mt-3">Advanced .gitignore Patterns</h5>
+  <pre class="bg-light p-3 rounded"><code># Ignore all .txt files
+*.txt
+
+# But don't ignore requirements.txt
+!requirements.txt
+
+# Ignore all files in any directory named temp
+**/temp/
+
+# Ignore only in root directory
+/config.json
+
+# Ignore all .log files in logs directory and subdirectories
+logs/**/*.log</code></pre>
+
+  <h5 class="mt-3">Already Committed Files?</h5>
+  <pre class="bg-light p-3 rounded"><code># Remove file from Git but keep it locally
+git rm --cached filename
+
+# Remove directory from Git but keep it locally
+git rm -r --cached directory/
+
+# Commit the removal
+git commit -m "Remove ignored files from tracking"</code></pre>
+
+  <h5 class="mt-3">Global .gitignore</h5>
+  <pre class="bg-light p-3 rounded"><code># Create global gitignore for OS/IDE files
+git config --global core.excludesfile ~/.gitignore_global
+
+# Add common patterns to ~/.gitignore_global
+echo ".DS_Store" >> ~/.gitignore_global
+echo ".vscode/" >> ~/.gitignore_global
+echo ".idea/" >> ~/.gitignore_global</code></pre>
+
+  <h5 class="mt-3">Pro Tips</h5>
+  <ul>
+    <li>Use <a href="https://www.toptal.com/developers/gitignore" target="_blank" rel="noopener noreferrer">gitignore.io</a> to generate templates</li>
+    <li>Always add <code>.env</code> files to <code>.gitignore</code></li>
+    <li>Commit <code>.gitignore</code> to your repository</li>
+    <li>Review <code>git status</code> before committing to catch missed files</li>
+  </ul>
+
+  <h4 class="mt-5">🪝 Pre-Commit Hooks with .pre-commit-config.yaml</h4>
+
+  <p>
+    <strong>Pre-commit hooks</strong> are scripts that run automatically before each commit. They catch issues early — formatting errors, linting violations, security problems — before code enters your repository.
+  </p>
+
+  <h5 class="mt-3">Why Use Pre-Commit Hooks?</h5>
+  <ul>
+    <li><strong>Consistency:</strong> Enforce code style across the team automatically</li>
+    <li><strong>Quality:</strong> Catch bugs, security issues, and bad practices early</li>
+    <li><strong>Efficiency:</strong> Prevent broken code from entering CI/CD pipelines</li>
+    <li><strong>Automation:</strong> No more "forgot to run the linter" excuses</li>
+  </ul>
+
+  <h5 class="mt-3">Installing Pre-Commit</h5>
+  <pre class="bg-light p-3 rounded"><code># Install pre-commit (Python required)
+pip install pre-commit
+
+# Or with pipx (isolated installation)
+pipx install pre-commit
+
+# Install the git hook scripts
+pre-commit install</code></pre>
+
+  <h5 class="mt-3">Creating .pre-commit-config.yaml</h5>
+  <p>Create this file in your repository root:</p>
+  <pre class="bg-light p-3 rounded"><code># .pre-commit-config.yaml
+
+repos:
+  # General code quality checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace      # Remove trailing whitespace
+      - id: end-of-file-fixer        # Ensure files end with newline
+      - id: check-yaml               # Validate YAML files
+      - id: check-json               # Validate JSON files
+      - id: check-added-large-files  # Prevent large files (>500KB)
+      - id: check-merge-conflict     # Detect merge conflict markers
+      - id: detect-private-key       # Prevent committing private keys
+
+  # Python: Black formatter
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+
+  # Python: isort (import sorting)
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  # Python: flake8 linter
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ["--max-line-length=88", "--extend-ignore=E203"]
+
+  # Python: mypy type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests]</code></pre>
+
+  <h5 class="mt-3">Running Pre-Commit</h5>
+  <pre class="bg-light p-3 rounded"><code># Run on staged files (happens automatically on commit)
+pre-commit run
+
+# Run on all files
+pre-commit run --all-files
+
+# Update hooks to latest versions
+pre-commit autoupdate
+
+# Bypass hooks for a single commit (use sparingly!)
+git commit --no-verify -m "Emergency fix"</code></pre>
+
+  <h5 class="mt-3">Example Workflow</h5>
+  <pre class="bg-light p-3 rounded"><code># Make changes to your code
+echo "def hello():" > test.py
+echo "    print('hello')" >> test.py
+
+# Stage the file
+git add test.py
+
+# Try to commit (pre-commit runs automatically)
+git commit -m "Add hello function"
+
+# If pre-commit finds issues, it:
+# 1. Shows what failed
+# 2. Auto-fixes if possible (e.g., formatting)
+# 3. Blocks the commit until fixed
+
+# Review auto-fixes
+git diff
+
+# Stage fixed files
+git add test.py
+
+# Commit again
+git commit -m "Add hello function"</code></pre>
+
+  <h5 class="mt-3">Language-Specific Examples</h5>
+  
+  <p><strong>JavaScript/TypeScript:</strong></p>
+  <pre class="bg-light p-3 rounded"><code>repos:
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.56.0
+    hooks:
+      - id: eslint
+        files: \.[jt]sx?$
+        types: [file]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier</code></pre>
+
+  <p><strong>Ruff (Fast Python Linter):</strong></p>
+  <pre class="bg-light p-3 rounded"><code>repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.11
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format</code></pre>
+
+  <h4 class="mt-5">⚡ GitHub Actions: CI/CD Automation</h4>
+
+  <p>
+    <strong>GitHub Actions</strong> is a powerful CI/CD platform built into GitHub. It automates workflows like testing, building, deploying, and releasing your code whenever specific events occur (pushes, pull requests, releases, etc.).
+  </p>
+
+  <h5 class="mt-3">Key Concepts</h5>
+  <ul>
+    <li><strong>Workflow:</strong> Automated process defined in YAML (e.g., run tests on every PR)</li>
+    <li><strong>Event:</strong> Trigger that starts a workflow (push, pull_request, schedule, etc.)</li>
+    <li><strong>Job:</strong> Set of steps that execute on the same runner</li>
+    <li><strong>Step:</strong> Individual task (run command, use action, etc.)</li>
+    <li><strong>Runner:</strong> Server that executes workflows (GitHub-hosted or self-hosted)</li>
+    <li><strong>Action:</strong> Reusable unit of code (from marketplace or custom)</li>
+  </ul>
+
+  <h5 class="mt-3">Creating Your First Workflow</h5>
+  <p>Create <code>.github/workflows/ci.yml</code> in your repository:</p>
+  <pre class="bg-light p-3 rounded"><code>name: CI
+
+# Trigger workflow on push or pull request to main
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+      
+      # Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      # Run tests
+      - name: Run tests
+        run: pytest
+      
+      # Upload coverage report
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml</code></pre>
+
+  <h5 class="mt-3">Common Workflow Examples</h5>
+
+  <p><strong>Lint and Format Check:</strong></p>
+  <pre class="bg-light p-3 rounded"><code>name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ruff
+        run: pip install ruff
+      - name: Run ruff
+        run: ruff check .</code></pre>
+
+  <p><strong>Multi-OS and Multi-Version Testing:</strong></p>
+  <pre class="bg-light p-3 rounded"><code>name: Test Matrix
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -r requirements.txt
+      - run: pytest</code></pre>
+
+  <p><strong>Deploy to GitHub Pages:</strong></p>
+  <pre class="bg-light p-3 rounded"><code>name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist</code></pre>
+
+  <h5 class="mt-3">Using Secrets</h5>
+  <pre class="bg-light p-3 rounded"><code># In your workflow
+env:
+  API_KEY: ${{ secrets.API_KEY }}
+
+# Add secrets in GitHub:
+# Repo Settings → Secrets and variables → Actions → New repository secret</code></pre>
+
+  <h5 class="mt-3">Marketplace Actions</h5>
+  <p>Browse thousands of pre-built actions at <a href="https://github.com/marketplace?type=actions" target="_blank" rel="noopener noreferrer">GitHub Marketplace</a>:</p>
+  <ul>
+    <li><code>actions/checkout</code> - Check out your repository</li>
+    <li><code>actions/setup-python</code> - Setup Python environment</li>
+    <li><code>actions/setup-node</code> - Setup Node.js</li>
+    <li><code>docker/build-push-action</code> - Build and push Docker images</li>
+    <li><code>aws-actions/configure-aws-credentials</code> - AWS deployment</li>
+  </ul>
+
+  <h4 class="mt-5">🤝 Contributing to Open Source Projects</h4>
+
+  <p>
+    Contributing to open source is rewarding and a great way to learn. Here's a complete workflow for making your first contribution.
+  </p>
+
+  <h5 class="mt-3">Step 1: Find a Project</h5>
+  <ul>
+    <li>Look for <code>good first issue</code> or <code>help wanted</code> labels</li>
+    <li>Check <a href="https://goodfirstissue.dev/" target="_blank" rel="noopener noreferrer">Good First Issue</a></li>
+    <li>Explore projects you already use</li>
+    <li>Read <code>CONTRIBUTING.md</code> guidelines</li>
+  </ul>
+
+  <h5 class="mt-3">Step 2: Fork and Clone</h5>
+  <pre class="bg-light p-3 rounded"><code># 1. Fork the repository on GitHub (click "Fork" button)
+
+# 2. Clone YOUR fork
+git clone https://github.com/YOUR-USERNAME/project.git
+cd project
+
+# 3. Add original repo as upstream
+git remote add upstream https://github.com/ORIGINAL-OWNER/project.git
+
+# 4. Verify remotes
+git remote -v
+# origin    → your fork
+# upstream  → original repo</code></pre>
+
+  <h5 class="mt-3">Step 3: Create a Feature Branch</h5>
+  <pre class="bg-light p-3 rounded"><code># Always sync with upstream first
+git checkout main
+git fetch upstream
+git merge upstream/main
+
+# Create feature branch
+git checkout -b fix/issue-123-typo-in-readme</code></pre>
+
+  <h5 class="mt-3">Step 4: Make Changes</h5>
+  <pre class="bg-light p-3 rounded"><code># Make your changes
+# Follow the project's style guide
+# Add tests if applicable
+# Update documentation
+
+# Test your changes
+npm test  # or pytest, cargo test, etc.
+
+# Commit with clear message
+git add .
+git commit -m "Fix typo in README.md installation section"</code></pre>
+
+  <h5 class="mt-3">Step 5: Push and Create Pull Request</h5>
+  <pre class="bg-light p-3 rounded"><code># Push to YOUR fork
+git push origin fix/issue-123-typo-in-readme
+
+# Go to GitHub and click "Create Pull Request"
+# Fill in:
+# - Clear title: "Fix typo in README installation section"
+# - Description: What you changed and why
+# - Link to related issue: "Fixes #123"</code></pre>
+
+  <h5 class="mt-3">Step 6: Respond to Feedback</h5>
+  <pre class="bg-light p-3 rounded"><code># Maintainers may request changes
+# Make additional commits on the same branch
+git add .
+git commit -m "Address review feedback"
+git push origin fix/issue-123-typo-in-readme
+
+# PR automatically updates with new commits</code></pre>
+
+  <h5 class="mt-3">Step 7: Keep Your Fork Synced</h5>
+  <pre class="bg-light p-3 rounded"><code># Regularly sync your fork with upstream
+git checkout main
+git fetch upstream
+git merge upstream/main
+git push origin main</code></pre>
+
+  <h5 class="mt-3">Contribution Best Practices</h5>
+  <ul>
+    <li><strong>Read CONTRIBUTING.md:</strong> Every project has unique guidelines</li>
+    <li><strong>Start small:</strong> Documentation fixes and typos are great first PRs</li>
+    <li><strong>One PR = One feature/fix:</strong> Keep changes focused</li>
+    <li><strong>Write tests:</strong> Demonstrate your fix works</li>
+    <li><strong>Be patient and respectful:</strong> Maintainers are often volunteers</li>
+    <li><strong>Follow code style:</strong> Match existing patterns</li>
+    <li><strong>Sign commits if required:</strong> Some projects require <code>git commit -s</code></li>
+  </ul>
+
+  <h4 class="mt-5">🏷️ Tags, Releases, and Packages</h4>
+
+  <h5 class="mt-3">Git Tags</h5>
+  <p>Tags mark specific points in history, typically for releases:</p>
+  <pre class="bg-light p-3 rounded"><code># Create lightweight tag
+git tag v1.0.0
+
+# Create annotated tag (recommended for releases)
+git tag -a v1.0.0 -m "Release version 1.0.0"
+
+# List tags
+git tag
+git tag -l "v1.*"
+
+# Push tags to remote
+git push origin v1.0.0
+git push origin --tags  # Push all tags
+
+# Delete tag
+git tag -d v1.0.0
+git push origin --delete v1.0.0
+
+# Checkout tag
+git checkout v1.0.0</code></pre>
+
+  <h5 class="mt-3">Semantic Versioning</h5>
+  <p>Use <code>MAJOR.MINOR.PATCH</code> format (e.g., <code>v2.4.1</code>):</p>
+  <ul>
+    <li><strong>MAJOR:</strong> Breaking changes (v1.0.0 → v2.0.0)</li>
+    <li><strong>MINOR:</strong> New features, backwards compatible (v1.0.0 → v1.1.0)</li>
+    <li><strong>PATCH:</strong> Bug fixes (v1.0.0 → v1.0.1)</li>
+  </ul>
+
+  <h5 class="mt-3">GitHub Releases</h5>
+  <p>Releases are GitHub's way of packaging and distributing software:</p>
+  <pre class="bg-light p-3 rounded"><code># 1. Create and push a tag
+git tag -a v1.0.0 -m "Initial release"
+git push origin v1.0.0
+
+# 2. On GitHub:
+#    - Go to "Releases" → "Draft a new release"
+#    - Select tag: v1.0.0
+#    - Add title: "Version 1.0.0"
+#    - Write release notes (changelog)
+#    - Attach binaries/assets if needed
+#    - Click "Publish release"</code></pre>
+
+  <h5 class="mt-3">Automated Releases with GitHub Actions</h5>
+  <pre class="bg-light p-3 rounded"><code>name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: CHANGELOG.md
+          files: |
+            dist/*
+            LICENSE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}</code></pre>
+
+  <h5 class="mt-3">GitHub Packages</h5>
+  <p>Publish packages (npm, Docker, Maven, NuGet, etc.) to GitHub:</p>
+  
+  <p><strong>Publish Docker Image:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># .github/workflows/publish-docker.yml
+name: Publish Docker Image
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  push_to_registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}</code></pre>
+
+  <p><strong>Publish Python Package:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># .github/workflows/publish-pypi.yml
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build package
+        run: |
+          pip install build
+          python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}</code></pre>
+
+  <h4 class="mt-5">💡 Advanced Pro Tips</h4>
+
+  <ul>
+    <li><strong>Use GitHub CLI (<code>gh</code>):</strong> Manage PRs, issues, and releases from terminal</li>
+    <li><strong>Enable branch protection:</strong> Require PR reviews, status checks before merging</li>
+    <li><strong>Use CODEOWNERS:</strong> Auto-assign reviewers based on file paths</li>
+    <li><strong>Leverage GitHub Projects:</strong> Organize issues and PRs with Kanban boards</li>
+    <li><strong>Set up Dependabot:</strong> Automatic dependency updates and security alerts</li>
+    <li><strong>Use GitHub Discussions:</strong> Community Q&A separate from issues</li>
+    <li><strong>Add status badges:</strong> Show CI status, coverage, version in README</li>
+  </ul>
+
+  <h4 class="mt-5">🎓 Recap</h4>
+  <p>You've now learned advanced Git and GitHub techniques:</p>
+  <ul>
+    <li>✅ Configuring <code>.gitignore</code> to exclude unwanted files</li>
+    <li>✅ Setting up pre-commit hooks for automated quality checks</li>
+    <li>✅ Creating GitHub Actions workflows for CI/CD</li>
+    <li>✅ Contributing to open source projects</li>
+    <li>✅ Managing releases with tags and GitHub Releases</li>
+    <li>✅ Publishing packages to GitHub Packages</li>
+  </ul>
+
+  <div class="alert alert-success mt-4" role="alert">
+    <strong>📖 Review the basics:</strong> 
+    <a href="GitHub_Basics.html" class="alert-link">GitHub Basics: Mastering Version Control and Collaboration</a>
+  </div>
+
+  <h4 class="mt-5">📚 Additional Resources</h4>
+  <ul>
+    <li><a href="https://docs.github.com/en/actions" target="_blank" rel="noopener noreferrer">GitHub Actions Documentation</a></li>
+    <li><a href="https://pre-commit.com/" target="_blank" rel="noopener noreferrer">Pre-Commit Framework</a></li>
+    <li><a href="https://www.toptal.com/developers/gitignore" target="_blank" rel="noopener noreferrer">gitignore.io Generator</a></li>
+    <li><a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning Spec</a></li>
+    <li><a href="https://docs.github.com/en/packages" target="_blank" rel="noopener noreferrer">GitHub Packages Docs</a></li>
+    <li><a href="https://github.com/firstcontributions/first-contributions" target="_blank" rel="noopener noreferrer">First Contributions Tutorial</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy contributing! 🚀 Open source awaits.</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>

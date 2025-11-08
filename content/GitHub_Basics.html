@@ -1,0 +1,424 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master the fundamentals of Git and GitHub: version control, repositories, branches, commits, pull requests, staging area, and essential CLI commands for modern development." />
+  <title>GitHub Basics: Mastering Version Control and Collaboration | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="GitHub Basics: Mastering Version Control and Collaboration" />
+  <meta property="og:description" content="Master the fundamentals of Git and GitHub: version control, repositories, branches, commits, pull requests, staging area, and essential CLI commands for modern development." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GitHub Basics: Mastering Version Control and Collaboration" />
+  <meta name="twitter:description" content="Master the fundamentals of Git and GitHub: version control, repositories, branches, commits, pull requests, staging area, and essential CLI commands for modern development." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">GitHub Basics: Mastering Version Control and Collaboration</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>🚀 Ready for more?</strong> Once you've mastered the basics, check out 
+    <a href="GitHub_Advanced.html" class="alert-link">GitHub Advanced: Actions, Workflows, and Open Source Contribution</a> 
+    to learn about automation, contributing to open source projects, and advanced Git workflows.
+  </div>
+
+  <h4 class="mt-4">📚 What is Git and GitHub?</h4>
+  
+  <h5 class="mt-3">Git: The Version Control System</h5>
+  <p>
+    <strong>Git</strong> is a distributed version control system (VCS) that tracks changes in your code over time. Think of it as a time machine for your projects — you can save snapshots of your work, experiment without fear, and collaborate seamlessly with others.
+  </p>
+  
+  <p><strong>Why Git matters:</strong></p>
+  <ul>
+    <li><strong>Track changes:</strong> See what changed, when, and by whom</li>
+    <li><strong>Collaborate safely:</strong> Multiple people can work on the same project without conflicts</li>
+    <li><strong>Experiment freely:</strong> Create branches to test new features without breaking your main code</li>
+    <li><strong>Backup automatically:</strong> Your entire project history is distributed across all contributors</li>
+    <li><strong>Undo mistakes:</strong> Roll back to any previous state with a single command</li>
+  </ul>
+
+  <h5 class="mt-3">GitHub: Git Hosting + Social Coding</h5>
+  <p>
+    <strong>GitHub</strong> is a cloud-based platform that hosts Git repositories and adds powerful collaboration features. It's like Git plus a social network for developers.
+  </p>
+  
+  <p><strong>GitHub provides:</strong></p>
+  <ul>
+    <li><strong>Remote hosting:</strong> Store your repositories in the cloud</li>
+    <li><strong>Collaboration tools:</strong> Pull requests, code reviews, issues, and project boards</li>
+    <li><strong>CI/CD:</strong> GitHub Actions for automated testing and deployment</li>
+    <li><strong>Documentation:</strong> README files, wikis, and GitHub Pages for static sites</li>
+    <li><strong>Community:</strong> Discover, fork, and contribute to millions of open source projects</li>
+  </ul>
+
+  <div class="alert alert-warning mt-3" role="alert">
+    <strong>🔑 Key Difference:</strong> Git is the tool, GitHub is the platform. You use Git locally on your machine, and GitHub as a remote hub for collaboration.
+  </div>
+
+  <h4 class="mt-5">🌿 Understanding Branches, Commits, and Pull Requests</h4>
+
+  <h5 class="mt-3">Commits: Saving Snapshots</h5>
+  <p>
+    A <strong>commit</strong> is like a checkpoint in a video game — it saves the current state of your project with a message describing what changed.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code># Make changes to your files
+git add file1.py file2.py       # Stage specific files
+git add .                        # Stage all changes
+
+# Create a commit with a descriptive message
+git commit -m "Add user authentication feature"
+
+# View commit history
+git log
+git log --oneline --graph        # Compact, visual format</code></pre>
+
+  <p><strong>Good commit practices:</strong></p>
+  <ul>
+    <li>Write clear, descriptive messages (not "fix bug" but "Fix login validation for empty passwords")</li>
+    <li>Make small, focused commits (one feature/fix per commit)</li>
+    <li>Commit often to create a detailed history</li>
+    <li>Use present tense: "Add feature" not "Added feature"</li>
+  </ul>
+
+  <h5 class="mt-4">Branches: Parallel Development</h5>
+  <p>
+    <strong>Branches</strong> let you diverge from the main codebase to work on features, fixes, or experiments without affecting the stable version.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code># Create a new branch
+git branch feature/user-profile
+
+# Switch to that branch
+git checkout feature/user-profile
+
+# Or do both in one command
+git checkout -b feature/user-profile
+
+# List all branches
+git branch                       # Local branches
+git branch -r                    # Remote branches
+git branch -a                    # All branches
+
+# Switch back to main
+git checkout main
+
+# Delete a branch
+git branch -d feature/user-profile</code></pre>
+
+  <p><strong>Common branch naming conventions:</strong></p>
+  <ul>
+    <li><code>main</code> or <code>master</code>: The production-ready code</li>
+    <li><code>develop</code>: Integration branch for features</li>
+    <li><code>feature/feature-name</code>: New features</li>
+    <li><code>bugfix/bug-description</code>: Bug fixes</li>
+    <li><code>hotfix/critical-issue</code>: Urgent production fixes</li>
+  </ul>
+
+  <h5 class="mt-4">Pull Requests (PRs): Code Review & Merging</h5>
+  <p>
+    A <strong>pull request</strong> (PR) is how you propose changes to a repository. It's a request to merge your branch into another branch (usually <code>main</code>).
+  </p>
+
+  <p><strong>Pull request workflow:</strong></p>
+  <ol>
+    <li>Create a branch and make changes</li>
+    <li>Push your branch to GitHub</li>
+    <li>Open a PR on GitHub's web interface</li>
+    <li>Team members review your code, leave comments</li>
+    <li>You address feedback and push more commits</li>
+    <li>Once approved, the PR is merged</li>
+  </ol>
+
+  <pre class="bg-light p-3 rounded"><code># After making commits on your branch
+git push origin feature/user-profile
+
+# Then on GitHub:
+# 1. Go to your repository
+# 2. Click "Pull requests" → "New pull request"
+# 3. Select your branch
+# 4. Add title and description
+# 5. Request reviewers
+# 6. Click "Create pull request"</code></pre>
+
+  <h4 class="mt-5">📋 The Staging Area and Git CLI</h4>
+
+  <h5 class="mt-3">The Three-State Architecture</h5>
+  <p>
+    Git has three main states your files can be in:
+  </p>
+
+  <ol>
+    <li><strong>Working Directory:</strong> Where you edit files</li>
+    <li><strong>Staging Area (Index):</strong> Where you prepare commits</li>
+    <li><strong>Repository (.git):</strong> Where commits are stored permanently</li>
+  </ol>
+
+  <pre class="bg-light p-3 rounded"><code># Check status of files
+git status
+
+# Output shows:
+# - Untracked files (never added to Git)
+# - Modified files (changed since last commit)
+# - Staged files (ready to be committed)</code></pre>
+
+  <h5 class="mt-4">Staging Area Commands</h5>
+  <pre class="bg-light p-3 rounded"><code># Add specific files to staging
+git add file1.py file2.py
+
+# Add all changes
+git add .
+
+# Add all Python files
+git add *.py
+
+# Unstage a file (keep changes in working directory)
+git reset file1.py
+
+# Unstage all files
+git reset
+
+# Discard changes in working directory (careful!)
+git checkout -- file1.py
+
+# See what you're about to commit
+git diff --staged</code></pre>
+
+  <h5 class="mt-4">Essential Git CLI Commands</h5>
+  
+  <p><strong>Setup & Configuration:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Configure your identity
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Set default branch name
+git config --global init.defaultBranch main
+
+# View all settings
+git config --list</code></pre>
+
+  <p><strong>Repository Management:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Initialize a new repository
+git init
+
+# Clone an existing repository
+git clone https://github.com/username/repo.git
+
+# Add a remote repository
+git remote add origin https://github.com/username/repo.git
+
+# View remotes
+git remote -v
+
+# Change remote URL
+git remote set-url origin https://github.com/username/new-repo.git</code></pre>
+
+  <p><strong>Working with Changes:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># See what changed
+git status                       # Summary of changes
+git diff                         # Detailed changes (unstaged)
+git diff --staged                # Changes in staging area
+git diff branch1..branch2        # Compare branches
+
+# Commit changes
+git commit -m "Message"          # Commit staged files
+git commit -am "Message"         # Stage and commit tracked files
+git commit --amend               # Modify last commit
+
+# View history
+git log                          # Full commit history
+git log --oneline                # Compact view
+git log --graph --all            # Visual branch history
+git log -p                       # Show diffs in each commit
+git log --author="Name"          # Filter by author</code></pre>
+
+  <p><strong>Syncing with Remote:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Fetch changes from remote (doesn't merge)
+git fetch origin
+
+# Pull changes (fetch + merge)
+git pull origin main
+
+# Push your changes
+git push origin main
+git push origin feature/my-branch
+
+# Push and set upstream
+git push -u origin main          # First push
+
+# Force push (use with caution!)
+git push --force origin main</code></pre>
+
+  <p><strong>Undoing Changes:</strong></p>
+  <pre class="bg-light p-3 rounded"><code># Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit (discard changes)
+git reset --hard HEAD~1
+
+# Revert a commit (creates new commit)
+git revert abc123
+
+# Discard all local changes
+git reset --hard HEAD
+
+# Remove untracked files
+git clean -fd</code></pre>
+
+  <h4 class="mt-5">🔄 Common Git Workflows</h4>
+
+  <h5 class="mt-3">Basic Feature Development Flow</h5>
+  <pre class="bg-light p-3 rounded"><code># 1. Update main branch
+git checkout main
+git pull origin main
+
+# 2. Create feature branch
+git checkout -b feature/new-feature
+
+# 3. Make changes and commit
+git add .
+git commit -m "Implement new feature"
+
+# 4. Push to remote
+git push origin feature/new-feature
+
+# 5. Open PR on GitHub
+# 6. After approval, merge via GitHub UI
+# 7. Clean up
+git checkout main
+git pull origin main
+git branch -d feature/new-feature</code></pre>
+
+  <h5 class="mt-4">Syncing Fork with Original Repository</h5>
+  <pre class="bg-light p-3 rounded"><code># Add original repo as upstream
+git remote add upstream https://github.com/original/repo.git
+
+# Fetch from upstream
+git fetch upstream
+
+# Merge upstream changes
+git checkout main
+git merge upstream/main
+
+# Push to your fork
+git push origin main</code></pre>
+
+  <h4 class="mt-5">💡 Pro Tips and Best Practices</h4>
+
+  <ul>
+    <li><strong>Commit often:</strong> Small, frequent commits are better than large, infrequent ones</li>
+    <li><strong>Write meaningful commit messages:</strong> Your future self will thank you</li>
+    <li><strong>Never commit secrets:</strong> API keys, passwords, and tokens don't belong in version control</li>
+    <li><strong>Use .gitignore:</strong> Exclude build artifacts, dependencies, and OS files (covered in the advanced blog)</li>
+    <li><strong>Pull before push:</strong> Always sync with remote before pushing to avoid conflicts</li>
+    <li><strong>Branch for everything:</strong> Never work directly on <code>main</code></li>
+    <li><strong>Review before commit:</strong> Use <code>git diff</code> to verify what you're committing</li>
+    <li><strong>Learn to resolve conflicts:</strong> They're inevitable in team projects</li>
+  </ul>
+
+  <h4 class="mt-5">🎓 What's Next?</h4>
+  <p>
+    Now that you've mastered the fundamentals, you're ready to level up! In the next blog, we'll cover:
+  </p>
+  <ul>
+    <li>Setting up <code>.gitignore</code> files to exclude unwanted files</li>
+    <li>Configuring <code>pre-commit</code> hooks for automatic code quality checks</li>
+    <li>GitHub Actions for CI/CD automation</li>
+    <li>Contributing to open source projects</li>
+    <li>Creating releases, tags, and packages</li>
+  </ul>
+
+  <div class="alert alert-success mt-4" role="alert">
+    <strong>👉 Continue learning:</strong> 
+    <a href="GitHub_Advanced.html" class="alert-link">GitHub Advanced: Actions, Workflows, and Open Source Contribution</a>
+  </div>
+
+  <h4 class="mt-5">📚 Additional Resources</h4>
+  <ul>
+    <li><a href="https://git-scm.com/doc" target="_blank" rel="noopener noreferrer">Official Git Documentation</a></li>
+    <li><a href="https://docs.github.com/en" target="_blank" rel="noopener noreferrer">GitHub Docs</a></li>
+    <li><a href="https://learngitbranching.js.org/" target="_blank" rel="noopener noreferrer">Learn Git Branching (Interactive)</a></li>
+    <li><a href="https://ohshitgit.com/" target="_blank" rel="noopener noreferrer">Oh Shit, Git!? (Common Mistakes)</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy coding! 🚀</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>
