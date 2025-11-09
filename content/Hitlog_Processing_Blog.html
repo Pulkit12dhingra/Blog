@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A deep dive into building a production-ready Python application for analyzing user journeys and identifying influential articles that drive registrations." />
+  <title>Hitlog Processing: Analyzing User Journeys to Identify Influential Content | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Hitlog Processing: Analyzing User Journeys to Identify Influential Content" />
+  <meta property="og:description" content="A deep dive into building a production-ready Python application for analyzing user journeys and identifying influential articles that drive registrations." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hitlog Processing: Analyzing User Journeys to Identify Influential Content" />
+  <meta name="twitter:description" content="A deep dive into building a production-ready Python application for analyzing user journeys and identifying influential articles that drive registrations." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Hitlog Processing: Analyzing User Journeys to Identify Influential Content</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <h4 class="mt-4">Introduction & The Problem</h4>
+  <p>
+    Understanding which content drives user engagement and conversions is crucial for any content-driven platform. 
+    Imagine you run a news website where users read multiple articles before deciding to register. Which articles 
+    are actually influencing that registration decision? Which content pieces are your hidden conversion drivers?
+  </p>
+  <p>
+    This is the exact problem the <strong>Hitlog Processing</strong> project solves. Given a stream of user page views 
+    (hitlog data) containing article views and registration events, we need to determine which articles are most 
+    influential in leading users to register. The challenge lies in accurately tracking user journeys, handling 
+    multiple registration events, and avoiding double-counting articles within the same journey.
+  </p>
+  <p>
+    The solution? A production-ready Python application that processes hitlog CSV files and ranks articles by their 
+    influence on user registrations. Think of it as an attribution system that tells you: <em>"This article was 
+    viewed by 47 unique users before they registered."</em>
+  </p>
+
+  <h4 class="mt-4">Project Structure & Distributed Python Architecture</h4>
+  <p>
+    One of the key strengths of this project is its <strong>clean, modular architecture</strong> following Python 
+    best practices for production-ready applications. Let's examine the structure:
+  </p>
+  <pre class="bg-light p-3 rounded"><code>hitlog_processing/
+├── data/
+│   ├── data_gen.py              # Synthetic data generator
+│   ├── logs/                    # Input CSV files
+│   └── outputs/                 # Generated results
+├── notebooks/
+│   ├── data_exploration.ipynb   # EDA and journey analysis
+│   └── solutions/               # Algorithm prototypes
+├── src/
+│   └── telegraph_ranker/
+│       ├── cli.py               # Command-line interface
+│       ├── domain.py            # Type definitions
+│       ├── io_utils.py          # CSV reading/writing
+│       ├── approaches/
+│       │   ├── timestamp_based.py
+│       │   └── graph_based.py
+│       └── models/
+│           └── node.py          # Graph node representation
+├── tests/
+│   ├── conftest.py              # Pytest fixtures
+│   └── test_cli.py              # Integration tests
+├── Makefile                     # Development automation
+├── pyproject.toml               # Project configuration
+└── requirements.txt             # Pinned dependencies
+</code></pre>
+
+  <h5 class="mt-3">Advantages of This Distributed Format</h5>
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-layers"></i> Separation of Concerns</h6>
+          <p class="card-text">Each module has a single, well-defined responsibility. CLI logic is separate from 
+          algorithms, which are separate from I/O operations.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-code-square"></i> Testability</h6>
+          <p class="card-text">Unit tests can target specific modules without invoking the entire system. 
+          Pure functions make testing deterministic and fast.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-arrow-repeat"></i> Reusability</h6>
+          <p class="card-text">Core algorithms in <code>approaches/</code> can be imported and reused in notebooks, 
+          web APIs, or other applications without coupling to CLI.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-arrows-expand"></i> Scalability</h6>
+          <p class="card-text">Adding new ranking approaches is as simple as creating a new file in 
+          <code>approaches/</code> with a <code>build_ranking()</code> function.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Tools & Technologies Used</h4>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fab fa-python"></i> Python 3.13</h5>
+          <p class="card-text">Latest Python with modern type hints, dataclasses with slots, and performance improvements.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-table"></i> Pandas</h5>
+          <p class="card-text">Efficient CSV I/O, data manipulation, grouping operations, and sorting for large datasets.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-diagram-3"></i> NetworkX</h5>
+          <p class="card-text">Graph-based analysis with custom Node models for representing user journey flows.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-check2-circle"></i> Pytest</h5>
+          <p class="card-text">Comprehensive test suite with fixtures for integration testing and result validation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-code-slash"></i> Ruff</h5>
+          <p class="card-text">Lightning-fast linting and formatting for consistent code style and quality checks.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-box-seam"></i> UV Package Manager</h5>
+          <p class="card-text">Modern, fast dependency resolution and virtual environment management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Two Algorithmic Approaches</h4>
+  <p>
+    The project implements two distinct solutions to the same problem, each with different implementation strategies 
+    but producing <strong>identical results</strong>.
+  </p>
+
+  <h5 class="mt-3">1. Timestamp-Based Approach</h5>
+  <p>
+    This is the default and simpler implementation. It processes events chronologically for each user, maintaining 
+    a set of unique articles seen in the current "journey."
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
+    weights: dict[str, int] = {}
+    names: dict[str, str] = {}
+
+    for _uid, grp in df.groupby("user_id", sort=False):
+        seen_in_journey: set[str] = set()
+
+        for _, row in grp.iterrows():
+            url = row["page_url"]
+            if url.startswith(ARTICLE_PREFIX):
+                if url not in seen_in_journey:
+                    seen_in_journey.add(url)
+                    names.setdefault(url, row["page_name"])
+
+            if url == REG_URL:
+                # Commit +1 to all articles in journey
+                for art_url in seen_in_journey:
+                    weights[art_url] = weights.get(art_url, 0) + 1
+                seen_in_journey.clear()  # Reset for next journey
+
+    # Build and sort output DataFrame
+    ...
+</code></pre>
+  <p><strong>Key Features:</strong></p>
+  <ul>
+    <li>Simple, direct implementation</li>
+    <li>O(n) complexity where n = total events</li>
+    <li>Low memory overhead</li>
+    <li>Easy to debug and reason about</li>
+    <li>Deterministic results</li>
+  </ul>
+
+  <h5 class="mt-3">2. Graph-Based Approach</h5>
+  <p>
+    This approach builds a directed graph where nodes represent pages and edges represent user navigation patterns. 
+    It's more complex but extensible for future graph analytics.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
+    # Build Node objects for all pages
+    nodes = _build_nodes(df)
+    
+    # Create directed edges between consecutive pages
+    _link_edges(df, nodes)
+    
+    # Apply journey-based weight accumulation
+    _accumulate_weights(df, nodes)
+    
+    # Extract article nodes with positive weights
+    ...
+</code></pre>
+  <p><strong>Key Features:</strong></p>
+  <ul>
+    <li>Graph structure enables PageRank, centrality analysis</li>
+    <li>O(n + e) complexity where n = events, e = edges</li>
+    <li>Stores navigation patterns for further analysis</li>
+    <li>Extensible architecture for advanced metrics</li>
+    <li>Custom Node dataclass with slots for efficiency</li>
+  </ul>
+
+  <div class="alert alert-info mt-3">
+    <strong><i class="bi bi-info-circle"></i> Note:</strong> Both approaches produce <strong>identical results</strong> 
+    for influence ranking. The test suite validates this equivalence. Choose timestamp-based for simplicity, 
+    graph-based when you need the graph structure for additional analyses.
+  </div>
+
+  <h4 class="mt-4">Testing & Code Quality</h4>
+  <p>
+    Quality assurance is built into the development workflow through automated testing and code quality checks.
+  </p>
+
+  <h5 class="mt-3">Test Coverage</h5>
+  <p>
+    The test suite uses <strong>pytest</strong> to validate both approaches against the same sample data, 
+    ensuring output consistency:
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def test_cli_timestamp_and_graph(sample_csv_path, outputs_dir, run_cli_env):
+    # Run both approaches
+    _run_cli(sample_csv_path, out_ts, "timestamp", run_cli_env)
+    _run_cli(sample_csv_path, out_gr, "graph", run_cli_env)
+
+    # Validate schema and data
+    df_ts = _assert_schema_and_nonempty(out_ts)
+    df_gr = _assert_schema_and_nonempty(out_gr)
+
+    # Ensure results match
+    assert totals_timestamp == totals_graph
+</code></pre>
+
+  <h5 class="mt-3">Automated Quality Pipeline</h5>
+  <p>
+    The <code>Makefile</code> provides convenient targets for maintaining code quality:
+  </p>
+  <pre class="bg-light p-3 rounded"><code># Format code with Ruff
+make format
+
+# Run linter
+make lint
+
+# Run test suite
+make test
+
+# Complete pre-commit pipeline: format + lint + test
+make commit
+</code></pre>
+
+  <h4 class="mt-4">Usage Example</h4>
+  <p>
+    The CLI makes it easy to process hitlog data and generate influence rankings:
+  </p>
+  <pre class="bg-light p-3 rounded"><code># Install the package
+pip install -e .
+
+# Run with timestamp approach (default)
+python -m telegraph_ranker.cli \
+  --input data/logs/hitlog_2025-10-27.csv \
+  --output data/outputs/influence_timestamp.csv \
+  --approach timestamp
+
+# Run with graph approach
+python -m telegraph_ranker.cli \
+  --input data/logs/hitlog_2025-10-27.csv \
+  --output data/outputs/influence_graph.csv \
+  --approach graph
+</code></pre>
+
+  <h5 class="mt-3">Sample Output</h5>
+  <p>
+    The output CSV contains ranked articles sorted by influence score:
+  </p>
+  <pre class="bg-light p-3 rounded"><code>page_name,page_url,total
+"Breaking: Major Policy Announcement",/articles/major-policy-announcement,47
+"Tech Giants Face New Regulations",/articles/tech-regulations,42
+"Economic Outlook 2025",/articles/economic-outlook-2025,38
+"Climate Summit Reaches Agreement",/articles/climate-summit,35
+...
+</code></pre>
+
+  <h4 class="mt-4">Data Generation & Testing</h4>
+  <p>
+    The project includes a synthetic data generator (<code>data/data_gen.py</code>) that creates realistic user 
+    journeys for testing and demonstration. It generates:
+  </p>
+  <ul>
+    <li>20 simulated users</li>
+    <li>50 articles across 10 categories</li>
+    <li>Realistic timestamp sequences</li>
+    <li>Multiple registration events per user</li>
+    <li>Deterministic output (seeded random)</li>
+  </ul>
+
+  <h4 class="mt-4">Key Learnings & Best Practices</h4>
+  <div class="row">
+    <div class="col-md-6">
+      <h6><i class="bi bi-lightbulb"></i> Architecture Decisions</h6>
+      <ul>
+        <li>Separate pure functions from I/O operations</li>
+        <li>Use type hints for better IDE support and documentation</li>
+        <li>Leverage dataclasses with slots for performance</li>
+        <li>Keep algorithms independent of data sources</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h6><i class="bi bi-gear"></i> Development Workflow</h6>
+      <ul>
+        <li>Use Makefile for automating repetitive tasks</li>
+        <li>Combine linting, formatting, and tests in CI pipeline</li>
+        <li>Maintain both notebooks (exploration) and production code</li>
+        <li>Write integration tests that validate CLI behavior</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Future Enhancements</h4>
+  <p>
+    Potential extensions to explore:
+  </p>
+  <ul>
+    <li><strong>PageRank-based scoring:</strong> Use graph structure to compute article importance beyond simple counting</li>
+    <li><strong>Time decay weights:</strong> Give more weight to articles viewed closer to registration</li>
+    <li><strong>Multi-touch attribution:</strong> Implement first-touch, last-touch, or linear attribution models</li>
+    <li><strong>Real-time processing:</strong> Stream processing for live hitlog data</li>
+    <li><strong>Visualization dashboard:</strong> Interactive charts showing influence graphs and user flows</li>
+  </ul>
+
+  <h4 class="mt-4">Conclusion</h4>
+  <p>
+    The <strong>Hitlog Processing</strong> project demonstrates how to build a production-ready Python application 
+    with clean architecture, comprehensive testing, and multiple algorithmic approaches. By separating concerns, 
+    writing testable code, and following Python best practices, we've created a maintainable solution that can 
+    easily scale and evolve.
+  </p>
+  <p>
+    Whether you're analyzing content influence, building attribution systems, or just learning about user journey 
+    analysis, this project provides a solid foundation and real-world example of professional Python development.
+  </p>
+
+  <div class="alert alert-success mt-4">
+    <h5><i class="bi bi-github"></i> View the Full Project</h5>
+    <p class="mb-2">
+      Explore the complete source code, documentation, and examples on GitHub:
+    </p>
+    <a href="https://github.com/Pulkit12dhingra/Hitlog_Processing" target="_blank" class="btn btn-success">
+      <i class="bi bi-github"></i> GitHub Repository
+    </a>
+  </div>
+
+  <p class="fw-bold mt-4">
+    Next up: Scaling this to real-time stream processing with Apache Kafka! Stay tuned!
+  </p>
+
+</div>
+</body>
+</html>
