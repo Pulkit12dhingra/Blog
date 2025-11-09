@@ -78,16 +78,42 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Grid Search Algorithms: BFS vs DFS Explained with Code 🌐</h2>
+    <h2 class="fw-bold mb-3">Grid Search Algorithms: BFS vs DFS Explained with Code</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
   <hr />
 
   <p>
-    Traversing graphs is a foundational skill in computer science — and one of the best places to learn it is with a 2D grid. In this post, we’ll implement <strong>Breadth-First Search (BFS)</strong> and <strong>Depth-First Search (DFS)</strong> on a matrix, understand their differences, and see when to use which.
+    Traversing graphs is a foundational skill in computer science — and one of the best places to learn it is with a 2D grid. In this post, we'll implement <strong>Breadth-First Search (BFS)</strong> and <strong>Depth-First Search (DFS)</strong> on a matrix, understand their differences, and see when to use which.
   </p>
 
-  <h4> The Matrix</h4>
+  <h4 class="mt-4">Prerequisites</h4>
+  <p>
+    You'll need basic Python knowledge and understanding of data structures like queues and stacks. We'll use Python's <code>collections.deque</code> for efficient queue operations.
+  </p>
+  <p>
+    <strong>What you'll learn:</strong>
+  </p>
+  <ul>
+    <li>How BFS and DFS algorithms work on grids</li>
+    <li>Differences between breadth-first and depth-first exploration</li>
+    <li>When to use each algorithm</li>
+    <li>Implementation using queues and stacks</li>
+    <li>Time and space complexity analysis</li>
+  </ul>
+
+  <h4 class="mt-4">Understanding Graph Traversal</h4>
+  <p>
+    Graph traversal algorithms explore nodes (vertices) in a graph systematically. In grid problems, each cell is a node, and adjacent cells form edges. These algorithms are fundamental to:
+  </p>
+  <ul>
+    <li>Finding connected components in a network</li>
+    <li>Solving maze and pathfinding problems</li>
+    <li>Implementing flood fill algorithms</li>
+    <li>Building game AI for movement and exploration</li>
+  </ul>
+
+  <h4 class="mt-4">The Matrix</h4>
   <p>We’ll work with a 5×5 binary grid where 1s represent paths and 0s represent walls.</p>
   <pre class="bg-light p-3 rounded"><code>matrix = [[1,1,0,0,0],
           [0,1,0,1,0],
@@ -96,8 +122,8 @@
           [0,0,0,0,0]]</code></pre>
   <p>Our goal: visit all connected 1s starting from <code>(0, 0)</code>.</p>
 
-  <h3 class="mt-4"> Part 1: Breadth-First Search (BFS)</h3>
-  <p>BFS visits nodes layer by layer. It uses a <strong>queue</strong> to explore all neighbors before moving deeper.</p>
+  <h3 class="mt-4">Part 1: Breadth-First Search (BFS)</h3>
+  <p>BFS visits nodes layer by layer. It uses a <strong>queue</strong> to explore all neighbors before moving deeper. This guarantees finding the shortest path in unweighted graphs.</p>
   <pre class="bg-light p-3 rounded"><code>from collections import deque
 
 def bfs(matrix, start):
@@ -118,12 +144,19 @@ def bfs(matrix, start):
   </code></pre>
 
   <p><strong>Usage:</strong> <code>bfs(matrix, (0, 0))</code></p>
+  <p>
+    <strong>How it works:</strong> Starting from (0,0), BFS adds all valid neighbors to the queue. It processes nodes in the order they were discovered, ensuring we visit all cells at distance 1 before moving to distance 2, and so on.
+  </p>
+  <p>
+    <strong>Time Complexity:</strong> O(n×m) where n and m are grid dimensions<br>
+    <strong>Space Complexity:</strong> O(n×m) for the queue and visited set
+  </p>
 
   <div class="mt-2 mb-4 text-center">
     <img src="../img/Blog_18_1.png" alt="BFS" class="img-fluid rounded shadow"/>
   </div>
 
-  <h3 class="mt-4">🧗 Part 2: Depth-First Search (DFS)</h3>
+  <h3 class="mt-4">Part 2: Depth-First Search (DFS)</h3>
   <p>DFS dives deep before backtracking. It uses a <strong>stack</strong> to go as far as possible before reversing.</p>
   <pre class="bg-light p-3 rounded"><code>def dfs(matrix, start):
     n = len(matrix)
@@ -143,12 +176,19 @@ def bfs(matrix, start):
   </code></pre>
 
   <p><strong>Usage:</strong> <code>dfs(matrix, (0, 0))</code></p>
+  <p>
+    <strong>How it works:</strong> DFS explores as far as possible along each branch before backtracking. It uses a stack (implicitly via recursion or explicitly with a list) to keep track of the exploration path.
+  </p>
+  <p>
+    <strong>Time Complexity:</strong> O(n×m) where n and m are grid dimensions<br>
+    <strong>Space Complexity:</strong> O(n×m) worst case for the stack and visited set
+  </p>
 
   <div class="mt-2 mb-4 text-center">
     <img src="../img/Blog_18_2.png" alt="DFS" class="img-fluid rounded shadow"/>
   </div>
 
-  <h3 class="mt-4"> BFS vs DFS: Key Differences</h3>
+  <h3 class="mt-4">BFS vs DFS: Key Differences</h3>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead class="table-dark">
@@ -161,23 +201,75 @@ def bfs(matrix, start):
       <tbody>
         <tr><td>Data Structure</td><td>Queue (FIFO)</td><td>Stack (LIFO)</td></tr>
         <tr><td>Search Strategy</td><td>Layer by layer</td><td>Path by path</td></tr>
-        <tr><td>Shortest Path</td><td> Guaranteed</td><td> Not guaranteed</td></tr>
+        <tr><td>Shortest Path</td><td>Guaranteed</td><td>Not guaranteed</td></tr>
         <tr><td>Space Usage</td><td>Higher (stores layers)</td><td>Lower (deeper first)</td></tr>
         <tr><td>Traversal Order</td><td>Broad → Deep</td><td>Deep → Broad</td></tr>
       </tbody>
     </table>
   </div>
 
-  <h4> Final Thoughts</h4>
+  <h4 class="mt-4">When to Use Each Algorithm</h4>
+  <ul>
+    <li><strong>Use BFS when:</strong>
+      <ul>
+        <li>You need to find the shortest path in an unweighted graph</li>
+        <li>You want to find all nodes within a certain distance</li>
+        <li>The target is likely close to the starting point</li>
+        <li>You're implementing level-order traversal</li>
+      </ul>
+    </li>
+    <li><strong>Use DFS when:</strong>
+      <ul>
+        <li>You need to explore all possible paths (backtracking problems)</li>
+        <li>Memory is constrained (DFS typically uses less memory)</li>
+        <li>You're checking connectivity or finding cycles</li>
+        <li>The solution is likely deep in the tree</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4 class="mt-4">Common Applications</h4>
+  <ul>
+    <li><strong>BFS Applications:</strong>
+      <ul>
+        <li>Finding shortest path in mazes</li>
+        <li>Social network analysis (friends within N degrees)</li>
+        <li>Web crawlers (level-by-level exploration)</li>
+        <li>GPS navigation systems</li>
+        <li>Puzzle solving (Rubik's cube, sliding puzzles)</li>
+      </ul>
+    </li>
+    <li><strong>DFS Applications:</strong>
+      <ul>
+        <li>Detecting cycles in graphs</li>
+        <li>Topological sorting</li>
+        <li>Solving puzzles with only one solution (Sudoku)</li>
+        <li>Finding strongly connected components</li>
+        <li>Maze generation algorithms</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4 class="mt-4">Optimization Tips</h4>
+  <ul>
+    <li><strong>Bidirectional Search:</strong> Run BFS from both start and end simultaneously to find paths faster</li>
+    <li><strong>Iterative Deepening:</strong> Combine BFS's completeness with DFS's space efficiency</li>
+    <li><strong>Visited Set:</strong> Always track visited nodes to avoid infinite loops and redundant work</li>
+    <li><strong>Early Termination:</strong> Stop searching once you find the target (if you only need to find one solution)</li>
+    <li><strong>Recursive DFS:</strong> Can be cleaner but watch for stack overflow on very large graphs</li>
+  </ul>
+
+  <h4 class="mt-4">Final Thoughts</h4>
   <ul>
     <li>Use <strong>BFS</strong> when you care about finding the shortest path or nearest result.</li>
     <li>Use <strong>DFS</strong> when memory is tight or you want to explore deeply (like solving mazes).</li>
   </ul>
 
-  <p class="fw-bold">Mastering these two opens the door to algorithms like Dijkstra, A*, flood fill, and more. Happy traversing! </p>
+  <p class="fw-bold">Mastering these two opens the door to algorithms like Dijkstra, A*, flood fill, and more. Both algorithms form the foundation of graph theory and are essential for technical interviews and real-world problem-solving.</p>
 
-  <h4 class="mt-4"> Reference</h4>
-  <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/graph.ipynb" target="_blank">📓 graph.ipynb on GitHub</a></p>
+  <h4 class="mt-4">Reference</h4>
+  <p>For complete implementations with additional examples and variations:</p>
+  <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/graph.ipynb" target="_blank">graph.ipynb on GitHub</a></p>
 </div>
 </body>
 </html>

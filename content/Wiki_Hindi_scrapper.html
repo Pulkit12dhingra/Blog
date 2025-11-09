@@ -84,10 +84,25 @@
     <hr />
 
     <p>
-      Have you ever wondered how we can automatically retrieve information from URLs? Places like Wikipedia contain vast amounts of text that can power fine-tuning models on specific topics or languages. In this blog post, we’ll see how to scrape Wikipedia for Hindi text specifically, then break down each function in our scraper class to understand how it works.
+      Have you ever wondered how we can automatically retrieve information from URLs? Places like Wikipedia contain vast amounts of text that can power fine-tuning models on specific topics or languages. In this blog post, we'll see how to scrape Wikipedia for Hindi text specifically, then break down each function in our scraper class to understand how it works.
     </p>
 
-    <h4 class="mt-4"> The <code>requests</code> Module</h4>
+    <h4 class="mt-4">Prerequisites</h4>
+    <p>
+      Before we begin, make sure you have Python installed on your system. You'll also need to install two essential libraries:
+    </p>
+    <pre class="bg-light p-3 rounded"><code>pip install requests beautifulsoup4</code></pre>
+    <p>
+      <strong>What you'll learn:</strong>
+    </p>
+    <ul>
+      <li>How to fetch web pages using the <code>requests</code> library</li>
+      <li>How to parse HTML content with <code>BeautifulSoup</code></li>
+      <li>How to clean and extract specific text from Wikipedia articles</li>
+      <li>How to save extracted content to files with proper encoding for Hindi text</li>
+    </ul>
+
+    <h4 class="mt-4">The <code>requests</code> Module</h4>
     <p>
       The <code>requests</code> library is Python’s standard for HTTP communication. It abstracts away lower-level networking details, allowing you to send GET, POST, and other HTTP requests with ease.
     </p>
@@ -101,7 +116,7 @@
       <li>Handles sessions, headers, cookies, and automatic content decoding.</li>
     </ul>
 
-    <h4 class="mt-4">🍲 The <code>BeautifulSoup</code> Module</h4>
+    <h4 class="mt-4">The <code>BeautifulSoup</code> Module</h4>
     <p>
       <code>BeautifulSoup</code> from the <code>bs4</code> package parses HTML or XML documents into a navigable tree structure. You can search, traverse, and modify elements easily.
     </p>
@@ -113,7 +128,7 @@
 soup = BeautifulSoup(html_content, 'html.parser')
 title = soup.find('title').get_text()</code></pre>
 
-    <h4 class="mt-4">🔹 <code>__init__()</code> — Initializing the Scraper</h4>
+    <h4 class="mt-4"><code>__init__()</code> — Initializing the Scraper</h4>
     <p>
       The constructor sets up the scraper with the target URL. It runs once when you create your scraper object.
     </p>
@@ -124,7 +139,7 @@ title = soup.find('title').get_text()</code></pre>
       <li><strong>Action:</strong> stores it in <code>self.url</code> for later use by other methods.</li>
     </ul>
 
-    <h4 class="mt-4">🔹 <code>scrape()</code> — Fetching & Parsing Content</h4>
+    <h4 class="mt-4"><code>scrape()</code> — Fetching & Parsing Content</h4>
     <p>
       This method does the heavy lifting: it downloads the page, parses the HTML, extracts and cleans text.
     </p>
@@ -157,7 +172,7 @@ title = soup.find('title').get_text()</code></pre>
       <li><strong>Output:</strong> joins cleaned paragraphs with double newlines for readability.</li>
     </ul>
 
-    <h4 class="mt-4">🔹 <code>save()</code> — Writing to File</h4>
+    <h4 class="mt-4"><code>save()</code> — Writing to File</h4>
     <p>
       After scraping, <code>save()</code> persists the text to disk so you can process or analyze it offline.
     </p>
@@ -175,9 +190,9 @@ title = soup.find('title').get_text()</code></pre>
       <li><strong>Feedback:</strong> prints a green checkmark and file path for confirmation.</li>
     </ul>
 
-    <h4 class="mt-4"> Complete Class: All Functions Together</h4>
+    <h4 class="mt-4">Complete Class: All Functions Together</h4>
     <p>
-      Here’s the full, ready-to-run <code>HindiWikipediaScraper</code> combining all three methods. Copy, paste, and execute!
+      Here's the full, ready-to-run <code>HindiWikipediaScraper</code> combining all three methods. Copy, paste, and execute!
     </p>
     <pre class="bg-light p-3 rounded"><code>import requests
 from bs4 import BeautifulSoup
@@ -219,6 +234,63 @@ text = scraper.scrape()
 scraper.save(text)</code></pre>
 
     <p class="mt-4">Complete dataset can be found at <a href="https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi" target="_blank">https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi</a>.</p>
+
+    <h4 class="mt-4">Best Practices & Ethical Considerations</h4>
+    <p>
+      When scraping any website, including Wikipedia, it's important to follow ethical guidelines:
+    </p>
+    <ul>
+      <li><strong>Respect robots.txt:</strong> Check the website's robots.txt file to see if scraping is allowed.</li>
+      <li><strong>Rate limiting:</strong> Add delays between requests to avoid overwhelming the server.</li>
+      <li><strong>Use Wikipedia's API:</strong> For large-scale projects, consider using <a href="https://www.mediawiki.org/wiki/API:Main_page" target="_blank">Wikipedia's official API</a> instead of scraping.</li>
+      <li><strong>Attribution:</strong> Always credit Wikipedia and respect their <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC BY-SA 3.0</a> license.</li>
+    </ul>
+
+    <h4 class="mt-4">Limitations & Edge Cases</h4>
+    <p>
+      This scraper focuses on extracting paragraph text from Wikipedia articles. Here are some limitations to be aware of:
+    </p>
+    <ul>
+      <li><strong>Tables & Infoboxes:</strong> The current implementation only extracts <code>&lt;p&gt;</code> tags, so structured data in tables is not captured.</li>
+      <li><strong>Images & Media:</strong> No image URLs or media content is extracted.</li>
+      <li><strong>Page Structure Changes:</strong> If Wikipedia changes its HTML structure, the scraper may need updates.</li>
+      <li><strong>Network Errors:</strong> The scraper will raise exceptions for connection issues or non-200 status codes.</li>
+      <li><strong>Redirects:</strong> Wikipedia redirects are handled automatically by the requests library, but you may want to track them.</li>
+    </ul>
+
+    <h4 class="mt-4">Understanding Key Technical Choices</h4>
+    <p>
+      <strong>Why UTF-8 Encoding?</strong> Hindi uses Devanagari script, which requires UTF-8 encoding to properly display characters. Without setting <code>response.encoding = 'utf-8'</code>, you might see garbled text or question marks instead of Hindi characters.
+    </p>
+    <p>
+      <strong>Regular Expressions for Citations:</strong> The line <code>re.sub(r'\[\d+\]', '', text)</code> uses regex to remove Wikipedia citation numbers like [1], [2], etc. The pattern <code>\[\d+\]</code> matches square brackets containing one or more digits.
+    </p>
+
+    <h4 class="mt-4">Extending the Scraper</h4>
+    <p>
+      Here are some ways you could enhance this scraper for your own projects:
+    </p>
+    <ul>
+      <li><strong>Batch Processing:</strong> Create a list of URLs and loop through them to scrape multiple articles.</li>
+      <li><strong>Extract Metadata:</strong> Capture the article title, last modified date, or categories.</li>
+      <li><strong>Include Tables:</strong> Modify the scraper to also extract table data using <code>soup.find_all('table')</code>.</li>
+      <li><strong>Add Logging:</strong> Use Python's logging module to track progress and errors.</li>
+      <li><strong>Rate Limiting:</strong> Add <code>time.sleep()</code> between requests to be respectful of server resources.</li>
+    </ul>
+
+    <h4 class="mt-4">Next Steps</h4>
+    <p>
+      Now that you understand how the scraper works, try experimenting with it:
+    </p>
+    <ol>
+      <li>Install the required packages: <code>pip install requests beautifulsoup4</code></li>
+      <li>Copy the complete class code and run it with different Hindi Wikipedia URLs</li>
+      <li>Examine the output file to see how clean the extracted text is</li>
+      <li>Modify the scraper to extract additional information like headings or lists</li>
+    </ol>
+    <p>
+      The complete dataset created using this scraper is available at <a href="https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi" target="_blank">https://huggingface.co/datasets/DumbsterDrekk/Wiki-Hindi</a>, containing thousands of Hindi articles ready for NLP and machine learning tasks.
+    </p>
 
   </div>
 </body>

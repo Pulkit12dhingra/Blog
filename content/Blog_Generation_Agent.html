@@ -221,7 +221,7 @@ retriever = vectorstore.as_retriever()
   <p>We use the <code>qwen2.5-coder:7b</code> model from Ollama with a custom streaming callback.</p>
   <pre class="bg-light p-3 rounded"><code>llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
 
-<h5>🔄 History-Aware Question Rewriting</h5>
+<h5>History-Aware Question Rewriting</h5>
 <p>
   In multi-turn conversations, users often ask follow-up questions like “What about step 2?” or “Can you summarize that again?” These queries rely heavily on previous context and aren’t useful on their own. To make them meaningful to the retriever, we need to transform them into <strong>standalone questions</strong>.
 </p>
@@ -279,7 +279,7 @@ history_aware_retriever = create_history_aware_retriever(
 
   <h4 class="mt-4">🧩 Node Logic Explained</h4>
 
-  <h5>🔹 Input Node</h5>
+  <h5>Input Node</h5>
 <p>
   The <strong>input node</strong> is the starting point of the LangGraph pipeline. It receives the initial state dictionary, which typically includes:
   <ul>
@@ -308,7 +308,7 @@ history_aware_retriever = create_history_aware_retriever(
   But in most simple pipelines, this node serves as a clean handoff to begin the graph.
 </p>
 
-<h5>🔹 Retrieval Node</h5>
+<h5>Retrieval Node</h5>
 <p>
   The <strong>retrieval node</strong> is responsible for fetching relevant context documents based on the user's question. But instead of using the raw query, it first passes the question through the <strong>history-aware retriever</strong> that rewrites it into a standalone version (if needed).
 </p>
@@ -333,7 +333,7 @@ history_aware_retriever = create_history_aware_retriever(
 </p>
 
 
-<h5>🔹 Self-Reasoning Node</h5>
+<h5>Self-Reasoning Node</h5>
 <p>
   The <strong>self-reasoning node</strong> introduces an intermediate thinking step before the final answer is generated. Instead of directly jumping to an output, we ask the language model to explain <em>how</em> it would arrive at the answer using the question and the retrieved documents.
 </p>
@@ -365,7 +365,7 @@ def self_reasoning_node(state: GraphState) -> GraphState:
 </p>
 
 
-<h5>🔹 Answer Generation Node</h5>
+<h5>Answer Generation Node</h5>
 <p>
   This node is where the final answer is created. It combines the output of the <code>self_reasoning_node</code> (the step-by-step thought process) and the original retrieved documents to give the LLM a complete context for generation.
 </p>
@@ -396,7 +396,7 @@ def generate_answer_node(state: GraphState) -> GraphState:
 </p>
 
 
-<h5>🔹 Output Node</h5>
+<h5>Output Node</h5>
 <p>
   The <strong>output node</strong> marks the end of the LangGraph execution. Its job is simple: return the current state object, which now contains the final answer alongside all intermediate data like the question, documents, and reasoning.
 </p>
@@ -539,7 +539,7 @@ print("\\n\\nFinal Answer:\\n", result["answer"])
   <h4 class="mt-4"> Reference</h4>
   <p>
     Explore the full notebook used in this blog:
-    <a href="https://github.com/Pulkit12dhingra/langchain-agent-app/blob/master/agent.ipynb" target="_blank">📓 agent.ipynb on GitHub</a>
+    <a href="https://github.com/Pulkit12dhingra/langchain-agent-app/blob/master/agent.ipynb" target="_blank">agent.ipynb on GitHub</a>
   </p>
 </div>
 </body>

@@ -87,11 +87,26 @@
     <hr />
   
     <p>
-      If you’ve ever worked with data and wondered how models learn from it — linear regression is the perfect place to start.
-      In this post, we’ll build a linear regression model step-by-step. First with <code>scikit-learn</code>, and then from scratch using gradient descent.
+      If you've ever worked with data and wondered how models learn from it — linear regression is the perfect place to start.
+      In this post, we'll build a linear regression model step-by-step. First with <code>scikit-learn</code>, and then from scratch using gradient descent.
     </p>
+
+    <h4 class="mt-4">Prerequisites</h4>
+    <p>
+      You'll need basic Python knowledge and familiarity with NumPy. We'll use <code>scikit-learn</code> for comparison and the California Housing dataset for demonstration.
+    </p>
+    <p>
+      <strong>What you'll learn:</strong>
+    </p>
+    <ul>
+      <li>The mathematical foundation of linear regression</li>
+      <li>How loss functions measure model performance</li>
+      <li>How gradient descent optimizes model parameters</li>
+      <li>Building linear regression from scratch</li>
+      <li>Comparing custom implementation with scikit-learn</li>
+    </ul>
   
-    <h4 class="mt-4">📌 1. What is Linear Regression?</h4>
+    <h4 class="mt-4">1. What is Linear Regression?</h4>
     <p>
       Linear regression models the relationship between features (inputs) and a continuous target (output) by fitting a line.
       The model assumes:
@@ -104,7 +119,7 @@
       </ul>
     </p>
   
-    <h4 class="mt-4"> 2. Why Do We Need a Loss Function?</h4>
+    <h4 class="mt-4">2. Why Do We Need a Loss Function?</h4>
     <p>
       When we train a machine learning model, we want it to make good predictions. But how do we know if it's doing a good job?
       That’s where a <strong>loss function</strong> comes in. It’s a mathematical tool that tells us how far off our predictions are from the actual values.
@@ -115,7 +130,7 @@
       This gives us a single number — a score. The closer it is to zero, the better our model’s predictions. Our ultimate goal during training is to <strong>minimize this loss</strong>.
     </p>
   
-    <h4 class="mt-4">🧽 3. How Gradient Descent Optimizes the Loss</h4>
+    <h4 class="mt-4">3. How Gradient Descent Optimizes the Loss</h4>
     <p>
       Now that we know what we’re minimizing (the loss), the next question is — <em>how</em> do we minimize it? That’s where <strong>gradient descent</strong> comes in.
     </p>
@@ -138,7 +153,7 @@
       So, in short: <strong>Loss tells us how wrong we are. Gradient descent tells us how to get less wrong.</strong> 
     </p>
   
-    <h4 class="mt-4"> 4. Load & Scale the Data</h4>
+    <h4 class="mt-4">4. Load & Scale the Data</h4>
     <pre class="bg-light p-3 rounded"><code>from sklearn.datasets import fetch_california_housing
   from sklearn.model_selection import train_test_split
   from sklearn.preprocessing import StandardScaler
@@ -154,7 +169,7 @@
   X_test_scaled = scaler.transform(X_test)</code></pre>
     <p><strong>Why scale?</strong> Gradient descent converges faster and more reliably when features are on the same scale.</p>
   
-    <h4 class="mt-4"> 5. scikit-learn Linear Regression</h4>
+    <h4 class="mt-4">5. scikit-learn Linear Regression</h4>
     <pre class="bg-light p-3 rounded"><code>from sklearn.linear_model import LinearRegression
   from sklearn.metrics import mean_squared_error, r2_score
   
@@ -165,7 +180,7 @@
   print("MSE:", mean_squared_error(y_test, y_pred))
   print("R2 Score:", r2_score(y_test, y_pred))</code></pre>
   
-    <h4 class="mt-4"> 6. From Scratch: Function by Function</h4>
+    <h4 class="mt-4">6. From Scratch: Function by Function</h4>
   
     <h5>Function 1: Prediction</h5>
     <p>This function performs the forward pass and generates predicted values.</p>
@@ -202,7 +217,7 @@
               print(f"Epoch {i}, Loss: {loss:.4f}")
       return weights, bias</code></pre>
   
-    <h4 class="mt-4"> 7. Final Combined Code</h4>
+    <h4 class="mt-4">7. Final Combined Code</h4>
     <p>This is the complete training pipeline with all the helper functions integrated.</p>
     <pre class="bg-light p-3 rounded"><code>import numpy as np
   
@@ -234,27 +249,55 @@
   
       return weights, bias</code></pre>
   
-    <h4 class="mt-4"> 8. Compare Results</h4>
+    <h4 class="mt-4">8. Compare Results</h4>
     <ul>
       <li><strong>scikit-learn</strong> — MSE: 0.5558, R²: 0.5757</li>
       <li><strong>Custom Model</strong> — MSE: ~similar, R²: ~similar</li>
     </ul>
-  
+    <p>
+      Both implementations produce nearly identical results, confirming that our from-scratch implementation correctly implements the linear regression algorithm. The slight differences (if any) are due to initialization and floating-point precision.
+    </p>
+
+    <h4 class="mt-4">Key Takeaways</h4>
+    <ul>
+      <li><strong>Linear Regression Basics:</strong> Models linear relationships using y = wX + b</li>
+      <li><strong>Loss Function (MSE):</strong> Measures prediction error, goal is to minimize it</li>
+      <li><strong>Gradient Descent:</strong> Iteratively updates parameters by following the negative gradient</li>
+      <li><strong>Feature Scaling:</strong> Critical for gradient descent convergence</li>
+      <li><strong>Learning Rate:</strong> Controls step size; too large causes divergence, too small slows convergence</li>
+    </ul>
+
+    <h4 class="mt-4">Common Pitfalls & Tips</h4>
+    <ul>
+      <li><strong>Exploding Gradients:</strong> If loss increases, reduce learning rate</li>
+      <li><strong>Slow Convergence:</strong> Ensure features are scaled properly</li>
+      <li><strong>Local Minima:</strong> Not an issue for linear regression (convex optimization), but critical for neural networks</li>
+      <li><strong>Overfitting:</strong> Add regularization (Ridge/Lasso) for high-dimensional data</li>
+    </ul>
+
+    <h4 class="mt-4">Extensions & Next Steps</h4>
+    <ul>
+      <li><strong>Regularization:</strong> Add L1 (Lasso) or L2 (Ridge) penalties to prevent overfitting</li>
+      <li><strong>Polynomial Features:</strong> Model non-linear relationships</li>
+      <li><strong>Stochastic Gradient Descent:</strong> Use mini-batches for faster training on large datasets</li>
+      <li><strong>Learning Rate Scheduling:</strong> Adaptive learning rates for better convergence</li>
+      <li><strong>Multiple Outputs:</strong> Extend to multivariate regression</li>
+    </ul>
+
     <h4 class="mt-4">Final Thoughts</h4>
     <p>
       By implementing linear regression both with and without libraries, we got a deep understanding of how models learn.
       Gradient descent is foundational in machine learning — and this hands-on build makes it far less mysterious.
     </p>
-    
-    <p class="fw-bold">Next up: regularization (Ridge & Lasso) and nonlinear regression. Stay curious! </p>
+    <p>
+      Understanding these fundamentals is crucial before moving to more complex algorithms. Linear regression might seem simple, but the concepts you've learned here—loss functions, gradient descent, and optimization—form the backbone of deep learning and advanced machine learning techniques.
+    </p>
 
-    <h4 class="mt-4"> Reference</h4>
+    <h4 class="mt-4">Reference</h4>
     <p>You can explore the full notebook used to generate this blog on GitHub:</p>
     <p><a href="https://github.com/Pulkit12dhingra/Blog/blob/main/notebooks/Linear_Regression.ipynb" target="_blank">
-      📓 Linear_Regression.ipynb on GitHub
+      Linear_Regression.ipynb on GitHub
     </a></p>
-
-    <p class="fw-bold">Next up: regularization (Ridge & Lasso) and nonlinear regression. Stay curious! </p>
   
 </div>
 </body>  

@@ -86,10 +86,30 @@
 
   <p>
     Whether you're just getting started with data structures or brushing up for coding interviews, understanding search algorithms is fundamental.
-    In this blog, we break down two essential techniques: <strong>Linear Search</strong> and <strong>Binary Search</strong>. We’ll walk through their logic, time complexity, and implement them step-by-step in Python. Let’s dive in! 🏊
+    In this blog, we break down two essential techniques: <strong>Linear Search</strong> and <strong>Binary Search</strong>. We'll walk through their logic, time complexity, and implement them step-by-step in Python.
   </p>
 
-  <h4 class="mt-4"> Linear Search — The Brute Force Hero</h4>
+  <h4 class="mt-4">Prerequisites</h4>
+  <p>
+    This tutorial requires only basic Python knowledge. No external libraries are needed.
+  </p>
+  <p>
+    <strong>What you'll learn:</strong>
+  </p>
+  <ul>
+    <li>How Linear Search and Binary Search algorithms work</li>
+    <li>Time and space complexity analysis</li>
+    <li>When to use each search algorithm</li>
+    <li>Implementation techniques and best practices</li>
+    <li>Common variations and optimizations</li>
+  </ul>
+
+  <h4 class="mt-4">Understanding Search Algorithms</h4>
+  <p>
+    Searching is one of the most common operations in computer science. Whether you're looking up a contact in your phone or finding a specific record in a database, search algorithms power these operations. The efficiency of your search algorithm can dramatically impact application performance.
+  </p>
+
+  <h4 class="mt-4">Linear Search — The Brute Force Hero</h4>
   <p>
     Linear search is the simplest way to find an element in a list: go through each element one by one until you find the target — or exhaust the list.
   </p>
@@ -101,8 +121,13 @@
   <p><strong>Time Complexity:</strong> O(n)</p>
   <p><strong>Best Case:</strong> Element at the beginning</p>
   <p><strong>Worst Case:</strong> Element at the end or not found</p>
+  <p><strong>Space Complexity:</strong> O(1) - only uses a constant amount of extra space</p>
+  <p>
+    <strong>Advantages:</strong> Works on unsorted data, simple to implement, no preprocessing required<br>
+    <strong>Disadvantages:</strong> Slow for large datasets, inefficient for repeated searches
+  </p>
 
-  <h4 class="mt-4"> Binary Search — Divide and Conquer</h4>
+  <h4 class="mt-4">Binary Search — Divide and Conquer</h4>
   <p>
     Binary search is a much faster method — but only works on sorted arrays. It repeatedly divides the search interval in half.
   </p>
@@ -120,8 +145,33 @@
   <p><strong>Time Complexity:</strong> O(log n)</p>
   <p><strong>Best Case:</strong> Middle element</p>
   <p><strong>Worst Case:</strong> Element not in the list</p>
+  <p><strong>Space Complexity:</strong> O(1) for iterative, O(log n) for recursive (call stack)</p>
+  <p>
+    <strong>Advantages:</strong> Extremely fast for large sorted datasets, efficient for repeated searches<br>
+    <strong>Disadvantages:</strong> Requires sorted data, slightly more complex to implement
+  </p>
 
-  <h4 class="mt-4">🧪 Let’s Test Them!</h4>
+  <h4 class="mt-4">Recursive Binary Search</h4>
+  <p>
+    Binary search can also be implemented recursively, which some find more intuitive:
+  </p>
+  <pre class="bg-light p-3 rounded"><code>def binary_search_recursive(arr, target, low, high):
+    if low > high:
+        return -1
+    
+    mid = (low + high) // 2
+    
+    if arr[mid] == target:
+        return mid
+    elif arr[mid] < target:
+        return binary_search_recursive(arr, target, mid + 1, high)
+    else:
+        return binary_search_recursive(arr, target, low, mid - 1)</code></pre>
+  <p>
+    The recursive version is more elegant but uses additional stack space. For very large arrays, the iterative approach is preferred to avoid stack overflow.
+  </p>
+
+  <h4 class="mt-4">Let's Test Them!</h4>
   <p>We’ll use a sample array and search for a number using both methods.</p>
   <pre class="bg-light p-3 rounded"><code>arr = [2, 4, 6, 8, 10, 12, 14, 16]
 target = 10
@@ -129,7 +179,7 @@ target = 10
 print("Linear Search:", linear_search(arr, target))
 print("Binary Search:", binary_search(arr, target))</code></pre>
 
-  <h4 class="mt-4"> When Should You Use Which?</h4>
+  <h4 class="mt-4">When Should You Use Which?</h4>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead class="table-dark">
@@ -148,13 +198,55 @@ print("Binary Search:", binary_search(arr, target))</code></pre>
     </table>
   </div>
 
-  <h4 class="mt-4"> Final Thoughts</h4>
+  <h4 class="mt-4">Performance Comparison</h4>
   <p>
-    Understanding these core algorithms sets a strong foundation for tackling more complex problems. While linear search is versatile, binary search’s efficiency shines in sorted data scenarios. Master both — they’re classic interview staples!
+    To illustrate the difference, consider searching in an array of 1,000,000 elements:
+  </p>
+  <ul>
+    <li><strong>Linear Search:</strong> Might examine up to 1,000,000 elements (worst case)</li>
+    <li><strong>Binary Search:</strong> Examines at most log₂(1,000,000) ≈ 20 elements</li>
+  </ul>
+  <p>
+    This massive difference (50,000x faster!) explains why databases use binary search-like structures (B-trees) for indexing.
   </p>
 
-  <h4 class="mt-4"> Reference</h4>
-  <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/searching_algos.ipynb" target="_blank">📓 searching_algos.ipynb on GitHub</a></p>
+  <h4 class="mt-4">Common Variations and Extensions</h4>
+  <ul>
+    <li><strong>Finding First/Last Occurrence:</strong> Modify binary search to continue after finding the target</li>
+    <li><strong>Finding Insertion Point:</strong> Determine where to insert an element to maintain sorted order</li>
+    <li><strong>Searching in Rotated Arrays:</strong> Modified binary search for arrays rotated at an unknown pivot</li>
+    <li><strong>Interpolation Search:</strong> Improves on binary search for uniformly distributed data</li>
+    <li><strong>Exponential Search:</strong> Useful for unbounded/infinite lists</li>
+  </ul>
+
+  <h4 class="mt-4">Real-World Applications</h4>
+  <ul>
+    <li><strong>Databases:</strong> B-tree indices use variants of binary search for fast lookups</li>
+    <li><strong>Version Control:</strong> Git bisect uses binary search to find bug-introducing commits</li>
+    <li><strong>Auto-complete:</strong> Sorted dictionaries enable fast prefix matching</li>
+    <li><strong>Computer Networks:</strong> Binary search in routing tables</li>
+    <li><strong>Machine Learning:</strong> Hyperparameter tuning often uses binary search approaches</li>
+  </ul>
+
+  <h4 class="mt-4">Best Practices</h4>
+  <ul>
+    <li><strong>Avoid Integer Overflow:</strong> Use <code>mid = low + (high - low) // 2</code> instead of <code>(low + high) // 2</code> in languages where overflow is a concern</li>
+    <li><strong>Sort Cost:</strong> If you only search once, sorting + binary search (O(n log n) + O(log n)) may be slower than linear search (O(n))</li>
+    <li><strong>Cache Locality:</strong> Linear search may be faster for small arrays due to better cache performance</li>
+    <li><strong>Built-in Functions:</strong> Python's <code>bisect</code> module provides optimized binary search implementations</li>
+  </ul>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    Understanding these core algorithms sets a strong foundation for tackling more complex problems. While linear search is versatile, binary search's efficiency shines in sorted data scenarios. Master both — they're classic interview staples!
+  </p>
+  <p>
+    Remember: the best algorithm depends on your specific use case. Consider data size, whether it's sorted, search frequency, and implementation complexity. In production code, leverage built-in libraries like Python's <code>bisect</code> module for battle-tested implementations.
+  </p>
+
+  <h4 class="mt-4">Reference</h4>
+  <p>For complete implementations with additional examples and test cases:</p>
+  <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/searching_algos.ipynb" target="_blank">searching_algos.ipynb on GitHub</a></p>
 </div>
 </body>
 </html>

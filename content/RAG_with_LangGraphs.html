@@ -185,7 +185,7 @@ llm = Ollama(model="gemma3")</code></pre>
 <h4 class="mt-5">Graph-Based RAG with LangGraph</h4>
 <p>This section walks through each part of the LangGraph-powered RAG implementation, explaining every node and design decision in detail.</p>
 
-<h5 class="mt-4">📌 Imports and Definitions</h5>
+<h5 class="mt-4">Imports and Definitions</h5>
 <pre class="bg-light p-3 rounded"><code>from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
 from langchain.prompts import PromptTemplate
@@ -427,7 +427,8 @@ for step in graph.stream(
 
 </code></pre>
   <p class="fw-bold">
-    LangGraph gives your RAG pipeline memory, logic, and structure — making it far easier to scale and experiment. More features like streaming and condition-based flows are just a few lines away. 🔄
+    LangGraph gives your RAG pipeline memory, logic, and structure — making it far easier to scale and experiment. More features like streaming and condition-based flows are just a few lines away.
+</p>
   </p>
 </div>
 </body>

@@ -85,26 +85,59 @@
 
   <hr />
 
-  <p>Sorting algorithms are fundamental to computer science. Whether you’re arranging numbers in ascending order or organizing names alphabetically, sorting is everywhere. In this post, we’ll explore and compare popular sorting algorithms like <strong>Bubble Sort</strong>, <strong>Insertion Sort</strong>, <strong>Selection Sort</strong>, <strong>Merge Sort</strong>, and <strong>Quick Sort</strong>.</p>
+  <p>Sorting algorithms are fundamental to computer science. Whether you're arranging numbers in ascending order or organizing names alphabetically, sorting is everywhere. In this post, we'll explore and compare popular sorting algorithms like <strong>Bubble Sort</strong>, <strong>Insertion Sort</strong>, <strong>Selection Sort</strong>, <strong>Merge Sort</strong>, and <strong>Quick Sort</strong>.</p>
 
-  <h4 class="mt-4"> Problem Setup</h4>
+  <h4 class="mt-4">Prerequisites</h4>
+  <p>
+    This tutorial requires basic Python knowledge. No external libraries are needed for the sorting implementations, though we'll use <code>time</code> and <code>random</code> from Python's standard library for benchmarking.
+  </p>
+  <p>
+    <strong>What you'll learn:</strong>
+  </p>
+  <ul>
+    <li>How five fundamental sorting algorithms work</li>
+    <li>Performance characteristics and time complexity analysis</li>
+    <li>When to use each algorithm in practice</li>
+    <li>The concept of stable vs. unstable sorting</li>
+    <li>How to benchmark algorithm performance</li>
+  </ul>
+
+  <h4 class="mt-4">Understanding Sorting Algorithms</h4>
+  <p>
+    Sorting arranges data in a specific order (ascending or descending). The efficiency of a sorting algorithm is measured by:
+  </p>
+  <ul>
+    <li><strong>Time Complexity:</strong> How execution time grows with input size</li>
+    <li><strong>Space Complexity:</strong> Additional memory required</li>
+    <li><strong>Stability:</strong> Whether equal elements maintain their relative order</li>
+    <li><strong>Adaptability:</strong> Performance on partially sorted data</li>
+  </ul>
+
+  <h4 class="mt-4">Problem Setup</h4>
   <p>We’ll generate a random array of integers and apply each sorting algorithm. The goal is to analyze performance through benchmarking and visualize how each method behaves on the same dataset.</p>
 
   <h5>Generate Test Data</h5>
   <pre class="bg-light p-3 rounded"><code>import random
 array = random.sample(range(1, 1001), 1000)</code></pre>
 
-  <h4 class="mt-4">🔄 Sorting Algorithms</h4>
+  <h4 class="mt-4">Sorting Algorithms</h4>
 
-  <h5> Bubble Sort</h5>
+  <h5>Bubble Sort</h5>
+  <p>
+    Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they're in the wrong order. Larger values "bubble up" to the end with each pass.
+  </p>
   <pre class="bg-light p-3 rounded"><code>def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
         for j in range(n-i-1):
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]</code></pre>
+  <p><strong>Best for:</strong> Educational purposes, already sorted data (with optimization). <strong>Avoid for:</strong> Large datasets.</p>
 
-  <h5> Insertion Sort</h5>
+  <h5>Insertion Sort</h5>
+  <p>
+    Insertion Sort builds the sorted array one element at a time. It takes each element and inserts it into its correct position among the already-sorted elements.
+  </p>
   <pre class="bg-light p-3 rounded"><code>def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
@@ -113,8 +146,12 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
             arr[j + 1] = arr[j]
             j -= 1
         arr[j + 1] = key</code></pre>
+  <p><strong>Best for:</strong> Small datasets, nearly sorted data, online sorting (elements arrive one at a time). <strong>Efficient:</strong> On small arrays (< 50 elements).</p>
 
-  <h5> Selection Sort</h5>
+  <h5>Selection Sort</h5>
+  <p>
+    Selection Sort divides the array into sorted and unsorted regions. It repeatedly selects the minimum element from the unsorted region and moves it to the sorted region.
+  </p>
   <pre class="bg-light p-3 rounded"><code>def selection_sort(arr):
     for i in range(len(arr)):
         min_idx = i
@@ -122,8 +159,12 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
             if arr[j] < arr[min_idx]:
                 min_idx = j
         arr[i], arr[min_idx] = arr[min_idx], arr[i]</code></pre>
+  <p><strong>Best for:</strong> When memory writes are expensive (makes minimum swaps). <strong>Limitation:</strong> Always O(n²), even for sorted data.</p>
 
-  <h5> Merge Sort</h5>
+  <h5>Merge Sort</h5>
+  <p>
+    Merge Sort is a divide-and-conquer algorithm. It recursively splits the array into halves, sorts each half, and then merges the sorted halves back together.
+  </p>
   <pre class="bg-light p-3 rounded"><code>def merge_sort(arr):
     if len(arr) > 1:
         mid = len(arr) // 2
@@ -143,8 +184,16 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
             k += 1
 
         arr[k:] = left[i:] + right[j:]</code></pre>
+  <p><strong>Best for:</strong> Large datasets, guaranteed O(n log n) performance, linked lists. <strong>Trade-off:</strong> Requires O(n) extra space.</p>
 
-  <h5> Quick Sort</h5>
+  <h5>Quick Sort</h5>
+  <p>
+    Quick Sort selects a 'pivot' element and partitions the array so that elements smaller than the pivot come before it and larger elements come after. It then recursively sorts the partitions.
+  </p>
+  <h5>Quick Sort</h5>
+  <p>
+    Quick Sort selects a 'pivot' element and partitions the array so that elements smaller than the pivot come before it and larger elements come after. It then recursively sorts the partitions.
+  </p>
   <pre class="bg-light p-3 rounded"><code>def quick_sort(arr):
     if len(arr) <= 1:
         return arr
@@ -152,8 +201,9 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
     less = [x for x in arr[1:] if x <= pivot]
     greater = [x for x in arr[1:] if x > pivot]
     return quick_sort(less) + [pivot] + quick_sort(greater)</code></pre>
+  <p><strong>Best for:</strong> Large datasets, general-purpose sorting. <strong>Average case:</strong> Fastest practical sorting algorithm. <strong>Caution:</strong> Worst case O(n²) with poor pivot selection.</p>
 
-  <h4 class="mt-4"> Benchmarking the Algorithms</h4>
+  <h4 class="mt-4">Benchmarking the Algorithms</h4>
   <p>We’ll time how long each algorithm takes to sort the same array.</p>
   <pre class="bg-light p-3 rounded"><code>import time
 
@@ -179,7 +229,7 @@ for name, func in algorithms.items():
     <img src="../img/Blog_16_1.png" alt="Benchmark Results" class="img-fluid rounded shadow"/>
   </div>
 
-  <h4 class="mt-4"> Time Complexities</h4>
+  <h4 class="mt-4">Time Complexities</h4>
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
@@ -199,12 +249,53 @@ for name, func in algorithms.items():
     </tbody>
   </table>
 
-  <h4 class="mt-4"> Final Thoughts</h4>
-  <p>Different sorting algorithms shine in different scenarios. For smaller arrays, simple algorithms like insertion sort are often sufficient. For larger datasets, merge and quick sort outperform significantly. Understanding these trade-offs is key when optimizing performance.</p>
+  <h4 class="mt-4">Understanding Stability</h4>
+  <p>
+    A sorting algorithm is <strong>stable</strong> if it preserves the relative order of equal elements. For example, if you have records with the same key but different associated data, a stable sort ensures they appear in the same order as the input.
+  </p>
+  <p>
+    <strong>Stable algorithms:</strong> Bubble Sort, Insertion Sort, Merge Sort<br>
+    <strong>Unstable algorithms:</strong> Selection Sort, Quick Sort (standard implementation)
+  </p>
 
-  <h4 class="mt-4"> Reference</h4>
+  <h4 class="mt-4">Choosing the Right Algorithm</h4>
+  <ul>
+    <li><strong>Small datasets (< 50 elements):</strong> Insertion Sort is often fastest due to low overhead</li>
+    <li><strong>Nearly sorted data:</strong> Insertion Sort or Bubble Sort (with early termination)</li>
+    <li><strong>Large datasets:</strong> Merge Sort (guaranteed O(n log n)) or Quick Sort (average case fastest)</li>
+    <li><strong>Memory constrained:</strong> Quick Sort (in-place) or Selection Sort (minimum swaps)</li>
+    <li><strong>Stability required:</strong> Merge Sort or Insertion Sort</li>
+    <li><strong>Production systems:</strong> Use built-in sorting (Python's Timsort, a hybrid of Merge + Insertion)</li>
+  </ul>
+
+  <h4 class="mt-4">Real-World Applications</h4>
+  <ul>
+    <li><strong>Databases:</strong> Use optimized sorting for ORDER BY queries and index creation</li>
+    <li><strong>Operating Systems:</strong> Process scheduling and memory management</li>
+    <li><strong>Graphics:</strong> Sorting polygons by depth for rendering</li>
+    <li><strong>Data Analysis:</strong> Finding medians, percentiles, and detecting duplicates</li>
+    <li><strong>Compression:</strong> Algorithms like Huffman coding require sorted data</li>
+  </ul>
+
+  <h4 class="mt-4">Optimization Techniques</h4>
+  <ul>
+    <li><strong>Hybrid Approaches:</strong> Python's Timsort combines Merge Sort with Insertion Sort for small subarrays</li>
+    <li><strong>Randomized Quick Sort:</strong> Random pivot selection avoids worst-case scenarios</li>
+    <li><strong>Three-way Quick Sort:</strong> Optimized for arrays with many duplicate values</li>
+    <li><strong>Early Termination:</strong> Bubble Sort can stop if no swaps occur in a pass</li>
+    <li><strong>In-place Merge Sort:</strong> Trade time for space by eliminating auxiliary arrays</li>
+  </ul>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>Different sorting algorithms shine in different scenarios. For smaller arrays, simple algorithms like insertion sort are often sufficient. For larger datasets, merge and quick sort outperform significantly. Understanding these trade-offs is key when optimizing performance.</p>
+  <p>
+    In practice, most programming languages provide highly optimized built-in sorting functions. Python's <code>sorted()</code> and <code>list.sort()</code> use Timsort, which adapts to the data characteristics. However, understanding these fundamental algorithms deepens your knowledge of algorithm design and helps you make informed decisions when custom sorting logic is needed.
+  </p>
+
+  <h4 class="mt-4">Reference</h4>
+  <p>For the complete implementations with benchmarking code and visualizations, check out:</p>
   <p><a href="https://github.com/Pulkit12dhingra/Algorithms/blob/main/sorting_algos.ipynb" target="_blank">
-    📓 sorting_algos.ipynb on GitHub
+    sorting_algos.ipynb on GitHub
   </a></p>
 </div>
 </body>
