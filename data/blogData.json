@@ -138,6 +138,30 @@
     "tags": ["Python", "Setup", "Virtual Environment", "Beginner", "pip", "Tutorial"]
   },
   {
+    "file": "Pandas_Part1_Basics.html",
+    "title": "Pandas Part 1: From Installation to Data Cleaning",
+    "summary": "Master Pandas fundamentals: installation, data structures, reading/writing files, data cleaning, and filtering operations for effective data manipulation in Python.",
+    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Beginner"]
+  },
+  {
+    "file": "Pandas_Part2_Joins_GroupBy.html",
+    "title": "Pandas Part 2: Joins and GroupBy Operations",
+    "summary": "Master Pandas joins, merges, and GroupBy operations: inner/left/right/outer joins, multi-key merges, aggregations, transforms, pivot tables, and window functions.",
+    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Intermediate"]
+  },
+  {
+    "file": "Pandas_Part3_Advanced.html",
+    "title": "Pandas Part 3: Advanced Data Engineering",
+    "summary": "Master advanced Pandas techniques: data partitioning, chunking, memory optimization, parallel processing, vectorization, and production-ready best practices for data engineering.",
+    "tags": ["Python", "Pandas", "Data Engineering", "Tutorial", "Advanced"]
+  },
+  {
+    "file": "NumPy_Complete_Guide.html",
+    "title": "NumPy Complete Guide: From Arrays to Advanced Computing",
+    "summary": "Master NumPy from basics to advanced: arrays, operations, indexing, slicing, broadcasting, linear algebra, and performance optimization for numerical computing in Python.",
+    "tags": ["Python", "NumPy", "Data Science", "Linear Algebra", "Tutorial", "Scientific Computing"]
+  },
+  {
     "file": "Hello_World.html",
     "title": "Hello World! My First Blog Post",
     "summary": "Kicking off my blog with excitement and a glimpse of what's to come. Let the journey begin!",

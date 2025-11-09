@@ -1,0 +1,625 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master Pandas joins, merges, and GroupBy operations: inner/left/right/outer joins, multi-key merges, aggregations, transforms, pivot tables, and window functions." />
+  <title>Pandas Part 2: Joins and GroupBy Operations | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pandas Part 2: Joins and GroupBy Operations" />
+  <meta property="og:description" content="Master Pandas joins, merges, and GroupBy operations: inner/left/right/outer joins, multi-key merges, aggregations, transforms, pivot tables, and window functions." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pandas Part 2: Joins and GroupBy Operations" />
+  <meta name="twitter:description" content="Master Pandas joins, merges, and GroupBy operations: inner/left/right/outer joins, multi-key merges, aggregations, transforms, pivot tables, and window functions." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Pandas Part 2: Joins and GroupBy Operations</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>This is Part 2 of the Pandas Series.</strong> If you haven't already, check out 
+    <a href="Pandas_Part1_Basics.html" class="alert-link">Part 1: From Installation to Data Cleaning</a>. 
+    After this, continue with <a href="Pandas_Part3_Advanced.html" class="alert-link">Part 3: Advanced Data Engineering</a>.
+  </div>
+
+  <h4 class="mt-4">Introduction</h4>
+  <p>
+    In this second part of our Pandas series, we'll dive into two of the most powerful features for data engineering: 
+    joins/merges and GroupBy operations. These skills are essential for combining datasets from multiple sources and 
+    performing sophisticated aggregations similar to SQL operations.
+  </p>
+
+  <h4 class="mt-4">Table of Contents</h4>
+  <ul>
+    <li><a href="#joins-merges">Joins and Merges</a></li>
+    <li><a href="#groupby">GroupBy Operations</a></li>
+  </ul>
+
+  <h4 class="mt-5" id="joins-merges">Joins and Merges</h4>
+  <p>
+    Joining datasets is a core data engineering skill. Pandas provides powerful merge and join operations 
+    similar to SQL. In real-world scenarios, your data is rarely in a single table. Customer information 
+    might be in one file, orders in another, and product details in a third. Merging lets you combine these 
+    related datasets based on common keys (like customer IDs or product codes).
+  </p>
+  <p>
+    Understanding the different types of joins is crucial because each serves a different purpose. An inner 
+    join keeps only matching records (strict matching), while outer joins preserve non-matching records too. 
+    Left and right joins are asymmetric - they keep all records from one side. Choosing the right join type 
+    depends on whether you want to preserve all data or only matching data.
+  </p>
+
+  <h5 class="mt-3">Understanding Merge Types</h5>
+  <p>
+    Let's start with a practical example. Imagine you have an employees table and a departments table. 
+    Not all employees might have a department assigned, and not all departments might have employees. 
+    Different join types will handle these scenarios differently. Understanding this through examples 
+    is the best way to internalize how joins work.
+  </p>
+  <pre><code class="language-python"># Sample datasets
+employees = pd.DataFrame({
+    'emp_id': [1, 2, 3, 4],
+    'name': ['Alice', 'Bob', 'Charlie', 'David'],
+    'dept_id': [10, 20, 10, 30]
+})
+
+departments = pd.DataFrame({
+    'dept_id': [10, 20, 40],
+    'dept_name': ['Sales', 'Engineering', 'HR']
+})
+</code></pre>
+
+  <h5 class="mt-3">Inner Join (Default)</h5>
+  <p>
+    An inner join returns only the rows where the key exists in BOTH DataFrames. This is the most restrictive 
+    join - if an employee has no department, or a department has no employees, those records are excluded. 
+    Use inner joins when you only care about complete, matched records. In our example, David (dept_id=30) 
+    won't appear because department 30 doesn't exist, and department 40 (HR) won't appear because no employees 
+    are assigned to it.
+  </p>
+  <pre><code class="language-python"># Only matching rows from both DataFrames
+result = pd.merge(employees, departments, on='dept_id', how='inner')
+print(result)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>   emp_id     name  dept_id    dept_name
+0       1    Alice       10        Sales
+1       3  Charlie       10        Sales
+2       2      Bob       20  Engineering
+</code></pre>
+
+  <h5 class="mt-3">Left Join</h5>
+  <p>
+    A left join keeps ALL rows from the left DataFrame and adds matching data from the right. If there's no 
+    match, the right-side columns are filled with NaN. This is useful when you want to preserve your main dataset 
+    (left side) and enrich it with additional information where available. In our example, all employees are kept, 
+    but David's department name becomes NaN since his dept_id (30) doesn't exist in the departments table.
+  </p>
+  <pre><code class="language-python"># All rows from left DataFrame, matching from right
+result = pd.merge(employees, departments, on='dept_id', how='left')
+print(result)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>   emp_id     name  dept_id    dept_name
+0       1    Alice       10        Sales
+1       2      Bob       20  Engineering
+2       3  Charlie       10        Sales
+3       4    David       30          NaN
+</code></pre>
+
+  <h5 class="mt-3">Right Join</h5>
+  <p>
+    A right join is the mirror of a left join - it keeps ALL rows from the right DataFrame and adds matching 
+    data from the left. This is less commonly used than left joins (you can achieve the same by swapping the 
+    DataFrames), but it's useful when the right dataset is your reference (like a master list of valid values). 
+    In practice, most people prefer using left joins by swapping the order rather than using right joins.
+  </p>
+  <pre><code class="language-python"># All rows from right DataFrame, matching from left
+result = pd.merge(employees, departments, on='dept_id', how='right')
+print(result)
+</code></pre>
+
+  <h5 class="mt-3">Outer Join (Full Join)</h5>
+  <p>
+    An outer join (also called full join) keeps ALL rows from BOTH DataFrames. It's the most inclusive join - 
+    nothing is excluded. Missing data on either side is filled with NaN. This is useful for data quality checks 
+    (finding unmatched records) or when you want a complete picture of both datasets. In our example, you'll see 
+    David (no department) and HR department (no employees) both appear, with NaN values for the missing information.
+  </p>
+  <pre><code class="language-python"># All rows from both DataFrames
+result = pd.merge(employees, departments, on='dept_id', how='outer')
+print(result)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>   emp_id     name  dept_id    dept_name
+0     1.0    Alice       10        Sales
+1     3.0  Charlie       10        Sales
+2     2.0      Bob       20  Engineering
+3     4.0    David       30          NaN
+4     NaN      NaN       40           HR
+</code></pre>
+
+  <h5 class="mt-3">Merge on Multiple Keys</h5>
+  <p>
+    Sometimes a single column isn't unique enough to identify matches. For example, you might need both 
+    customer ID and order date to uniquely identify an order. Merging on multiple keys ensures you're 
+    matching the exact combination of values. You can also merge when the key columns have different names 
+    in each DataFrame using <code>left_on</code> and <code>right_on</code> parameters.
+  </p>
+  <pre><code class="language-python"># Multiple columns
+result = pd.merge(
+    df1, df2, 
+    on=['key1', 'key2'], 
+    how='inner'
+)
+
+# Different column names
+result = pd.merge(
+    df1, df2,
+    left_on='emp_id',
+    right_on='employee_id',
+    how='left'
+)
+</code></pre>
+
+  <h5 class="mt-3">Merge with Suffixes</h5>
+  <p>
+    What happens when both DataFrames have columns with the same name (other than the join key)? Pandas 
+    adds suffixes to distinguish them. By default, it uses '_x' and '_y', but you can customize these to 
+    make the result more readable. This is common when merging datasets that describe the same type of 
+    entity (like comparing current vs. previous month's data).
+  </p>
+  <pre><code class="language-python"># Handle overlapping column names
+result = pd.merge(
+    df1, df2,
+    on='id',
+    suffixes=('_left', '_right')
+)
+</code></pre>
+
+  <h5 class="mt-3">Join on Index</h5>
+  <p>
+    Sometimes your join key is the index rather than a regular column. This is common with time series data 
+    or when you've set meaningful IDs as the index. The <code>join()</code> method is optimized for index-based 
+    joins and can be more convenient than <code>merge()</code>. You can also use <code>merge()</code> with 
+    <code>left_index=True</code> and <code>right_index=True</code> parameters for more control.
+  </p>
+  <pre><code class="language-python"># Join using index
+result = df1.join(df2, how='left')
+
+# Join on specific column from left, index from right
+result = df1.join(df2, on='key', how='left')
+
+# Merge using index
+result = pd.merge(
+    df1, df2,
+    left_index=True,
+    right_index=True,
+    how='inner'
+)
+</code></pre>
+
+  <h5 class="mt-3">Concat - Stacking DataFrames</h5>
+  <p>
+    <code>concat()</code> is different from merge - instead of joining based on keys, it stacks DataFrames 
+    together. Vertical concatenation (axis=0) appends rows - like combining data from multiple months into 
+    one dataset. Horizontal concatenation (axis=1) appends columns - like adding new features side-by-side. 
+    You can control how to handle mismatched columns with the <code>join</code> parameter: 'inner' keeps only 
+    common columns, 'outer' keeps all columns (filling missing values with NaN).
+  </p>
+  <pre><code class="language-python"># Vertical concatenation (stacking rows)
+result = pd.concat([df1, df2], axis=0, ignore_index=True)
+
+# Horizontal concatenation (stacking columns)
+result = pd.concat([df1, df2], axis=1)
+
+# With keys for multi-index
+result = pd.concat(
+    [df1, df2],
+    keys=['first', 'second'],
+    names=['source', 'row']
+)
+
+# Only common columns
+result = pd.concat([df1, df2], join='inner')
+
+# All columns (default)
+result = pd.concat([df1, df2], join='outer')
+</code></pre>
+
+  <h5 class="mt-3">Practical Example: Multi-Table Join</h5>
+  <p>
+    Real-world scenarios often require joining more than two tables. The technique is to chain merges: merge 
+    the first two tables, then merge the result with the third table, and so on. This example demonstrates 
+    a common e-commerce scenario: combining orders with customer information and product details to create 
+    a comprehensive sales report. Method chaining makes this elegant and readable. After joining, you can 
+    perform calculations like computing totals by multiplying quantity × price.
+  </p>
+  <pre><code class="language-python"># Three-way join
+orders = pd.DataFrame({
+    'order_id': [1, 2, 3],
+    'customer_id': [101, 102, 101],
+    'product_id': [201, 202, 203],
+    'quantity': [5, 3, 2]
+})
+
+customers = pd.DataFrame({
+    'customer_id': [101, 102, 103],
+    'name': ['Alice', 'Bob', 'Charlie'],
+    'country': ['USA', 'UK', 'Canada']
+})
+
+products = pd.DataFrame({
+    'product_id': [201, 202, 203],
+    'product_name': ['Laptop', 'Mouse', 'Keyboard'],
+    'price': [1000, 50, 100]
+})
+
+# Chain multiple merges
+result = orders.merge(customers, on='customer_id', how='left') \
+               .merge(products, on='product_id', how='left')
+
+# Calculate total
+result['total'] = result['quantity'] * result['price']
+print(result)
+</code></pre>
+
+  <h4 class="mt-5" id="groupby">GroupBy Operations</h4>
+  <p>
+    GroupBy is one of the most powerful features in Pandas. It follows the split-apply-combine pattern:
+    split data into groups, apply a function to each group, and combine results. This is how you answer 
+    questions like "What's the average salary by department?" or "What's the total revenue by region and 
+    product?" If you're familiar with SQL, GroupBy is like the GROUP BY clause but more flexible and powerful.
+  </p>
+  <p>
+    The beauty of GroupBy is that it enables aggregated analysis at any level of granularity. You can group 
+    by one column, multiple columns, or even custom criteria. You can apply built-in functions (sum, mean, 
+    count) or your own custom logic. Understanding GroupBy transforms you from someone who can read data 
+    to someone who can analyze it.
+  </p>
+
+  <h5 class="mt-3">Basic GroupBy</h5>
+  <p>
+    At its simplest, GroupBy splits your DataFrame based on unique values in a column. For each group, you 
+    apply an aggregation function (like sum, mean, or count). The result is a Series or DataFrame with one 
+    row per group. This is the foundation - once you understand basic grouping, you can build to more complex 
+    analyses. In this example, we group sales data by region to see which region generated more revenue.
+  </p>
+  <pre><code class="language-python"># Sample data
+sales = pd.DataFrame({
+    'region': ['East', 'East', 'West', 'West', 'East', 'West'],
+    'product': ['A', 'B', 'A', 'B', 'A', 'B'],
+    'revenue': [1000, 1500, 1200, 1800, 1100, 1600],
+    'units': [50, 75, 60, 90, 55, 80]
+})
+
+# Group by single column
+by_region = sales.groupby('region')['revenue'].sum()
+print(by_region)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>region
+East    3600
+West    4600
+Name: revenue, dtype: int64
+</code></pre>
+
+  <h5 class="mt-3">Multiple Aggregations</h5>
+  <p>
+    Often you want multiple statistics for each group - not just the sum, but also the mean, max, min, and 
+    count. The <code>agg()</code> method (short for aggregate) lets you specify multiple functions at once. 
+    You can apply different functions to different columns. Named aggregations (using tuples) produce cleaner 
+    output with custom column names, making your results more readable and professional. This is crucial for 
+    reports and dashboards where clarity matters.
+  </p>
+  <pre><code class="language-python"># Multiple aggregate functions
+result = sales.groupby('region').agg({
+    'revenue': ['sum', 'mean', 'max'],
+    'units': ['sum', 'mean']
+})
+print(result)
+
+# Named aggregations (cleaner output)
+result = sales.groupby('region').agg(
+    total_revenue=('revenue', 'sum'),
+    avg_revenue=('revenue', 'mean'),
+    total_units=('units', 'sum'),
+    avg_units=('units', 'mean')
+).reset_index()
+print(result)
+</code></pre>
+
+  <h5 class="mt-3">Group by Multiple Columns</h5>
+  <p>
+    Sometimes one grouping level isn't enough. You might want to see revenue not just by region, but by 
+    region AND product combination. Grouping by multiple columns creates a hierarchical grouping - first by 
+    region, then within each region, by product. This enables drill-down analysis: "Which products perform 
+    best in each region?" The result can have a MultiIndex (hierarchical index) or you can flatten it with 
+    <code>reset_index()</code> for easier manipulation.
+  </p>
+  <pre><code class="language-python"># Group by region and product
+result = sales.groupby(['region', 'product']).agg({
+    'revenue': 'sum',
+    'units': 'sum'
+}).reset_index()
+print(result)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>  region product  revenue  units
+0   East       A     2100    105
+1   East       B     1500     75
+2   West       A     1200     60
+3   West       B     3400    170
+</code></pre>
+
+  <h5 class="mt-3">Custom Aggregation Functions</h5>
+  <p>
+    Built-in functions (sum, mean, max) cover common cases, but sometimes you need custom logic. Maybe you 
+    want the range (max - min), or a weighted average, or something domain-specific. You can define your own 
+    functions and pass them to <code>agg()</code>. Lambda functions work for simple one-liners. For more 
+    complex logic, define a regular function. Custom aggregations unlock unlimited analytical possibilities - 
+    if you can define it, you can compute it per group.
+  </p>
+  <pre><code class="language-python"># Define custom function
+def range_func(x):
+    return x.max() - x.min()
+
+result = sales.groupby('region').agg({
+    'revenue': [range_func, 'sum', 'mean']
+})
+
+# Lambda functions
+result = sales.groupby('region')['revenue'].agg(
+    lambda x: x.max() - x.min()
+)
+
+# Multiple custom functions
+result = sales.groupby('region').agg(
+    revenue_range=('revenue', lambda x: x.max() - x.min()),
+    revenue_std=('revenue', 'std'),
+    unit_variance=('units', 'var')
+)
+</code></pre>
+
+  <h5 class="mt-3">Transform - Keep Original Shape</h5>
+  <p>
+    Sometimes you don't want to aggregate (reduce groups to single rows) - you want to ADD group statistics 
+    back to your original DataFrame. <code>transform()</code> computes group statistics but broadcasts them 
+    back to the original shape, creating new columns. This is perfect for calculations like "percent of total" 
+    or "deviation from group mean." Each row gets its group's statistic, making comparisons easy. Transform 
+    is underutilized but incredibly powerful for analytical features.
+  </p>
+  <pre><code class="language-python"># Add group statistics as new columns
+sales['region_total'] = sales.groupby('region')['revenue'].transform('sum')
+sales['region_mean'] = sales.groupby('region')['revenue'].transform('mean')
+sales['pct_of_region'] = sales['revenue'] / sales['region_total'] * 100
+print(sales)
+</code></pre>
+
+  <h5 class="mt-3">Filter Groups</h5>
+  <p>
+    <code>filter()</code> lets you keep only groups that satisfy a condition - like "only keep regions with 
+    more than $4000 total revenue." Unlike regular filtering which works on individual rows, this works on 
+    entire groups. If a group meets the condition, ALL its rows are kept; if not, ALL its rows are excluded. 
+    This is useful for focusing on significant groups or removing outliers at the group level.
+  </p>
+  <pre><code class="language-python"># Keep groups that satisfy condition
+# Only regions with total revenue > 4000
+result = sales.groupby('region').filter(lambda x: x['revenue'].sum() > 4000)
+print(result)
+
+# Only regions with more than 2 transactions
+result = sales.groupby('region').filter(lambda x: len(x) > 2)
+</code></pre>
+
+  <h5 class="mt-3">Apply - Most Flexible</h5>
+  <p>
+    <code>apply()</code> is the Swiss Army knife of GroupBy - it can do anything transform, filter, or agg 
+    can do, and more. You pass a function that receives each group as a DataFrame and returns whatever you 
+    want (a Series, DataFrame, or even a scalar). This flexibility comes at a cost: apply is slower because 
+    it's less optimized. Use it when you need complex, custom logic per group - like normalizing values within 
+    each group or selecting top N records per group.
+  </p>
+  <pre><code class="language-python"># Apply custom function to each group
+def normalize_revenue(group):
+    group['revenue_normalized'] = (
+        (group['revenue'] - group['revenue'].mean()) / group['revenue'].std()
+    )
+    return group
+
+result = sales.groupby('region').apply(normalize_revenue)
+print(result)
+
+# Get top N from each group
+def top_2(group):
+    return group.nlargest(2, 'revenue')
+
+result = sales.groupby('region').apply(top_2).reset_index(drop=True)
+</code></pre>
+
+  <h5 class="mt-3">Window Functions</h5>
+  <p>
+    Window functions (borrowed from SQL) perform calculations across rows within groups without collapsing 
+    the groups. <code>rank()</code> assigns ranks within each group. <code>cumsum()</code> computes running 
+    totals. <code>shift()</code> accesses previous or next rows (lag/lead). <code>rolling()</code> calculates 
+    moving averages. These are essential for time series analysis, finding patterns, and comparative metrics 
+    like "how does this month compare to last month?" within each group.
+  </p>
+  <pre><code class="language-python"># Ranking within groups
+sales['rank_in_region'] = sales.groupby('region')['revenue'].rank(
+    method='dense', ascending=False
+)
+
+# Cumulative sum within groups
+sales['cumsum_revenue'] = sales.groupby('region')['revenue'].cumsum()
+
+# Shift (lag/lead)
+sales['prev_revenue'] = sales.groupby('region')['revenue'].shift(1)
+sales['next_revenue'] = sales.groupby('region')['revenue'].shift(-1)
+
+# Rolling window within groups
+sales['rolling_mean'] = sales.groupby('region')['revenue'].rolling(
+    window=2, min_periods=1
+).mean().reset_index(drop=True)
+</code></pre>
+
+  <h5 class="mt-3">Pivot Tables</h5>
+  <p>
+    Pivot tables reshape your data from long format to wide format, making it easier to see patterns. They're 
+    like Excel pivot tables but more powerful. You specify what goes in rows (index), what goes in columns, 
+    what values to aggregate, and how to aggregate them. The <code>margins</code> parameter adds row and column 
+    totals. Pivot tables are perfect for cross-tabulation analysis: "How much revenue did each product generate 
+    in each region?" The result is a matrix that's easy to read and analyze visually.
+  </p>
+  <pre><code class="language-python"># Create pivot table
+pivot = pd.pivot_table(
+    sales,
+    values='revenue',
+    index='region',
+    columns='product',
+    aggfunc='sum',
+    fill_value=0,
+    margins=True,
+    margins_name='Total'
+)
+print(pivot)
+</code></pre>
+  <p><strong>Output:</strong></p>
+  <pre><code>product      A     B   Total
+region                       
+East      2100  1500    3600
+West      1200  3400    4600
+Total     3300  4900    8200
+</code></pre>
+
+  <h5 class="mt-3">Cross-tabulation</h5>
+  <p>
+    <code>crosstab()</code> is similar to pivot tables but optimized for counting frequencies. It's commonly 
+    used for categorical data analysis: "How many records fall into each combination of categories?" You can 
+    also aggregate values (not just count) and normalize results to show percentages instead of raw counts. 
+    This is invaluable for understanding distributions and relationships between categorical variables - the 
+    foundation of exploratory data analysis.
+  </p>
+  <pre><code class="language-python"># Frequency table
+ct = pd.crosstab(
+    sales['region'],
+    sales['product'],
+    values=sales['revenue'],
+    aggfunc='sum',
+    margins=True
+)
+print(ct)
+
+# With percentages
+ct = pd.crosstab(
+    sales['region'],
+    sales['product'],
+    normalize='all'  # 'index', 'columns', or 'all'
+) * 100
+</code></pre>
+
+  <h4 class="mt-5">What's Next?</h4>
+  <p>
+    You've now mastered joins and GroupBy operations! In Part 3, we'll cover advanced topics:
+  </p>
+  <ul>
+    <li>Reading data in chunks for large files</li>
+    <li>Partitioning strategies (by value, date, Parquet)</li>
+    <li>Memory-efficient data types</li>
+    <li>Parallel processing techniques</li>
+    <li>Performance optimization (vectorization, eval, profiling)</li>
+    <li>Best practices for production code</li>
+  </ul>
+
+  <div class="alert alert-success mt-4" role="alert">
+    <strong>Continue learning:</strong> 
+    <a href="Pandas_Part3_Advanced.html" class="alert-link">Pandas Part 3: Advanced Data Engineering</a>
+  </div>
+
+  <h4 class="mt-5">Additional Resources</h4>
+  <ul>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/merging.html" target="_blank" rel="noopener noreferrer">Pandas Merging Documentation</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/groupby.html" target="_blank" rel="noopener noreferrer">Pandas GroupBy Documentation</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/reshaping.html" target="_blank" rel="noopener noreferrer">Pandas Reshaping Documentation</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy coding!</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>

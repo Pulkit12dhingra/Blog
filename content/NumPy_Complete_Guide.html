@@ -1,0 +1,1196 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master NumPy from basics to advanced: arrays, operations, indexing, slicing, broadcasting, linear algebra, and performance optimization for numerical computing in Python." />
+  <title>NumPy Complete Guide: From Arrays to Advanced Computing | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="NumPy Complete Guide: From Arrays to Advanced Computing" />
+  <meta property="og:description" content="Master NumPy from basics to advanced: arrays, operations, indexing, slicing, broadcasting, linear algebra, and performance optimization for numerical computing in Python." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NumPy Complete Guide: From Arrays to Advanced Computing" />
+  <meta name="twitter:description" content="Master NumPy from basics to advanced: arrays, operations, indexing, slicing, broadcasting, linear algebra, and performance optimization for numerical computing in Python." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">NumPy Complete Guide: From Arrays to Advanced Computing</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>Foundation of Scientific Python:</strong> NumPy is the backbone of the entire Python data science ecosystem. 
+    Pandas, scikit-learn, TensorFlow, and most other libraries are built on top of NumPy. Master this, and you'll 
+    understand how Python achieves near-C performance for numerical operations.
+  </div>
+
+  <h4 class="mt-4">Introduction</h4>
+  <p>
+    NumPy (Numerical Python) is the fundamental package for scientific computing in Python. It provides powerful 
+    n-dimensional array objects, sophisticated broadcasting functions, and tools for integrating C/C++/Fortran code. 
+    If you're doing any numerical work in Python - data science, machine learning, image processing, signal processing, 
+    or scientific computing - you're using NumPy.
+  </p>
+  <p>
+    Why NumPy instead of Python lists? Speed and memory efficiency. NumPy arrays are 10-100x faster than Python lists 
+    for numerical operations because they're implemented in C and use contiguous memory. This guide takes you from 
+    installation through advanced operations, with explanations of the "why" behind each concept.
+  </p>
+
+  <h4 class="mt-4">Table of Contents</h4>
+  <ul>
+    <li><a href="#installation">Installation and Setup</a></li>
+    <li><a href="#arrays">Creating Arrays</a></li>
+    <li><a href="#array-properties">Array Properties and Attributes</a></li>
+    <li><a href="#indexing">Indexing and Slicing</a></li>
+    <li><a href="#operations">Array Operations</a></li>
+    <li><a href="#broadcasting">Broadcasting</a></li>
+    <li><a href="#reshaping">Reshaping and Manipulation</a></li>
+    <li><a href="#linear-algebra">Linear Algebra</a></li>
+    <li><a href="#statistics">Statistics and Aggregations</a></li>
+    <li><a href="#advanced">Advanced Techniques</a></li>
+    <li><a href="#best-practices">Best Practices</a></li>
+  </ul>
+
+  <h4 class="mt-5" id="installation">Installation and Setup</h4>
+  <p>
+    NumPy is a third-party library that needs to be installed. Most scientific Python distributions (Anaconda, 
+    Miniconda) include NumPy by default. If you're using vanilla Python, you'll need to install it manually. 
+    The installation is simple, but understanding which method to use depends on your environment.
+  </p>
+
+  <h5 class="mt-3">Installing NumPy</h5>
+  <p>
+    For most users, pip is the easiest method. Conda users should prefer conda to ensure binary compatibility 
+    with other scientific packages. The uv package manager is gaining traction for its speed. NumPy has native 
+    extensions (compiled C code), so installation downloads pre-built binaries for your platform - this is why 
+    it's larger and slower to install than pure Python packages.
+  </p>
+  <pre><code class="language-bash"># Using pip (most common)
+pip install numpy
+
+# Using conda (for Anaconda/Miniconda users)
+conda install numpy
+
+# Using uv (modern, fast)
+uv pip install numpy
+
+# Install specific version (for reproducibility)
+pip install numpy==1.26.0
+</code></pre>
+
+  <h5 class="mt-3">Verifying Installation</h5>
+  <p>
+    Always verify installation and check the version. NumPy evolves rapidly, and different versions may have 
+    different features or behaviors. Knowing your version is crucial when following tutorials or debugging issues. 
+    The version also tells you which features are available - older versions lack some newer optimizations.
+  </p>
+  <pre><code class="language-python">import numpy as np
+
+# Check version
+print(np.__version__)  # e.g., '1.26.0'
+
+# Quick functionality test
+arr = np.array([1, 2, 3])
+print(arr)  # Should print: [1 2 3]
+</code></pre>
+
+  <h4 class="mt-5" id="arrays">Creating Arrays</h4>
+  <p>
+    The ndarray (n-dimensional array) is NumPy's core data structure. Unlike Python lists which can hold mixed 
+    types and aren't optimized for numerical operations, NumPy arrays are homogeneous (all elements same type) 
+    and stored in contiguous memory. This enables vectorized operations that are orders of magnitude faster than 
+    loops. Understanding array creation is the foundation of everything else.
+  </p>
+
+  <h5 class="mt-3">From Python Lists</h5>
+  <p>
+    The simplest way to create arrays is from Python lists. <code>np.array()</code> inspects the list and 
+    infers the appropriate data type. One-dimensional lists become 1D arrays (vectors), nested lists become 
+    multi-dimensional arrays (matrices, tensors). NumPy will upcast types if necessary (mixing ints and floats 
+    results in float array). You can explicitly specify dtype for control.
+  </p>
+  <pre><code class="language-python">import numpy as np
+
+# 1D array (vector)
+arr1d = np.array([1, 2, 3, 4, 5])
+print(arr1d)  # [1 2 3 4 5]
+
+# 2D array (matrix)
+arr2d = np.array([[1, 2, 3], [4, 5, 6]])
+print(arr2d)
+# [[1 2 3]
+#  [4 5 6]]
+
+# 3D array (tensor)
+arr3d = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+print(arr3d.shape)  # (2, 2, 2)
+
+# Specify data type explicitly
+arr_float = np.array([1, 2, 3], dtype=float)
+print(arr_float)  # [1. 2. 3.]
+</code></pre>
+
+  <h5 class="mt-3">Using Built-in Functions</h5>
+  <p>
+    NumPy provides convenience functions for common array patterns. <code>zeros()</code> and <code>ones()</code> 
+    create arrays filled with 0s or 1s - useful for initialization. <code>empty()</code> is faster but gives 
+    uninitialized memory (random values). <code>arange()</code> is like Python's range but returns an array. 
+    <code>linspace()</code> creates evenly spaced values between bounds - essential for plotting and numerical 
+    analysis. <code>eye()</code> creates identity matrices.
+  </p>
+  <pre><code class="language-python"># Array of zeros
+zeros = np.zeros((3, 4))  # 3x4 array of zeros
+print(zeros)
+
+# Array of ones
+ones = np.ones((2, 3, 4))  # 2x3x4 array of ones
+
+# Empty array (faster but uninitialized - use with caution)
+empty = np.empty((2, 2))
+
+# Range of values (like Python's range)
+range_arr = np.arange(0, 10, 2)  # [0 2 4 6 8]
+
+# Evenly spaced values
+linspace_arr = np.linspace(0, 1, 5)  # [0.   0.25 0.5  0.75 1.  ]
+
+# Identity matrix
+identity = np.eye(3)  # 3x3 identity matrix
+
+# Full array (fill with specific value)
+full_arr = np.full((2, 3), 7)  # 2x3 array filled with 7
+</code></pre>
+
+  <h5 class="mt-3">Random Arrays</h5>
+  <p>
+    Random number generation is crucial for simulations, initialization in machine learning, and testing. NumPy's 
+    random module provides various distributions. <code>random()</code> gives uniform [0, 1). <code>randint()</code> 
+    for random integers. <code>randn()</code> for standard normal (Gaussian). <code>choice()</code> for random 
+    sampling. Modern NumPy uses Generator objects for better statistical properties and reproducibility. Always 
+    set a seed for reproducible results in research and debugging.
+  </p>
+  <pre><code class="language-python"># Random values between 0 and 1
+random_arr = np.random.random((3, 3))
+
+# Random integers
+random_int = np.random.randint(0, 10, size=(3, 3))
+
+# Standard normal distribution (mean=0, std=1)
+normal = np.random.randn(3, 3)
+
+# Random choice from array
+choices = np.random.choice([10, 20, 30, 40], size=5)
+
+# Modern approach: Generator (recommended for new code)
+rng = np.random.default_rng(seed=42)  # Seeded for reproducibility
+random_gen = rng.random((3, 3))
+normal_gen = rng.standard_normal((3, 3))
+</code></pre>
+
+  <h4 class="mt-5" id="array-properties">Array Properties and Attributes</h4>
+  <p>
+    Understanding array properties is essential for debugging and ensuring operations work as expected. Shape 
+    tells you dimensions, dtype tells you memory usage and precision, size tells you total elements. These 
+    properties determine what operations are valid and how much memory you're using. Always check these when 
+    debugging unexpected behavior.
+  </p>
+
+  <h5 class="mt-3">Essential Attributes</h5>
+  <p>
+    <code>shape</code> is a tuple describing dimensions - (3, 4) means 3 rows, 4 columns. <code>ndim</code> 
+    is number of dimensions (axes). <code>size</code> is total elements (product of shape). <code>dtype</code> 
+    is the data type (int32, float64, etc.) - this determines precision and memory usage. <code>itemsize</code> 
+    is bytes per element. Understanding these helps you reason about memory usage and performance.
+  </p>
+  <pre><code class="language-python">arr = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+
+# Shape: dimensions of array
+print(arr.shape)  # (3, 4) - 3 rows, 4 columns
+
+# Number of dimensions
+print(arr.ndim)  # 2 (2D array)
+
+# Total number of elements
+print(arr.size)  # 12
+
+# Data type
+print(arr.dtype)  # int64 (or int32 on 32-bit systems)
+
+# Bytes per element
+print(arr.itemsize)  # 8 (for int64)
+
+# Total bytes consumed
+print(arr.nbytes)  # 96 (12 elements * 8 bytes)
+</code></pre>
+
+  <h5 class="mt-3">Data Types</h5>
+  <p>
+    NumPy supports various data types, each with different precision and memory usage. <code>int32</code> vs 
+    <code>int64</code> matters for memory and range. <code>float32</code> vs <code>float64</code> matters for 
+    precision and GPU compatibility (most GPUs prefer float32). <code>bool</code> for flags. <code>complex</code> 
+    for complex numbers in signal processing. Choose the smallest type that meets your precision needs to save 
+    memory and improve cache performance.
+  </p>
+  <pre><code class="language-python"># Integer types
+int8 = np.array([1, 2, 3], dtype=np.int8)    # -128 to 127
+int32 = np.array([1, 2, 3], dtype=np.int32)  # Default on many systems
+int64 = np.array([1, 2, 3], dtype=np.int64)  # Largest integer type
+
+# Float types
+float32 = np.array([1.0, 2.0], dtype=np.float32)  # Single precision
+float64 = np.array([1.0, 2.0], dtype=np.float64)  # Double precision (default)
+
+# Boolean
+bool_arr = np.array([True, False, True], dtype=bool)
+
+# Complex numbers
+complex_arr = np.array([1+2j, 3+4j], dtype=complex)
+
+# Convert between types
+arr_int = np.array([1.7, 2.3, 3.9])
+arr_to_int = arr_int.astype(int)  # [1 2 3] - truncates!
+</code></pre>
+
+  <h4 class="mt-5" id="indexing">Indexing and Slicing</h4>
+  <p>
+    Indexing and slicing in NumPy are similar to Python lists but more powerful for multi-dimensional arrays. 
+    Understanding indexing is crucial because it's how you access and modify data. NumPy's advanced indexing 
+    features (boolean indexing, fancy indexing) enable elegant, efficient operations that would require loops 
+    in pure Python.
+  </p>
+
+  <h5 class="mt-3">Basic Indexing</h5>
+  <p>
+    Indexing starts at 0 (like Python). Negative indices count from the end. For multi-dimensional arrays, 
+    use comma-separated indices: <code>arr[row, col]</code>. Each dimension is indexed independently. This is 
+    more intuitive and efficient than nested bracket notation. Remember: slicing creates views (not copies) 
+    by default - modifications affect the original array.
+  </p>
+  <pre><code class="language-python">arr = np.array([[1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12]])
+
+# Single element
+print(arr[0, 0])  # 1
+print(arr[1, 2])  # 7
+
+# Negative indexing (from end)
+print(arr[-1, -1])  # 12 (last element)
+
+# Entire row
+print(arr[1])  # [5 6 7 8]
+
+# Entire column (requires slicing)
+print(arr[:, 2])  # [ 3  7 11]
+</code></pre>
+
+  <h5 class="mt-3">Slicing</h5>
+  <p>
+    Slicing syntax is <code>start:stop:step</code>. Omit start to begin at 0, omit stop for end, omit step 
+    for 1. In multi-dimensional arrays, slice each dimension independently. The colon <code>:</code> alone 
+    means "all elements in this dimension". Slicing returns views (shares memory with original) for efficiency - 
+    use <code>.copy()</code> if you need an independent copy.
+  </p>
+  <pre><code class="language-python">arr = np.array([[1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12]])
+
+# Rows 0-1 (exclusive end), all columns
+print(arr[0:2, :])
+# [[1 2 3 4]
+#  [5 6 7 8]]
+
+# All rows, columns 1-2
+print(arr[:, 1:3])
+# [[ 2  3]
+#  [ 6  7]
+#  [10 11]]
+
+# Every other row
+print(arr[::2, :])
+# [[ 1  2  3  4]
+#  [ 9 10 11 12]]
+
+# Reverse rows
+print(arr[::-1, :])
+
+# Submatrix: rows 0-1, columns 2-3
+print(arr[0:2, 2:4])
+# [[3 4]
+#  [7 8]]
+
+# Slicing creates a view, not copy
+view = arr[0:2, 0:2]
+view[0, 0] = 999  # This modifies original arr!
+print(arr[0, 0])  # 999
+
+# Create a copy instead
+copy = arr[0:2, 0:2].copy()
+copy[0, 0] = -1  # Original arr unchanged
+</code></pre>
+
+  <h5 class="mt-3">Boolean Indexing</h5>
+  <p>
+    Boolean indexing uses boolean arrays as masks to select elements. This is incredibly powerful - you can 
+    filter arrays based on conditions without loops. The boolean array must have the same shape (or be 
+    broadcastable). True elements are selected, False elements are excluded. This is the NumPy equivalent of 
+    SQL WHERE clauses or Pandas boolean indexing. It's elegant and fast.
+  </p>
+  <pre><code class="language-python">arr = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+# Boolean condition
+mask = arr > 5
+print(mask)  # [False False False False False  True  True  True  True  True]
+
+# Filter using boolean mask
+filtered = arr[mask]
+print(filtered)  # [ 6  7  8  9 10]
+
+# Inline condition (most common)
+print(arr[arr > 5])  # [ 6  7  8  9 10]
+
+# Multiple conditions (use & for AND, | for OR, ~ for NOT)
+print(arr[(arr > 3) & (arr < 8)])  # [4 5 6 7]
+print(arr[(arr < 3) | (arr > 8)])  # [1 2 9 10]
+
+# Modify elements that meet condition
+arr[arr > 5] = 0
+print(arr)  # [1 2 3 4 5 0 0 0 0 0]
+
+# 2D boolean indexing
+arr2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+print(arr2d[arr2d > 5])  # [6 7 8 9] (flattened result)
+</code></pre>
+
+  <h5 class="mt-3">Fancy Indexing</h5>
+  <p>
+    Fancy indexing uses integer arrays to index arrays. You can select arbitrary positions in any order, even 
+    repeating elements. This enables operations like gathering specific rows/columns, reordering, or duplicating 
+    elements. Unlike basic slicing which creates views, fancy indexing creates copies. Use this when you need 
+    non-contiguous selections or complex access patterns.
+  </p>
+  <pre><code class="language-python">arr = np.array([10, 20, 30, 40, 50])
+
+# Index with array of integers
+indices = np.array([0, 2, 4])
+print(arr[indices])  # [10 30 50]
+
+# Arbitrary order
+indices = np.array([4, 1, 3, 1])  # Can repeat!
+print(arr[indices])  # [50 20 40 20]
+
+# 2D fancy indexing
+arr2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+# Select rows 0 and 2
+print(arr2d[[0, 2]])
+# [[1 2 3]
+#  [7 8 9]]
+
+# Select specific elements: arr2d[row_indices, col_indices]
+rows = np.array([0, 1, 2])
+cols = np.array([0, 1, 2])
+print(arr2d[rows, cols])  # [1 5 9] (diagonal elements)
+
+# Select corners
+rows = np.array([0, 0, 2, 2])
+cols = np.array([0, 2, 0, 2])
+print(arr2d[rows, cols])  # [1 3 7 9]
+</code></pre>
+
+  <h4 class="mt-5" id="operations">Array Operations</h4>
+  <p>
+    NumPy's power comes from vectorized operations - applying operations to entire arrays without explicit loops. 
+    These operations are implemented in optimized C code and use SIMD instructions when possible, making them 
+    orders of magnitude faster than Python loops. Understanding vectorization is the key to writing fast NumPy code.
+  </p>
+
+  <h5 class="mt-3">Arithmetic Operations</h5>
+  <p>
+    Arithmetic operators work element-wise on arrays. <code>+, -, *, /</code> operate on corresponding elements. 
+    This is different from linear algebra multiplication! Arrays must have compatible shapes (either same shape 
+    or broadcastable). These operations are vectorized - no loops needed. They're also much faster than Python 
+    loops because they bypass the Python interpreter and use optimized C code.
+  </p>
+  <pre><code class="language-python">a = np.array([1, 2, 3, 4])
+b = np.array([10, 20, 30, 40])
+
+# Element-wise arithmetic
+print(a + b)  # [11 22 33 44]
+print(a - b)  # [-9 -18 -27 -36]
+print(a * b)  # [10 40 90 160] - NOT matrix multiplication!
+print(b / a)  # [10. 10. 10. 10.]
+
+# Power
+print(a ** 2)  # [1 4 9 16]
+
+# Operations with scalars (broadcasting)
+print(a * 10)  # [10 20 30 40]
+print(a + 5)   # [6 7 8 9]
+
+# Compound operations
+result = (a + b) * 2 / a
+print(result)  # [22. 22. 22. 22.]
+</code></pre>
+
+  <h5 class="mt-3">Universal Functions (ufuncs)</h5>
+  <p>
+    Universal functions (ufuncs) are vectorized functions that operate element-wise. NumPy provides mathematical 
+    functions (sin, cos, exp, log), comparison functions, and more. They're implemented in C for speed and 
+    support broadcasting. They also handle type coercion automatically. Ufuncs are the foundation of NumPy's 
+    speed - they eliminate the need for Python loops entirely.
+  </p>
+  <pre><code class="language-python">arr = np.array([0, 30, 45, 60, 90])
+
+# Trigonometric (input in degrees, convert to radians first)
+radians = np.deg2rad(arr)
+print(np.sin(radians))
+print(np.cos(radians))
+
+# Exponential and logarithm
+arr2 = np.array([1, 2, 3, 4])
+print(np.exp(arr2))      # e^x
+print(np.log(arr2))      # Natural log
+print(np.log10(arr2))    # Base 10 log
+
+# Square root and power
+print(np.sqrt(arr2))     # Square root
+print(np.power(arr2, 3)) # Cube
+
+# Rounding
+arr3 = np.array([1.2, 2.7, 3.5, 4.9])
+print(np.round(arr3))    # [1. 3. 4. 5.]
+print(np.floor(arr3))    # [1. 2. 3. 4.]
+print(np.ceil(arr3))     # [2. 3. 4. 5.]
+
+# Absolute value
+arr4 = np.array([-1, -2, 3, -4])
+print(np.abs(arr4))      # [1 2 3 4]
+</code></pre>
+
+  <h5 class="mt-3">Comparison Operations</h5>
+  <p>
+    Comparison operators return boolean arrays. These are essential for filtering and conditional logic. You can 
+    use <code>&amp; (and), | (or), ~ (not)</code> for combining conditions. The functions <code>np.any()</code> 
+    and <code>np.all()</code> check if any or all elements meet a condition - useful for validation. Comparisons 
+    are vectorized, so they're fast even on large arrays.
+  </p>
+  <pre><code class="language-python">a = np.array([1, 2, 3, 4, 5])
+b = np.array([5, 4, 3, 2, 1])
+
+# Element-wise comparisons
+print(a == b)  # [False False  True False False]
+print(a < b)   # [ True  True False False False]
+print(a >= 3)  # [False False  True  True  True]
+
+# Logical operations
+print((a > 2) & (a < 5))  # [False False  True  True False]
+
+# Check if any element meets condition
+print(np.any(a > 4))      # True
+
+# Check if all elements meet condition
+print(np.all(a > 0))      # True
+
+# Count elements meeting condition
+print(np.sum(a > 2))      # 3
+
+# Find indices where condition is True
+indices = np.where(a > 2)
+print(indices)            # (array([2, 3, 4]),)
+print(a[indices])         # [3 4 5]
+</code></pre>
+
+  <h4 class="mt-5" id="broadcasting">Broadcasting</h4>
+  <p>
+    Broadcasting is NumPy's superpower - it allows operations between arrays of different shapes without copying 
+    data. Understanding broadcasting eliminates the need for loops and enables elegant, efficient code. The rules 
+    seem complex at first, but they become intuitive with practice. Broadcasting is what makes NumPy truly powerful 
+    for array programming.
+  </p>
+
+  <h5 class="mt-3">Broadcasting Rules</h5>
+  <p>
+    Broadcasting compares array shapes element-wise from right to left. Dimensions are compatible if they're equal 
+    or one is 1. Missing dimensions are treated as size 1. Arrays are "stretched" (virtually, no copying) to match 
+    shapes. A common example: adding a scalar to an array (scalar is broadcast to array shape). Or adding a 1D 
+    array to each row/column of a 2D array. Understanding broadcasting is essential for writing efficient NumPy code.
+  </p>
+  <pre><code class="language-python"># Scalar broadcasting (most simple)
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+print(arr + 10)
+# [[11 12 13]
+#  [14 15 16]]
+
+# 1D array broadcast to 2D
+arr = np.array([[1, 2, 3],
+                [4, 5, 6]])
+row = np.array([10, 20, 30])
+
+# row is broadcast to each row of arr
+result = arr + row
+print(result)
+# [[11 22 33]
+#  [14 25 36]]
+
+# Column vector broadcast
+col = np.array([[10], [20]])  # Shape (2, 1)
+result = arr + col
+print(result)
+# [[11 12 13]
+#  [24 25 26]]
+
+# Broadcasting in both dimensions
+a = np.array([[1, 2, 3]])  # Shape (1, 3)
+b = np.array([[10], [20]])  # Shape (2, 1)
+result = a + b              # Shape (2, 3)
+print(result)
+# [[11 12 13]
+#  [21 22 23]]
+</code></pre>
+
+  <h5 class="mt-3">Common Broadcasting Patterns</h5>
+  <p>
+    Several patterns appear frequently in real code. Normalizing data (subtract mean, divide by std) across rows 
+    or columns. Computing pairwise distances. Applying different weights to different features. These operations 
+    would require nested loops in pure Python but are one-liners with broadcasting. Learning these patterns makes 
+    you much more productive.
+  </p>
+  <pre><code class="language-python"># Normalize each column (mean=0, std=1)
+data = np.array([[1, 2], [3, 4], [5, 6]], dtype=float)
+mean = data.mean(axis=0)  # Mean of each column
+std = data.std(axis=0)    # Std of each column
+normalized = (data - mean) / std  # Broadcasting!
+print(normalized)
+
+# Pairwise distances (outer operation)
+x = np.array([1, 2, 3])
+y = np.array([10, 20])
+# Create 2D grid of differences
+diff = x[:, np.newaxis] - y  # Shape (3, 1) - (2,) = (3, 2)
+print(diff)
+# [[-9 -19]
+#  [-8 -18]
+#  [-7 -17]]
+
+# Apply weights to columns
+data = np.array([[1, 2, 3], [4, 5, 6]])
+weights = np.array([0.5, 1.0, 1.5])
+weighted = data * weights  # Each column multiplied by its weight
+print(weighted)
+# [[0.5 2.  4.5]
+#  [2.  5.  9. ]]
+</code></pre>
+
+  <h4 class="mt-5" id="reshaping">Reshaping and Manipulation</h4>
+  <p>
+    Changing array shape is common in data processing. You might need to flatten an image array, reshape for 
+    batch processing, or transpose matrices. NumPy provides flexible reshaping operations, most creating views 
+    (no copying) for efficiency. Understanding when copies are made vs. views is important for performance and 
+    correctness.
+  </p>
+
+  <h5 class="mt-3">Reshape</h5>
+  <p>
+    <code>reshape()</code> changes array shape without changing data. The new shape must have the same total 
+    elements (product of dimensions). Use -1 to infer one dimension automatically. Reshaping returns a view when 
+    possible (no data copying), making it very efficient. Common use: converting between different tensor shapes 
+    for neural networks, or flattening/unflattening arrays.
+  </p>
+  <pre><code class="language-python">arr = np.arange(12)  # [0 1 2 3 4 5 6 7 8 9 10 11]
+
+# Reshape to 2D
+reshaped = arr.reshape(3, 4)
+print(reshaped)
+# [[ 0  1  2  3]
+#  [ 4  5  6  7]
+#  [ 8  9 10 11]]
+
+# Reshape to 3D
+reshaped3d = arr.reshape(2, 3, 2)
+print(reshaped3d.shape)  # (2, 3, 2)
+
+# Use -1 to infer dimension
+print(arr.reshape(3, -1))  # (3, 4) - infers 4
+print(arr.reshape(-1, 6))  # (2, 6) - infers 2
+
+# Flatten to 1D
+flattened = reshaped.reshape(-1)  # or reshaped.flatten()
+print(flattened)  # [0 1 2 3 4 5 6 7 8 9 10 11]
+</code></pre>
+
+  <h5 class="mt-3">Transpose and Swapping Axes</h5>
+  <p>
+    <code>transpose()</code> or <code>.T</code> flips array dimensions. For 2D arrays, it swaps rows and columns 
+    (like matrix transpose). For higher dimensions, you can specify which axes to swap. Transposing creates a 
+    view (no copying), but changes the memory layout. This matters for cache performance - row-major vs. 
+    column-major access patterns affect speed.
+  </p>
+  <pre><code class="language-python">arr = np.array([[1, 2, 3], [4, 5, 6]])
+print(arr.shape)  # (2, 3)
+
+# Transpose
+transposed = arr.T
+print(transposed)
+# [[1 4]
+#  [2 5]
+#  [3 6]]
+print(transposed.shape)  # (3, 2)
+
+# For multi-dimensional arrays
+arr3d = np.arange(24).reshape(2, 3, 4)
+print(arr3d.shape)  # (2, 3, 4)
+
+# Swap axes 0 and 2
+swapped = arr3d.transpose(2, 1, 0)
+print(swapped.shape)  # (4, 3, 2)
+
+# Equivalent with swapaxes
+swapped2 = arr3d.swapaxes(0, 2)
+print(swapped2.shape)  # (4, 3, 2)
+</code></pre>
+
+  <h5 class="mt-3">Stack and Concatenate</h5>
+  <p>
+    Combining multiple arrays is common when assembling datasets or building batches. <code>concatenate()</code> 
+    joins arrays along existing axes (arrays must match in other dimensions). <code>stack()</code> creates a new 
+    axis and stacks arrays along it. <code>vstack()</code> and <code>hstack()</code> are shortcuts for vertical 
+    (row-wise) and horizontal (column-wise) stacking. Choose based on whether you want a new dimension or not.
+  </p>
+  <pre><code class="language-python">a = np.array([1, 2, 3])
+b = np.array([4, 5, 6])
+
+# Stack along new axis
+stacked = np.stack([a, b])
+print(stacked)
+# [[1 2 3]
+#  [4 5 6]]
+print(stacked.shape)  # (2, 3)
+
+# Stack along existing axis (concatenate)
+concatenated = np.concatenate([a, b])
+print(concatenated)  # [1 2 3 4 5 6]
+
+# 2D arrays
+arr1 = np.array([[1, 2], [3, 4]])
+arr2 = np.array([[5, 6], [7, 8]])
+
+# Vertical stack (vstack)
+vstacked = np.vstack([arr1, arr2])
+print(vstacked)
+# [[1 2]
+#  [3 4]
+#  [5 6]
+#  [7 8]]
+
+# Horizontal stack (hstack)
+hstacked = np.hstack([arr1, arr2])
+print(hstacked)
+# [[1 2 5 6]
+#  [3 4 7 8]]
+
+# Depth stack (stack along new 3rd dimension)
+dstacked = np.dstack([arr1, arr2])
+print(dstacked.shape)  # (2, 2, 2)
+</code></pre>
+
+  <h4 class="mt-5" id="linear-algebra">Linear Algebra</h4>
+  <p>
+    NumPy provides comprehensive linear algebra operations through <code>numpy.linalg</code>. These operations 
+    are crucial for machine learning, physics simulations, and numerical analysis. They're implemented using 
+    highly optimized BLAS/LAPACK libraries, making them very fast. Understanding the basics of linear algebra 
+    and when to use these operations is essential for scientific computing.
+  </p>
+
+  <h5 class="mt-3">Matrix Operations</h5>
+  <p>
+    Matrix multiplication is different from element-wise multiplication. Use <code>@</code> operator or 
+    <code>np.dot()</code> for proper matrix multiplication. The <code>@</code> operator is preferred in modern 
+    Python (3.5+) for readability. Matrix multiplication is fundamental in linear algebra and machine learning 
+    (neural networks are essentially sequences of matrix multiplications).
+  </p>
+  <pre><code class="language-python"># Matrix multiplication
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+
+# Modern syntax (Python 3.5+)
+C = A @ B
+print(C)
+# [[19 22]
+#  [43 50]]
+
+# Equivalent to
+C = np.dot(A, B)
+
+# Element-wise multiplication (not matrix mult!)
+elementwise = A * B
+print(elementwise)
+# [[ 5 12]
+#  [21 32]]
+
+# Matrix-vector multiplication
+v = np.array([1, 2])
+result = A @ v  # or np.dot(A, v)
+print(result)  # [ 5 11]
+
+# Batch matrix multiplication (3D)
+batch = np.random.random((5, 3, 3))  # 5 matrices of 3x3
+result = batch @ batch  # Multiply each matrix by itself
+print(result.shape)  # (5, 3, 3)
+</code></pre>
+
+  <h5 class="mt-3">Matrix Decompositions</h5>
+  <p>
+    Matrix decompositions (factorizations) break matrices into products of simpler matrices. These are fundamental 
+    in numerical linear algebra. Eigendecomposition finds eigenvectors/eigenvalues (used in PCA, stability analysis). 
+    SVD (Singular Value Decomposition) is used in dimensionality reduction, recommendation systems, and more. 
+    QR decomposition for solving linear systems. These operations are computationally expensive but essential 
+    for many algorithms.
+  </p>
+  <pre><code class="language-python">A = np.array([[4, 2], [1, 3]])
+
+# Eigenvalues and eigenvectors
+eigenvalues, eigenvectors = np.linalg.eig(A)
+print("Eigenvalues:", eigenvalues)
+print("Eigenvectors:\n", eigenvectors)
+
+# Singular Value Decomposition (SVD)
+U, s, Vt = np.linalg.svd(A)
+print("U:\n", U)
+print("Singular values:", s)
+print("Vt:\n", Vt)
+
+# QR decomposition
+Q, R = np.linalg.qr(A)
+print("Q:\n", Q)
+print("R:\n", R)
+
+# Cholesky decomposition (for positive definite matrices)
+B = np.array([[4, 2], [2, 3]])
+L = np.linalg.cholesky(B)
+print("L:\n", L)
+print("Verify:", L @ L.T)  # Should equal B
+</code></pre>
+
+  <h5 class="mt-3">Solving Linear Systems</h5>
+  <p>
+    Solving <code>Ax = b</code> is a fundamental problem in linear algebra. <code>np.linalg.solve()</code> 
+    efficiently solves this using LU decomposition (much better than computing the inverse). Computing the 
+    inverse explicitly (<code>np.linalg.inv()</code>) is rarely necessary and often numerically unstable. 
+    For least squares problems (overdetermined systems), use <code>lstsq()</code>. These operations are at 
+    the heart of many algorithms in statistics, physics, and machine learning.
+  </p>
+  <pre><code class="language-python"># Solve Ax = b
+A = np.array([[3, 1], [1, 2]])
+b = np.array([9, 8])
+
+x = np.linalg.solve(A, b)
+print("Solution:", x)  # [2. 3.]
+
+# Verify
+print("Verification:", A @ x)  # Should equal b
+
+# Matrix inverse (avoid if possible!)
+A_inv = np.linalg.inv(A)
+print("Inverse:\n", A_inv)
+print("A @ A_inv:\n", A @ A_inv)  # Identity matrix
+
+# Determinant
+det = np.linalg.det(A)
+print("Determinant:", det)
+
+# Matrix rank
+rank = np.linalg.matrix_rank(A)
+print("Rank:", rank)
+
+# Least squares (for overdetermined systems)
+A = np.array([[1, 1], [1, 2], [1, 3]])
+b = np.array([1, 2, 2])
+x, residuals, rank, s = np.linalg.lstsq(A, b, rcond=None)
+print("Least squares solution:", x)
+</code></pre>
+
+  <h4 class="mt-5" id="statistics">Statistics and Aggregations</h4>
+  <p>
+    NumPy provides comprehensive statistical functions for data analysis. These operations can work on entire 
+    arrays or along specific axes (dimensions). Understanding axis parameter is crucial: <code>axis=0</code> 
+    operates across rows (column-wise result), <code>axis=1</code> across columns (row-wise result). These 
+    operations are the foundation of data analysis and are heavily used in Pandas under the hood.
+  </p>
+
+  <h5 class="mt-3">Basic Statistics</h5>
+  <p>
+    Common statistical functions: mean, median, standard deviation, variance, min/max, sum, product. They can 
+    operate on entire arrays or along axes. The <code>axis</code> parameter determines the aggregation dimension. 
+    These are optimized C implementations, much faster than Python loops. Use <code>keepdims=True</code> to 
+    maintain dimensionality for broadcasting in subsequent operations.
+  </p>
+  <pre><code class="language-python">data = np.array([[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 9]])
+
+# Whole array statistics
+print("Mean:", np.mean(data))           # 5.0
+print("Median:", np.median(data))       # 5.0
+print("Std:", np.std(data))             # 2.58...
+print("Variance:", np.var(data))        # 6.66...
+print("Min:", np.min(data))             # 1
+print("Max:", np.max(data))             # 9
+print("Sum:", np.sum(data))             # 45
+
+# Along axes
+print("Mean of each column:", np.mean(data, axis=0))  # [4. 5. 6.]
+print("Mean of each row:", np.mean(data, axis=1))     # [2. 5. 8.]
+
+# Min/max indices
+print("Index of min:", np.argmin(data))               # 0 (flattened)
+print("Index of max:", np.argmax(data))               # 8
+
+# Cumulative operations
+print("Cumulative sum:", np.cumsum(data))
+# [ 1  3  6 10 15 21 28 36 45]
+
+# Percentiles
+print("25th percentile:", np.percentile(data, 25))    # 3.0
+print("75th percentile:", np.percentile(data, 75))    # 7.0
+</code></pre>
+
+  <h5 class="mt-3">Correlation and Covariance</h5>
+  <p>
+    Correlation and covariance measure relationships between variables. Covariance shows how two variables vary 
+    together. Correlation is normalized covariance (values from -1 to 1). These are fundamental in statistics, 
+    finance, and machine learning. <code>np.corrcoef()</code> returns correlation matrix, <code>np.cov()</code> 
+    returns covariance matrix. Understanding these helps in feature analysis and multivariate statistics.
+  </p>
+  <pre><code class="language-python"># Sample data: 3 variables, 5 observations
+data = np.array([[1, 2, 3, 4, 5],
+                 [2, 4, 5, 4, 5],
+                 [3, 6, 7, 8, 9]])
+
+# Covariance matrix
+cov_matrix = np.cov(data)
+print("Covariance matrix:\n", cov_matrix)
+
+# Correlation matrix
+corr_matrix = np.corrcoef(data)
+print("Correlation matrix:\n", corr_matrix)
+
+# Correlation between two specific arrays
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([2, 4, 5, 4, 5])
+correlation = np.corrcoef(x, y)[0, 1]
+print("Correlation between x and y:", correlation)
+</code></pre>
+
+  <h4 class="mt-5" id="advanced">Advanced Techniques</h4>
+  <p>
+    These advanced techniques separate beginners from experts. They enable elegant, efficient solutions to 
+    complex problems. Understanding when and how to use these techniques dramatically improves code quality 
+    and performance.
+  </p>
+
+  <h5 class="mt-3">Vectorization with np.vectorize</h5>
+  <p>
+    <code>np.vectorize()</code> turns Python functions into ufuncs. It's convenient but NOT fast - it's 
+    essentially a hidden Python loop. Use it for prototyping or when the function is too complex to vectorize 
+    manually. For performance-critical code, write true vectorized code or use Numba/Cython. The value of 
+    vectorize is in code clarity, not speed.
+  </p>
+  <pre><code class="language-python"># Define a Python function
+def custom_func(x):
+    if x < 0:
+        return 0
+    elif x < 5:
+        return x ** 2
+    else:
+        return x ** 3
+
+# Vectorize it
+vfunc = np.vectorize(custom_func)
+
+# Apply to array
+arr = np.array([-1, 2, 4, 6, 8])
+result = vfunc(arr)
+print(result)  # [0 4 16 216 512]
+
+# Note: This is slow! Better to use np.where for conditions
+result_fast = np.where(arr < 0, 0,
+                      np.where(arr < 5, arr**2, arr**3))
+print(result_fast)  # Same result, much faster
+</code></pre>
+
+  <h5 class="mt-3">Memory Views and Strides</h5>
+  <p>
+    Understanding memory layout helps optimize performance. NumPy arrays have strides - the number of bytes 
+    to step in each dimension. Contiguous arrays are faster because they're cache-friendly. Non-contiguous 
+    arrays (from slicing, transpose) have irregular strides. Use <code>np.ascontiguousarray()</code> to fix 
+    this when needed. Understanding C-order (row-major) vs. Fortran-order (column-major) helps when interfacing 
+    with other libraries.
+  </p>
+  <pre><code class="language-python">arr = np.arange(12).reshape(3, 4)
+
+# Check memory layout
+print("Contiguous:", arr.flags['C_CONTIGUOUS'])  # True
+print("Strides:", arr.strides)  # (32, 8) for int64
+
+# After transpose, no longer C-contiguous
+arr_t = arr.T
+print("Transposed contiguous:", arr_t.flags['C_CONTIGUOUS'])  # False
+print("Transposed strides:", arr_t.strides)  # (8, 32)
+
+# Make contiguous copy
+arr_t_contig = np.ascontiguousarray(arr_t)
+print("Now contiguous:", arr_t_contig.flags['C_CONTIGUOUS'])  # True
+
+# View vs Copy
+view = arr[::2, :]  # View (no copy)
+print("Is view:", view.base is arr)  # True
+
+copy = arr[::2, :].copy()
+print("Is copy:", copy.base is arr)  # False
+</code></pre>
+
+  <h5 class="mt-3">Structured Arrays</h5>
+  <p>
+    Structured arrays are like simple databases - each element can have multiple named fields with different 
+    types. Think of them as arrays of structs (from C). Useful for heterogeneous data before Pandas existed. 
+    Now, Pandas DataFrames are usually better for tabular data, but structured arrays are still useful for 
+    interfacing with C code or when you need minimal overhead.
+  </p>
+  <pre><code class="language-python"># Define structured dtype
+dt = np.dtype([('name', 'U10'), ('age', 'i4'), ('weight', 'f4')])
+
+# Create structured array
+data = np.array([('Alice', 25, 55.5),
+                 ('Bob', 30, 75.0),
+                 ('Charlie', 35, 80.2)], dtype=dt)
+
+# Access fields
+print(data['name'])    # ['Alice' 'Bob' 'Charlie']
+print(data['age'])     # [25 30 35]
+
+# Access single record
+print(data[0])         # ('Alice', 25, 55.5)
+
+# Filter
+adults = data[data['age'] > 26]
+print(adults)
+</code></pre>
+
+  <h4 class="mt-5" id="best-practices">Best Practices</h4>
+  <p>
+    Following these best practices ensures your NumPy code is fast, correct, and maintainable. They're learned 
+    from years of experience with NumPy in production systems.
+  </p>
+
+  <div class="alert alert-warning" role="alert">
+    <h5><i class="bi bi-lightbulb"></i> Key Recommendations</h5>
+    <ul class="mb-0">
+      <li><strong>Always vectorize</strong> - avoid Python loops over array elements</li>
+      <li><strong>Pre-allocate arrays</strong> when possible - growing arrays in loops is very slow</li>
+      <li><strong>Use appropriate dtypes</strong> - float32 vs float64 matters for memory and speed</li>
+      <li><strong>Understand views vs copies</strong> - unexpected mutations are common bugs</li>
+      <li><strong>Use broadcasting</strong> instead of explicit loops</li>
+      <li><strong>Profile before optimizing</strong> - don't guess where bottlenecks are</li>
+      <li><strong>Prefer contiguous arrays</strong> for better cache performance</li>
+      <li><strong>Use axis parameter</strong> instead of loops for aggregations</li>
+      <li><strong>Check array shapes</strong> frequently during development</li>
+      <li><strong>Read the docs</strong> - NumPy has many optimized functions you might not know</li>
+    </ul>
+  </div>
+
+  <h5 class="mt-3">Performance Tips</h5>
+  <p>
+    These concrete tips will make your code faster. Pre-allocation avoids repeated memory allocation. Contiguous 
+    memory is cache-friendly. The right dtype saves memory and can be faster (GPU operations often use float32). 
+    Understanding these principles helps you write production-grade code.
+  </p>
+  <pre><code class="language-python"># Bad: Growing array in loop
+result = np.array([])
+for i in range(10000):
+    result = np.append(result, i)  # Very slow!
+
+# Good: Pre-allocate
+result = np.zeros(10000)
+for i in range(10000):
+    result[i] = i
+
+# Better: Vectorized (no loop needed)
+result = np.arange(10000)
+
+# Use appropriate dtype
+large_int = np.arange(100000, dtype=np.int32)  # 400KB
+# vs
+large_int64 = np.arange(100000, dtype=np.int64)  # 800KB
+
+# Use in-place operations when possible
+arr = np.arange(10000)
+arr += 1  # In-place (no new array created)
+# vs
+arr = arr + 1  # Creates new array
+
+# Use axis parameter instead of loops
+data = np.random.random((1000, 100))
+# Bad
+means = np.array([data[i].mean() for i in range(len(data))])
+# Good
+means = data.mean(axis=1)
+</code></pre>
+
+  <h5 class="mt-3">Common Pitfalls</h5>
+  <p>
+    These are the most common mistakes developers make with NumPy. Understanding views vs copies prevents bugs. 
+    Integer division truncates in Python 2 style if both operands are integers. Comparing floating point requires 
+    tolerance (use <code>np.allclose()</code>). Avoiding these pitfalls saves hours of debugging.
+  </p>
+  <pre><code class="language-python"># Pitfall 1: View vs Copy mutation
+arr = np.array([1, 2, 3, 4, 5])
+view = arr[:3]
+view[0] = 999
+print(arr)  # [999 2 3 4 5] - Original modified!
+
+# Solution: Explicit copy
+copy = arr[:3].copy()
+copy[0] = -1
+print(arr)  # [999 2 3 4 5] - Original unchanged
+
+# Pitfall 2: Integer division
+a = np.array([1, 2, 3])
+print(a / 2)  # [0.5 1.  1.5] - OK in Python 3
+# Be aware of dtype in operations
+
+# Pitfall 3: Floating point comparison
+a = 0.1 + 0.1 + 0.1
+b = 0.3
+print(a == b)  # False (floating point precision!)
+
+# Solution: Use allclose
+print(np.allclose(a, b))  # True
+
+# Pitfall 4: Matrix multiplication confusion
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+print(A * B)    # Element-wise
+print(A @ B)    # Matrix multiplication
+
+# Pitfall 5: Axis confusion
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+print(arr.sum(axis=0))  # [5 7 9] - sum columns
+print(arr.sum(axis=1))  # [6 15] - sum rows
+# axis=0 means "collapse the first dimension"
+</code></pre>
+
+  <h4 class="mt-5">Conclusion</h4>
+  <p>
+    You now have a comprehensive understanding of NumPy from basics to advanced techniques. NumPy is the 
+    foundation of the entire PyData ecosystem - mastering it unlocks the full power of scientific Python.
+  </p>
+
+  <h5 class="mt-3">Key Takeaways</h5>
+  <ul>
+    <li><strong>Vectorization</strong> is the key to NumPy's performance - always prefer it over loops</li>
+    <li><strong>Broadcasting</strong> enables elegant operations between different-shaped arrays</li>
+    <li><strong>Views vs copies</strong> - understand when data is shared vs duplicated</li>
+    <li><strong>Linear algebra</strong> operations are highly optimized and essential for ML</li>
+    <li><strong>Axis parameter</strong> controls which dimension operations work across</li>
+    <li><strong>Memory layout</strong> affects performance - contiguous is faster</li>
+  </ul>
+
+  <h5 class="mt-3">Next Steps</h5>
+  <ul>
+    <li>Practice with real datasets - try Kaggle competitions or scientific data</li>
+    <li>Explore specialized libraries built on NumPy (Pandas, SciPy, scikit-learn)</li>
+    <li>Learn about GPU acceleration with CuPy (NumPy-compatible GPU arrays)</li>
+    <li>Study numerical algorithms and their NumPy implementations</li>
+    <li>Read the NumPy source code - it's educational to see how things are implemented</li>
+    <li>Contribute to open source projects using NumPy</li>
+  </ul>
+
+  <h4 class="mt-5">Additional Resources</h4>
+  <ul>
+    <li><a href="https://numpy.org/doc/stable/" target="_blank" rel="noopener noreferrer">Official NumPy Documentation</a></li>
+    <li><a href="https://numpy.org/doc/stable/user/absolute_beginners.html" target="_blank" rel="noopener noreferrer">NumPy for Absolute Beginners</a></li>
+    <li><a href="https://numpy.org/doc/stable/user/basics.html" target="_blank" rel="noopener noreferrer">NumPy Basics</a></li>
+    <li><a href="https://numpy.org/doc/stable/reference/routines.linalg.html" target="_blank" rel="noopener noreferrer">Linear Algebra Reference</a></li>
+    <li><a href="https://github.com/numpy/numpy" target="_blank" rel="noopener noreferrer">NumPy GitHub Repository</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy computing!</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>

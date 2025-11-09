@@ -1,0 +1,606 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master advanced Pandas techniques: data partitioning, chunking, memory optimization, parallel processing, vectorization, and production-ready best practices for data engineering." />
+  <title>Pandas Part 3: Advanced Data Engineering | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pandas Part 3: Advanced Data Engineering" />
+  <meta property="og:description" content="Master advanced Pandas techniques: data partitioning, chunking, memory optimization, parallel processing, vectorization, and production-ready best practices for data engineering." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pandas Part 3: Advanced Data Engineering" />
+  <meta name="twitter:description" content="Master advanced Pandas techniques: data partitioning, chunking, memory optimization, parallel processing, vectorization, and production-ready best practices for data engineering." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Pandas Part 3: Advanced Data Engineering</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>This is Part 3 of the Pandas Series.</strong> Make sure you've covered 
+    <a href="Pandas_Part1_Basics.html" class="alert-link">Part 1: From Installation to Data Cleaning</a> and 
+    <a href="Pandas_Part2_Joins_GroupBy.html" class="alert-link">Part 2: Joins and GroupBy Operations</a> first.
+  </div>
+
+  <h4 class="mt-4">Introduction</h4>
+  <p>
+    In this final part of our Pandas series, we'll explore advanced techniques essential for production-grade 
+    data engineering. You'll learn how to handle large datasets efficiently, optimize memory usage, leverage 
+    parallel processing, and follow best practices that separate hobbyist code from professional-grade pipelines.
+  </p>
+
+  <h4 class="mt-4">Table of Contents</h4>
+  <ul>
+    <li><a href="#partitions">Partitioning Data</a></li>
+    <li><a href="#performance">Performance Optimization</a></li>
+    <li><a href="#best-practices">Best Practices</a></li>
+  </ul>
+
+  <h4 class="mt-5" id="partitions">Partitioning Data</h4>
+  <p>
+    When working with large datasets, partitioning is essential for memory management, parallel processing, 
+    and efficient I/O operations. Think of partitioning as dividing your data into manageable chunks. A 100GB 
+    file won't fit in memory, but 1000 files of 100MB each can be processed one at a time. Partitioning also 
+    enables parallel processing across multiple cores and makes queries more efficient by reading only relevant 
+    partitions.
+  </p>
+  <p>
+    Modern data engineering relies heavily on partitioning strategies. Cloud data lakes often store data 
+    partitioned by date (year/month/day) so queries can skip irrelevant partitions. This "partition pruning" 
+    dramatically speeds up queries. Understanding partitioning separates beginners from professionals in data 
+    engineering.
+  </p>
+
+  <h5 class="mt-3">Reading Data in Chunks</h5>
+  <p>
+    The <code>chunksize</code> parameter in <code>read_csv()</code> is your first tool for handling large files. 
+    Instead of loading the entire file into memory (which might crash your system), you read and process it in 
+    chunks. Each chunk is a DataFrame that you process independently. This is perfect for operations like 
+    filtering, aggregating, or transforming data where you don't need the entire dataset at once. The key is 
+    choosing an appropriate chunk size: too small and you have overhead; too large and you risk memory issues.
+  </p>
+  <pre><code class="language-python"># Read large CSV in chunks
+chunk_size = 10000
+chunks = []
+
+for chunk in pd.read_csv('large_file.csv', chunksize=chunk_size):
+    # Process each chunk
+    chunk_processed = chunk[chunk['value'] > 0]
+    chunks.append(chunk_processed)
+
+# Combine processed chunks
+result = pd.concat(chunks, ignore_index=True)
+
+# Or process without storing
+total = 0
+for chunk in pd.read_csv('large_file.csv', chunksize=chunk_size):
+    total += chunk['amount'].sum()
+print(f"Total: {total}")
+</code></pre>
+
+  <h5 class="mt-3">Partitioning by Value</h5>
+  <p>
+    Value-based partitioning splits data based on column values - like separating data by category, region, 
+    or customer type. Each partition becomes a separate file. This is useful for distributing work ("process 
+    each category independently") and for query optimization ("only load the categories I need"). It's common 
+    in ETL pipelines where different partitions might be processed by different systems or at different times.
+  </p>
+  <pre><code class="language-python"># Split DataFrame by column value
+grouped = df.groupby('category')
+partitions = {name: group for name, group in grouped}
+
+# Save each partition
+for category, partition_df in partitions.items():
+    partition_df.to_csv(f'data_{category}.csv', index=False)
+
+# Or more efficiently
+for category, group in df.groupby('category'):
+    group.to_csv(f'partition_{category}.csv', index=False)
+</code></pre>
+
+  <h5 class="mt-3">Date-based Partitioning</h5>
+  <p>
+    Date-based partitioning is the most common strategy in production systems. Data is naturally time-series 
+    in many domains (logs, transactions, sensor readings), and queries often filter by date ranges. Partitioning 
+    by year/month/day/hour lets you skip reading irrelevant time periods. It also aligns with data retention 
+    policies: "delete all partitions older than 2 years" is trivial when data is date-partitioned. Pandas' 
+    datetime operations make extracting year/month/quarter easy.
+  </p>
+  <pre><code class="language-python"># Partition by date
+df['date'] = pd.to_datetime(df['date'])
+
+# By year and month
+df['year'] = df['date'].dt.year
+df['month'] = df['date'].dt.month
+
+for (year, month), group in df.groupby(['year', 'month']):
+    filename = f'data_{year}_{month:02d}.csv'
+    group.to_csv(filename, index=False)
+
+# By quarter
+df['quarter'] = df['date'].dt.to_period('Q')
+for quarter, group in df.groupby('quarter'):
+    group.to_csv(f'data_{quarter}.csv', index=False)
+</code></pre>
+
+  <h5 class="mt-3">Parquet Partitioning (Recommended for Big Data)</h5>
+  <p>
+    Parquet is a columnar storage format designed for big data analytics. Unlike CSV (row-based), Parquet 
+    stores data by column, making it incredibly efficient for analytical queries that read specific columns. 
+    Combined with partitioning, Parquet is the gold standard for data lakes. The <code>partition_cols</code> 
+    parameter automatically creates a directory structure (like Hive-style partitioning) that query engines 
+    can exploit for partition pruning. Reading parquet is also 10-100x faster than CSV because it's binary 
+    and compressed. This is what professionals use.
+  </p>
+  <pre><code class="language-python"># Write partitioned Parquet files
+df.to_parquet(
+    'output_dir',
+    partition_cols=['year', 'month'],
+    compression='snappy',
+    engine='pyarrow'
+)
+
+# This creates structure like:
+# output_dir/
+#   year=2023/
+#     month=1/
+#       part-0.parquet
+#     month=2/
+#       part-0.parquet
+#   year=2024/
+#     month=1/
+#       part-0.parquet
+
+# Read partitioned data
+df = pd.read_parquet('output_dir')
+
+# Filter on partition columns (very efficient)
+df = pd.read_parquet('output_dir', filters=[('year', '==', 2024)])
+</code></pre>
+
+  <h5 class="mt-3">Split Dataset for Training/Testing</h5>
+  <p>
+    In machine learning, you need to split data into training and testing sets. The simple <code>sample()</code> 
+    method does random splitting. For more control (like stratified splitting to maintain class distribution), 
+    use scikit-learn's <code>train_test_split()</code>. Stratified splitting is crucial when you have imbalanced 
+    classes - it ensures both training and test sets have similar proportions of each class. Always set 
+    <code>random_state</code> for reproducibility: you want the same split every time you run your code.
+  </p>
+  <pre><code class="language-python"># Random split
+train = df.sample(frac=0.8, random_state=42)
+test = df.drop(train.index)
+
+# Or using sklearn
+from sklearn.model_selection import train_test_split
+train, test = train_test_split(df, test_size=0.2, random_state=42)
+
+# Stratified split (maintain class distribution)
+train, test = train_test_split(
+    df,
+    test_size=0.2,
+    stratify=df['category'],
+    random_state=42
+)
+</code></pre>
+
+  <h5 class="mt-3">Memory-Efficient Data Types</h5>
+  <p>
+    Pandas' default data types can be wasteful. An int64 uses 8 bytes even if your values fit in int8 (1 byte). 
+    Storing "Male"/"Female" as strings uses far more memory than storing as a category (which uses integer codes 
+    internally). This function optimizes dtypes automatically: converting low-cardinality strings to categories 
+    and downcasting numeric types to their smallest representations. For large datasets, this can reduce memory 
+    usage by 50-90%, allowing you to process more data in memory and significantly speeding up operations.
+  </p>
+  <pre><code class="language-python"># Optimize memory usage
+def optimize_dtypes(df):
+    # Convert object to category for low-cardinality columns
+    for col in df.select_dtypes(include=['object']).columns:
+        if df[col].nunique() / len(df) < 0.5:  # Less than 50% unique
+            df[col] = df[col].astype('category')
+    
+    # Downcast numeric types
+    for col in df.select_dtypes(include=['int']).columns:
+        df[col] = pd.to_numeric(df[col], downcast='integer')
+    
+    for col in df.select_dtypes(include=['float']).columns:
+        df[col] = pd.to_numeric(df[col], downcast='float')
+    
+    return df
+
+# Check memory usage
+print(df.memory_usage(deep=True))
+df_optimized = optimize_dtypes(df)
+print(df_optimized.memory_usage(deep=True))
+</code></pre>
+
+  <h5 class="mt-3">Parallel Processing with Partitions</h5>
+  <p>
+    Modern CPUs have multiple cores, but Python code runs on a single core by default. To use all cores, you 
+    need multiprocessing. The strategy: split your DataFrame into N partitions (where N = number of cores), 
+    process each partition in a separate process, then combine results. This works well for "embarrassingly 
+    parallel" operations where partitions are independent (like applying the same transformation to each 
+    partition). Be aware: multiprocessing has overhead (copying data between processes), so it's only worth 
+    it for computationally expensive operations on large datasets.
+  </p>
+  <pre><code class="language-python">from multiprocessing import Pool
+import numpy as np
+
+def process_partition(partition):
+    """Process a single partition"""
+    # Your processing logic here
+    partition['processed'] = partition['value'] * 2
+    return partition
+
+# Split DataFrame into partitions
+n_cores = 4
+df_split = np.array_split(df, n_cores)
+
+# Process in parallel
+with Pool(n_cores) as pool:
+    df_processed = pd.concat(pool.map(process_partition, df_split))
+
+print(df_processed)
+</code></pre>
+
+  <h4 class="mt-5" id="performance">Performance Optimization</h4>
+  <p>
+    Performance matters when working with large datasets. The difference between vectorized and non-vectorized 
+    code can be 100x in speed. Understanding performance principles transforms slow, clunky code into fast, 
+    production-ready pipelines. The key insight: Pandas is built on NumPy, which uses highly optimized C code. 
+    When you use vectorized operations, you're calling that fast C code. When you loop in Python, you're 
+    running slow Python code. Always prefer vectorization.
+  </p>
+  
+  <h5 class="mt-3">Vectorization Over Loops</h5>
+  <p>
+    This is the #1 performance rule in Pandas: NEVER iterate with loops when vectorization is possible. 
+    Vectorized operations work on entire columns at once using optimized C/Fortran code under the hood. Loops 
+    run in slow Python interpreter. The speed difference is dramatic - often 100x faster. Even <code>apply()</code> 
+    with lambda functions is slow because it's essentially a hidden loop. The examples below show the wrong way 
+    and the right way. Internalize this principle: if you're writing a for loop over DataFrame rows, there's 
+    usually a better vectorized way.
+  </p>
+  <pre><code class="language-python"># Slow - Iterative
+result = []
+for i in range(len(df)):
+    result.append(df.iloc[i]['a'] + df.iloc[i]['b'])
+df['c'] = result
+
+# Fast - Vectorized
+df['c'] = df['a'] + df['b']
+
+# Slow - Using apply with lambda
+df['d'] = df.apply(lambda row: row['a'] + row['b'], axis=1)
+
+# Fast - Direct vectorization
+df['d'] = df['a'] + df['b']
+</code></pre>
+
+  <h5 class="mt-3">Use .values or .to_numpy() for NumPy Operations</h5>
+  <p>
+    When you need to do operations that Pandas doesn't directly support, convert to NumPy arrays with 
+    <code>to_numpy()</code> (or the older <code>.values</code>). NumPy operations are often faster than 
+    equivalent Pandas operations because they have less overhead. However, you lose the index and column 
+    labels, so this is best for pure numerical computations where labels don't matter. After computation, 
+    you can assign the results back to a DataFrame column.
+  </p>
+  <pre><code class="language-python"># When you need NumPy operations
+import numpy as np
+
+# Convert to NumPy array for computation
+values = df['column'].to_numpy()
+result = np.sqrt(values)
+df['sqrt_column'] = result
+</code></pre>
+
+  <h5 class="mt-3">Query vs Boolean Indexing</h5>
+  <p>
+    The <code>query()</code> method is often faster than boolean indexing for simple filters, especially on 
+    large DataFrames. It uses an optimized evaluation engine (numexpr) under the hood. The syntax is also 
+    cleaner and more readable - you write conditions as strings similar to SQL WHERE clauses. However, for 
+    complex conditions or when you need to combine with other operations, traditional boolean indexing might 
+    be more flexible. Profile both approaches for your specific use case.
+  </p>
+  <pre><code class="language-python"># For simple filters, query() can be faster
+df_filtered = df.query('age > 25 and salary > 50000')
+
+# Equivalent to
+df_filtered = df[(df['age'] > 25) & (df['salary'] > 50000)]
+</code></pre>
+
+  <h5 class="mt-3">Avoid Chained Assignment</h5>
+  <p>
+    Chained assignment is a common pitfall: <code>df[condition][column] = value</code>. This might not work 
+    as expected because the first bracket returns a copy (sometimes), and you're modifying the copy, not the 
+    original DataFrame. Pandas warns about "SettingWithCopyWarning" for this reason. The solution: use 
+    <code>loc</code> which guarantees you're modifying the original DataFrame. This isn't just about 
+    correctness - <code>loc</code> is also clearer in intent and often faster.
+  </p>
+  <pre><code class="language-python"># Bad - Chained assignment
+df[df['age'] > 25]['salary'] = 60000  # May not work
+
+# Good - Use loc
+df.loc[df['age'] > 25, 'salary'] = 60000
+</code></pre>
+
+  <h5 class="mt-3">Use Categorical for Low-Cardinality Strings</h5>
+  <p>
+    String columns with repeated values (like "Male"/"Female" or city names) waste enormous memory. Each string 
+    is stored separately even if it repeats millions of times. Converting to <code>category</code> dtype stores 
+    each unique value once and uses integer codes for repetitions. For a column with 1 million "Male"/"Female" 
+    values, this reduces memory from ~8MB to ~1MB - an 8x improvement. As a bonus, categorical operations 
+    (groupby, sorting) are also faster. Use categories whenever you have fewer than ~50% unique values.
+  </p>
+  <pre><code class="language-python"># Convert to category to save memory
+df['city'] = df['city'].astype('category')
+
+# Creates more efficient storage for repeated values
+</code></pre>
+
+  <h5 class="mt-3">Efficient Merging</h5>
+  <p>
+    Merging performance depends on whether data is sorted. If both DataFrames are sorted on the merge key, 
+    Pandas can use a more efficient merge algorithm (merge-join vs hash-join). Pre-sorting can dramatically 
+    speed up large merges. The <code>indicator</code> parameter is useful for data quality checks - it adds 
+    a column showing whether each row came from left only, right only, or both. This helps you understand 
+    your join results and catch data quality issues.
+  </p>
+  <pre><code class="language-python"># Sort before merge for better performance
+df1_sorted = df1.sort_values('key')
+df2_sorted = df2.sort_values('key')
+result = pd.merge(df1_sorted, df2_sorted, on='key')
+
+# Use merge with indicator to track merge results
+result = pd.merge(df1, df2, on='key', how='outer', indicator=True)
+</code></pre>
+
+  <h5 class="mt-3">Use eval() for Complex Expressions</h5>
+  <p>
+    The <code>eval()</code> method is a hidden gem for complex arithmetic expressions. It uses the numexpr 
+    library which evaluates expressions in optimized C code, avoiding temporary arrays that normal operations 
+    create. For large DataFrames with complex formulas, <code>eval()</code> can be 2-10x faster and use less 
+    memory. The syntax is simple: write your expression as a string. It's especially powerful for multiple 
+    operations in one expression: <code>(a + b) * (c - d)</code>. Not all operations are supported, so check 
+    the documentation.
+  </p>
+  <pre><code class="language-python"># For large DataFrames, eval can be faster
+df.eval('c = a + b', inplace=True)
+df.eval('d = (a + b) * (c - 10)', inplace=True)
+</code></pre>
+
+  <h5 class="mt-3">Profiling Your Code</h5>
+  <p>
+    "Premature optimization is the root of all evil" - Donald Knuth. Before optimizing, MEASURE where time 
+    is actually spent. The <code>time</code> module gives basic timing. Jupyter's <code>%timeit</code> magic 
+    runs code multiple times and gives accurate statistics. The <code>cProfile</code> module profiles entire 
+    scripts, showing which functions consume the most time. Often you'll find that 80% of time is in 20% of 
+    code - optimize that 20% first. Don't waste time optimizing code that runs fast already.
+  </p>
+  <pre><code class="language-python">import time
+
+# Time a single operation
+start = time.time()
+result = df.groupby('category')['value'].sum()
+print(f"Time: {time.time() - start:.4f} seconds")
+
+# Using magic command in Jupyter
+%timeit df.groupby('category')['value'].sum()
+
+# Profile entire script
+import cProfile
+cProfile.run('your_function()')
+</code></pre>
+
+  <h4 class="mt-5" id="best-practices">Best Practices</h4>
+  <p>
+    These best practices come from years of experience with Pandas in production. They're not just about 
+    performance - they're about writing correct, maintainable, and robust code. Following these principles 
+    will make your code more reliable, easier to debug, and faster. They separate code that "works on my 
+    laptop" from code that reliably processes terabytes in production.
+  </p>
+  
+  <div class="alert alert-warning" role="alert">
+    <h5><i class="bi bi-lightbulb"></i> Key Recommendations</h5>
+    <ul class="mb-0">
+      <li><strong>Always use vectorized operations</strong> instead of loops or apply when possible</li>
+      <li><strong>Set proper data types</strong> early to save memory and improve performance</li>
+      <li><strong>Use method chaining</strong> for cleaner, more readable code</li>
+      <li><strong>Prefer read_parquet() over read_csv()</strong> for large datasets</li>
+      <li><strong>Use inplace=False</strong> (default) for safer operations</li>
+      <li><strong>Profile your code</strong> before optimizing</li>
+      <li><strong>Handle missing data explicitly</strong> - don't ignore NaNs</li>
+      <li><strong>Use categorical dtype</strong> for strings with few unique values</li>
+      <li><strong>Partition large datasets</strong> when processing</li>
+      <li><strong>Document your transformations</strong> with clear comments</li>
+    </ul>
+  </div>
+
+  <h5 class="mt-3">Method Chaining Example</h5>
+  <p>
+    Method chaining (also called fluent interface) makes code more readable by avoiding intermediate variables. 
+    Each method returns a DataFrame, so you can chain methods together. Use parentheses and line breaks for 
+    readability. This style is more declarative: you describe WHAT you want, not HOW to do it step by step. 
+    It's easier to understand the data flow at a glance. The <code>assign()</code> method is particularly 
+    useful in chains for creating new columns - it returns a new DataFrame with the added column, perfect 
+    for chaining.
+  </p>
+  <pre><code class="language-python"># Instead of this
+df = pd.read_csv('data.csv')
+df = df[df['age'] > 25]
+df = df.dropna()
+df['age_group'] = df['age'] // 10
+df = df.groupby('age_group')['salary'].mean()
+
+# Use this
+result = (
+    pd.read_csv('data.csv')
+    .query('age > 25')
+    .dropna()
+    .assign(age_group=lambda x: x['age'] // 10)
+    .groupby('age_group')['salary']
+    .mean()
+)
+</code></pre>
+
+  <h5 class="mt-3">Error Handling</h5>
+  <p>
+    Production code needs robust error handling. File operations can fail for many reasons: file not found, 
+    empty file, corrupted data, wrong format, permission issues, etc. Catching specific exceptions lets you 
+    handle each case appropriately. Instead of crashing, your code can log the error, try alternatives, or 
+    gracefully exit with a meaningful message. Pandas defines specific error types (EmptyDataError, ParserError) 
+    for common issues - catch these specifically rather than using a generic <code>except Exception</code>.
+  </p>
+  <pre><code class="language-python">try:
+    df = pd.read_csv('data.csv')
+except FileNotFoundError:
+    print("File not found")
+except pd.errors.EmptyDataError:
+    print("File is empty")
+except pd.errors.ParserError:
+    print("Error parsing CSV")
+</code></pre>
+
+  <h5 class="mt-3">Configuration Settings</h5>
+  <p>
+    Pandas' display options control how DataFrames are printed. The defaults show only a few rows/columns and 
+    might truncate numbers. For exploration, you might want to see more. <code>set_option()</code> changes 
+    settings globally. <code>option_context()</code> is a context manager that temporarily changes settings - 
+    useful for printing specific DataFrames differently without affecting the rest of your code. Common settings: 
+    max_rows, max_columns, precision (decimal places), and float_format (for controlling number display).
+  </p>
+  <pre><code class="language-python"># Display options
+pd.set_option('display.max_rows', 100)
+pd.set_option('display.max_columns', 20)
+pd.set_option('display.width', 1000)
+pd.set_option('display.precision', 2)
+pd.set_option('display.float_format', '{:.2f}'.format)
+
+# Reset to defaults
+pd.reset_option('all')
+
+# Context manager for temporary settings
+with pd.option_context('display.max_rows', 10):
+    print(df)
+</code></pre>
+
+  <h4 class="mt-5">Conclusion</h4>
+  <p>
+    Congratulations on completing the Pandas series! You now have the skills to:
+  </p>
+  <ul>
+    <li>Read and write data in multiple formats efficiently</li>
+    <li>Clean and preprocess messy real-world datasets</li>
+    <li>Perform complex joins and merges like a database pro</li>
+    <li>Master groupby operations for aggregation and transformation</li>
+    <li>Partition data for scalable processing</li>
+    <li>Optimize performance for production workloads</li>
+  </ul>
+  <p>
+    The key to mastering Pandas is practice. Start with real datasets, experiment with different approaches, 
+    and always profile your code. Remember: premature optimization is the root of all evil, but understanding 
+    performance characteristics helps you make informed decisions.
+  </p>
+
+  <h5 class="mt-3">Next Steps</h5>
+  <ul>
+    <li>Work on real-world datasets from Kaggle or your own projects</li>
+    <li>Explore Dask for parallel processing of larger-than-memory datasets</li>
+    <li>Learn PySpark for distributed data processing</li>
+    <li>Study SQL to compare approaches and choose the right tool</li>
+    <li>Practice writing production-quality ETL pipelines</li>
+  </ul>
+
+  <div class="alert alert-success mt-4" role="alert">
+    <strong>Series Complete!</strong> Review earlier parts: 
+    <a href="Pandas_Part1_Basics.html" class="alert-link">Part 1</a> and 
+    <a href="Pandas_Part2_Joins_GroupBy.html" class="alert-link">Part 2</a>
+  </div>
+
+  <h4 class="mt-5">Additional Resources</h4>
+  <ul>
+    <li><a href="https://pandas.pydata.org/docs/" target="_blank" rel="noopener noreferrer">Official Pandas Documentation</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/enhancingperf.html" target="_blank" rel="noopener noreferrer">Enhancing Performance</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/scale.html" target="_blank" rel="noopener noreferrer">Scaling to Large Datasets</a></li>
+    <li><a href="https://github.com/pandas-dev/pandas" target="_blank" rel="noopener noreferrer">Pandas GitHub Repository</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy coding!</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>

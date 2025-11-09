@@ -1,0 +1,635 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Master Pandas fundamentals: installation, data structures, reading/writing files, data cleaning, and filtering operations for effective data manipulation in Python." />
+  <title>Pandas Part 1: From Installation to Data Cleaning | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pandas Part 1: From Installation to Data Cleaning" />
+  <meta property="og:description" content="Master Pandas fundamentals: installation, data structures, reading/writing files, data cleaning, and filtering operations for effective data manipulation in Python." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pandas Part 1: From Installation to Data Cleaning" />
+  <meta name="twitter:description" content="Master Pandas fundamentals: installation, data structures, reading/writing files, data cleaning, and filtering operations for effective data manipulation in Python." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Pandas Part 1: From Installation to Data Cleaning</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info" role="alert">
+    <strong>This is Part 1 of the Pandas Series.</strong> After mastering the basics, continue with 
+    <a href="Pandas_Part2_Joins_GroupBy.html" class="alert-link">Part 2: Joins and GroupBy Operations</a> and 
+    <a href="Pandas_Part3_Advanced.html" class="alert-link">Part 3: Advanced Data Engineering</a>.
+  </div>
+
+  <h4 class="mt-4">Introduction</h4>
+  <p>
+    Pandas is the Swiss Army knife of data manipulation in Python. Whether you're cleaning messy CSV files, 
+    performing complex aggregations, or building production-ready data pipelines, Pandas is your go-to library. 
+    In this first part of our comprehensive series, we'll cover installation, core data structures, reading/writing 
+    data, cleaning operations, and filtering techniques.
+  </p>
+  <p>
+    By the end of this guide, you'll have a solid foundation for working with data in Pandas.
+  </p>
+
+  <h4 class="mt-4">Table of Contents</h4>
+  <ul>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#basics">Basic Operations</a></li>
+    <li><a href="#data-structures">Core Data Structures</a></li>
+    <li><a href="#reading-writing">Reading and Writing Data</a></li>
+    <li><a href="#data-cleaning">Data Cleaning and Preprocessing</a></li>
+    <li><a href="#filtering-selection">Filtering and Selection</a></li>
+  </ul>
+
+  <h4 class="mt-5" id="installation">Installation</h4>
+  <p>
+    Before diving into Pandas, we need to install it. Pandas is a third-party library, meaning it doesn't come 
+    pre-installed with Python. The installation process is straightforward, and you have several options depending 
+    on your development environment and package manager preference.
+  </p>
+  <p>
+    <strong>Why multiple installation methods?</strong> Different developers have different workflows. If you're 
+    working in a Conda environment (common for data science), you'll want to use conda. If you're using standard 
+    Python virtual environments, pip is your best bet. The newer uv package manager offers blazingly fast installation 
+    speeds and is gaining popularity.
+  </p>
+  
+  <h5 class="mt-3">Using pip (recommended)</h5>
+  <p>
+    Pip is Python's default package installer and works in most environments. The basic installation is simple, 
+    but you can also install optional dependencies for enhanced performance (like faster C-based parsers).
+  </p>
+  <pre><code class="language-bash"># Install pandas
+pip install pandas
+
+# Install with optional dependencies
+pip install pandas[performance]
+
+# Install specific version
+pip install pandas==2.1.3
+</code></pre>
+
+  <h5 class="mt-3">Using conda</h5>
+  <p>
+    If you're using Anaconda or Miniconda, conda is the recommended installer. It handles dependency management 
+    better in scientific computing environments and often installs pre-compiled binaries that work more reliably 
+    across different systems.
+  </p>
+  <pre><code class="language-bash">conda install pandas
+
+# Or from conda-forge
+conda install -c conda-forge pandas
+</code></pre>
+
+  <h5 class="mt-3">Using uv (modern package manager)</h5>
+  <p>
+    UV is a new-generation Python package manager written in Rust. It's significantly faster than pip and is 
+    becoming increasingly popular for modern Python projects. If you're working on a project that uses uv, 
+    this is the way to go.
+  </p>
+  <pre><code class="language-bash">uv pip install pandas
+</code></pre>
+
+  <h5 class="mt-3">Verify Installation</h5>
+  <p>
+    After installation, it's good practice to verify that Pandas installed correctly and check which version 
+    you have. Different versions may have different features or behaviors, so knowing your version helps when 
+    following tutorials or debugging issues.
+  </p>
+  <pre><code class="language-python">import pandas as pd
+print(pd.__version__)  # Should print version number like 2.1.3
+</code></pre>
+
+  <h4 class="mt-5" id="basics">Basic Operations</h4>
+  <p>
+    Now that Pandas is installed, let's explore the basics. At its core, Pandas is about working with tabular 
+    data - think Excel spreadsheets or SQL tables. The most common way to get started is by creating a DataFrame 
+    from scratch, which helps you understand the structure before loading real data.
+  </p>
+
+  <h5 class="mt-3">Importing and Creating Data</h5>
+  <p>
+    A DataFrame is like a table with rows and columns. Each column can have a different data type (numbers, 
+    strings, dates, etc.), making it incredibly versatile. The most intuitive way to create a DataFrame is 
+    from a Python dictionary, where keys become column names and values become the data in those columns.
+  </p>
+  <pre><code class="language-python">import pandas as pd
+import numpy as np
+
+# Create a simple DataFrame
+data = {
+    'name': ['Alice', 'Bob', 'Charlie', 'David'],
+    'age': [25, 30, 35, 40],
+    'city': ['New York', 'London', 'Paris', 'Tokyo'],
+    'salary': [50000, 60000, 70000, 80000]
+}
+
+df = pd.DataFrame(data)
+print(df)
+</code></pre>
+
+  <p><strong>Output:</strong></p>
+  <pre><code>      name  age      city  salary
+0    Alice   25  New York   50000
+1      Bob   30    London   60000
+2  Charlie   35     Paris   70000
+3    David   40     Tokyo   80000
+</code></pre>
+
+  <h5 class="mt-3">Basic Information</h5>
+  <p>
+    Once you have a DataFrame, you'll want to understand its structure. Pandas provides several methods to 
+    quickly inspect your data: checking dimensions, viewing column names and types, getting statistical summaries, 
+    and peeking at the first or last few rows. These are essential first steps when working with any dataset.
+  </p>
+  <pre><code class="language-python"># Shape of DataFrame
+print(f"Shape: {df.shape}")  # (4, 4)
+
+# Column names
+print(f"Columns: {df.columns.tolist()}")
+
+# Data types
+print(df.dtypes)
+
+# Quick statistics
+print(df.describe())
+
+# First and last rows
+print(df.head(2))
+print(df.tail(2))
+
+# Info about DataFrame
+df.info()
+</code></pre>
+
+  <h4 class="mt-5" id="data-structures">Core Data Structures</h4>
+  <p>
+    Pandas is built on three fundamental data structures. Understanding these is crucial because everything 
+    you do in Pandas involves manipulating these objects. Think of them as building blocks: Series are single 
+    columns, DataFrames are tables, and Index objects label the rows and columns.
+  </p>
+  
+  <h5 class="mt-3">1. Series - 1D Labeled Array</h5>
+  <p>
+    A Series is essentially a single column of data with labels (index). It's similar to a Python list or 
+    NumPy array, but with the added power of labeled indices. This means you can access elements by position 
+    (like a list) or by label (like a dictionary). Every column in a DataFrame is actually a Series object.
+  </p>
+  <pre><code class="language-python"># Creating a Series
+s = pd.Series([10, 20, 30, 40], index=['a', 'b', 'c', 'd'])
+print(s)
+
+# Series from dictionary
+dict_data = {'x': 100, 'y': 200, 'z': 300}
+s2 = pd.Series(dict_data)
+
+# Accessing elements
+print(s['b'])  # 20
+print(s[1])    # 20
+
+# Series operations
+print(s * 2)
+print(s + 10)
+print(s.mean())
+</code></pre>
+
+  <h5 class="mt-3">2. DataFrame - 2D Labeled Data Structure</h5>
+  <p>
+    A DataFrame is the workhorse of Pandas - a two-dimensional table with labeled rows and columns. You can 
+    think of it as a collection of Series objects sharing the same index. DataFrames can be created from various 
+    sources: dictionaries, lists of dictionaries, NumPy arrays, or even by reading files. Each creation method 
+    has its use case depending on where your data comes from.
+  </p>
+  <pre><code class="language-python"># Create from dictionary
+df = pd.DataFrame({
+    'A': [1, 2, 3],
+    'B': [4, 5, 6],
+    'C': [7, 8, 9]
+})
+
+# Create from list of dictionaries
+data = [
+    {'A': 1, 'B': 4, 'C': 7},
+    {'A': 2, 'B': 5, 'C': 8},
+    {'A': 3, 'B': 6, 'C': 9}
+]
+df = pd.DataFrame(data)
+
+# Create from numpy array
+arr = np.array([[1, 4, 7], [2, 5, 8], [3, 6, 9]])
+df = pd.DataFrame(arr, columns=['A', 'B', 'C'])
+</code></pre>
+
+  <h5 class="mt-3">3. Index - Immutable Array for Axis Labels</h5>
+  <p>
+    The Index object is what makes Pandas powerful - it labels your rows (and columns). While simple integer 
+    indices work fine, custom indices (like dates, IDs, or names) make your data more meaningful and enable 
+    advanced operations like alignment and hierarchical indexing. MultiIndex takes this further, allowing 
+    multiple levels of indexing for complex datasets.
+  </p>
+  <pre><code class="language-python"># Custom index
+df = pd.DataFrame(
+    data={'value': [100, 200, 300]},
+    index=pd.Index(['row1', 'row2', 'row3'], name='id')
+)
+
+# MultiIndex (hierarchical indexing)
+idx = pd.MultiIndex.from_tuples([
+    ('A', 1), ('A', 2), ('B', 1), ('B', 2)
+], names=['letter', 'number'])
+
+df = pd.DataFrame({'value': [10, 20, 30, 40]}, index=idx)
+print(df)
+</code></pre>
+
+  <h4 class="mt-5" id="reading-writing">Reading and Writing Data</h4>
+  <p>
+    In real-world scenarios, you rarely create DataFrames from scratch. Instead, you load data from files, 
+    databases, APIs, or web pages. Pandas supports dozens of file formats, making it incredibly versatile 
+    for data ingestion. Understanding the options for reading and writing data is crucial for efficient 
+    data pipelines.
+  </p>
+  
+  <h5 class="mt-3">Reading CSV Files</h5>
+  <p>
+    CSV (Comma-Separated Values) is the most common format for tabular data. Pandas' <code>read_csv()</code> 
+    function is highly optimized and packed with options. You can specify delimiters, handle missing values, 
+    parse dates automatically, select specific columns, and much more. The basic usage is simple, but the 
+    advanced options give you fine-grained control over how data is loaded.
+  </p>
+  <pre><code class="language-python"># Basic read
+df = pd.read_csv('data.csv')
+
+# With options
+df = pd.read_csv(
+    'data.csv',
+    sep=',',                    # Delimiter
+    header=0,                   # Row to use as column names
+    index_col=0,                # Column to use as index
+    usecols=['name', 'age'],    # Columns to read
+    dtype={'age': int},         # Data types
+    parse_dates=['date_col'],   # Parse dates
+    na_values=['NA', 'null'],   # Additional NA values
+    nrows=1000,                 # Read first N rows
+    skiprows=[1, 2],            # Skip specific rows
+    encoding='utf-8'            # File encoding
+)
+
+# Read from URL
+url = 'https://example.com/data.csv'
+df = pd.read_csv(url)
+</code></pre>
+
+  <h5 class="mt-3">Writing CSV Files</h5>
+  <p>
+    After processing your data, you'll often need to save it. The <code>to_csv()</code> method mirrors 
+    <code>read_csv()</code> with similar options. You can control whether to include the index, choose 
+    delimiters, select specific columns, and even compress the output for storage efficiency.
+  </p>
+  <pre><code class="language-python"># Basic write
+df.to_csv('output.csv', index=False)
+
+# With options
+df.to_csv(
+    'output.csv',
+    sep='|',                    # Delimiter
+    index=False,                # Don't write index
+    header=True,                # Write column names
+    columns=['name', 'age'],    # Specific columns
+    encoding='utf-8',           # Encoding
+    compression='gzip'          # Compress output
+)
+</code></pre>
+
+  <h5 class="mt-3">Other Formats</h5>
+  <p>
+    Beyond CSV, Pandas supports Excel files (great for business users), JSON (common in web APIs), Parquet 
+    (efficient columnar storage for big data), SQL databases (direct database integration), and even HTML 
+    tables scraped from websites. Each format has its strengths: Excel for sharing with non-technical users, 
+    Parquet for large datasets, JSON for APIs, and SQL for database operations.
+  </p>
+  <pre><code class="language-python"># Excel
+df = pd.read_excel('data.xlsx', sheet_name='Sheet1')
+df.to_excel('output.xlsx', sheet_name='Results', index=False)
+
+# JSON
+df = pd.read_json('data.json')
+df.to_json('output.json', orient='records', indent=2)
+
+# Parquet (efficient columnar format)
+df = pd.read_parquet('data.parquet')
+df.to_parquet('output.parquet', compression='snappy')
+
+# SQL Database
+import sqlite3
+conn = sqlite3.connect('database.db')
+df = pd.read_sql_query('SELECT * FROM table', conn)
+df.to_sql('new_table', conn, if_exists='replace', index=False)
+
+# HTML
+df = pd.read_html('https://example.com/table.html')[0]
+df.to_html('output.html')
+</code></pre>
+
+  <h4 class="mt-5" id="data-cleaning">Data Cleaning and Preprocessing</h4>
+  <p>
+    Real-world data is messy. You'll encounter missing values, duplicates, wrong data types, and inconsistent 
+    formatting. Data cleaning often takes 80% of a data scientist's time. Pandas provides powerful tools to 
+    handle these issues systematically, transforming raw data into clean, analysis-ready datasets.
+  </p>
+  
+  <h5 class="mt-3">Handling Missing Data</h5>
+  <p>
+    Missing data (represented as NaN in Pandas) is inevitable in real datasets. The key is deciding how to 
+    handle it: Should you drop rows with missing values? Fill them with defaults? Interpolate? The right 
+    approach depends on your data and analysis goals. Pandas gives you multiple strategies, from simple 
+    deletion to sophisticated imputation techniques.
+  </p>
+  <pre><code class="language-python"># Detect missing values
+print(df.isnull().sum())
+print(df.isna().any())
+
+# Drop missing values
+df_clean = df.dropna()                    # Drop any row with NA
+df_clean = df.dropna(axis=1)              # Drop columns with NA
+df_clean = df.dropna(thresh=2)            # Keep rows with at least 2 non-NA
+df_clean = df.dropna(subset=['age'])      # Drop rows where 'age' is NA
+
+# Fill missing values
+df['age'].fillna(0, inplace=True)         # Fill with constant
+df['age'].fillna(df['age'].mean(), inplace=True)  # Fill with mean
+df.fillna(method='ffill', inplace=True)   # Forward fill
+df.fillna(method='bfill', inplace=True)   # Backward fill
+df.interpolate(method='linear', inplace=True)  # Interpolate
+</code></pre>
+
+  <h5 class="mt-3">Removing Duplicates</h5>
+  <p>
+    Duplicate rows can skew your analysis and waste computational resources. They often arise from data 
+    collection errors, multiple sources being merged, or timestamp-based data with repeated readings. 
+    Pandas makes it easy to detect duplicates based on all columns or specific subsets, and then decide 
+    which duplicate to keep (first, last, or remove all).
+  </p>
+  <pre><code class="language-python"># Find duplicates
+print(df.duplicated().sum())
+print(df.duplicated(subset=['name']))
+
+# Remove duplicates
+df_unique = df.drop_duplicates()
+df_unique = df.drop_duplicates(subset=['name'], keep='first')
+df_unique = df.drop_duplicates(subset=['name', 'age'], keep='last')
+</code></pre>
+
+  <h5 class="mt-3">Data Type Conversion</h5>
+  <p>
+    Pandas infers data types when loading data, but it doesn't always get it right. A column of numbers 
+    might be read as strings, or dates as plain text. Incorrect types can cause errors in calculations or 
+    waste memory. Converting to appropriate types (integers, floats, dates, categories) ensures correct 
+    operations and can significantly reduce memory usage, especially with categorical data.
+  </p>
+  <pre><code class="language-python"># Convert data types
+df['age'] = df['age'].astype(int)
+df['salary'] = df['salary'].astype(float)
+df['date'] = pd.to_datetime(df['date'])
+df['category'] = df['category'].astype('category')
+
+# Convert multiple columns
+df = df.astype({
+    'age': int,
+    'salary': float,
+    'active': bool
+})
+</code></pre>
+
+  <h5 class="mt-3">Renaming and Reindexing</h5>
+  <p>
+    Column names from source files are often cryptic, inconsistent, or don't follow naming conventions. 
+    Renaming makes your code more readable and maintainable. Similarly, manipulating the index - whether 
+    resetting it to default integers, setting a meaningful column as the index, or renaming index labels - 
+    helps organize your data and enable efficient lookups.
+  </p>
+  <pre><code class="language-python"># Rename columns
+df.rename(columns={'old_name': 'new_name'}, inplace=True)
+df.columns = ['col1', 'col2', 'col3']
+
+# Rename index
+df.rename(index={0: 'first', 1: 'second'}, inplace=True)
+
+# Reset index
+df.reset_index(drop=True, inplace=True)
+
+# Set new index
+df.set_index('id', inplace=True)
+</code></pre>
+
+  <h5 class="mt-3">String Operations</h5>
+  <p>
+    Text data requires special handling - converting cases, removing whitespace, splitting fields, or 
+    extracting patterns. Pandas' <code>.str</code> accessor provides vectorized string operations, meaning 
+    you can apply string methods to entire columns at once (much faster than loops). This is invaluable for 
+    cleaning names, parsing text fields, or extracting information using regular expressions.
+  </p>
+  <pre><code class="language-python"># String methods (vectorized)
+df['name'] = df['name'].str.lower()
+df['name'] = df['name'].str.upper()
+df['name'] = df['name'].str.strip()
+df['name'] = df['name'].str.replace('_', ' ')
+
+# String contains
+mask = df['name'].str.contains('alice', case=False)
+df_filtered = df[mask]
+
+# Split strings
+df[['first', 'last']] = df['name'].str.split(' ', expand=True)
+
+# Extract with regex
+df['code'] = df['text'].str.extract(r'([A-Z]{3})')
+</code></pre>
+
+  <h4 class="mt-5" id="filtering-selection">Filtering and Selection</h4>
+  <p>
+    Selecting the right subset of data is fundamental to analysis. You might need specific columns, certain 
+    rows meeting conditions, or a combination of both. Pandas offers multiple ways to slice and dice your 
+    data, each with different use cases. Mastering selection is key to efficient data manipulation.
+  </p>
+  
+  <h5 class="mt-3">Column Selection</h5>
+  <p>
+    Columns can be selected using bracket notation (like a dictionary) or dot notation (for simple names). 
+    Selecting a single column returns a Series, while selecting multiple columns returns a DataFrame. This 
+    distinction matters because Series and DataFrames have different methods and behaviors.
+  </p>
+  <pre><code class="language-python"># Single column (returns Series)
+ages = df['age']
+
+# Multiple columns (returns DataFrame)
+subset = df[['name', 'age']]
+
+# Using dot notation (if column name is valid Python identifier)
+ages = df.age
+</code></pre>
+
+  <h5 class="mt-3">Row Selection</h5>
+  <p>
+    Row selection comes in two flavors: <code>iloc</code> for position-based selection (like array indexing) 
+    and <code>loc</code> for label-based selection. Position-based is useful when you know exactly which row 
+    numbers you want. Label-based is powerful when your index has meaningful labels. Boolean indexing lets 
+    you filter rows based on conditions - this is how you answer questions like "show me all customers over 
+    age 25" or "find records where sales exceed $1000".
+  </p>
+  <pre><code class="language-python"># By position (iloc)
+first_row = df.iloc[0]
+first_three = df.iloc[0:3]
+specific_rows = df.iloc[[0, 2, 4]]
+slice_data = df.iloc[0:5, 1:3]  # Rows 0-4, columns 1-2
+
+# By label (loc)
+row = df.loc[0]
+rows = df.loc[0:2]
+subset = df.loc[0:2, ['name', 'age']]
+
+# Boolean indexing
+adults = df[df['age'] >= 18]
+high_salary = df[df['salary'] > 60000]
+
+# Multiple conditions
+result = df[(df['age'] > 25) & (df['salary'] > 55000)]
+result = df[(df['city'] == 'London') | (df['city'] == 'Paris')]
+</code></pre>
+
+  <h5 class="mt-3">Advanced Filtering</h5>
+  <p>
+    Beyond basic comparisons, Pandas offers specialized filtering methods. The <code>isin()</code> method 
+    checks membership in a list (like SQL's IN operator). <code>between()</code> finds values in a range. 
+    The <code>query()</code> method uses a SQL-like string syntax that's often more readable than boolean 
+    indexing. <code>nlargest()</code> and <code>nsmallest()</code> quickly find top or bottom values. 
+    <code>sample()</code> randomly selects rows - useful for quick data exploration or creating test sets.
+  </p>
+  <pre><code class="language-python"># isin() method
+cities = ['London', 'Paris', 'Tokyo']
+df_filtered = df[df['city'].isin(cities)]
+
+# between() method
+df_filtered = df[df['age'].between(25, 35)]
+
+# query() method (easier syntax)
+df_filtered = df.query('age > 25 and salary > 50000')
+df_filtered = df.query('city in ["London", "Paris"]')
+
+# nlargest / nsmallest
+top_3 = df.nlargest(3, 'salary')
+bottom_2 = df.nsmallest(2, 'age')
+
+# sample() - random rows
+random_sample = df.sample(n=5)
+random_fraction = df.sample(frac=0.1)  # 10% of data
+</code></pre>
+
+  <h4 class="mt-5">What's Next?</h4>
+  <p>
+    Now that you've mastered the fundamentals of Pandas, you're ready to dive deeper! In Part 2, we'll cover:
+  </p>
+  <ul>
+    <li>All types of joins and merges (inner, left, right, outer)</li>
+    <li>Merging on multiple keys and handling overlapping columns</li>
+    <li>Concat operations for stacking DataFrames</li>
+    <li>GroupBy operations with aggregations and transforms</li>
+    <li>Custom aggregation functions</li>
+    <li>Window functions and rolling operations</li>
+    <li>Pivot tables and cross-tabulation</li>
+  </ul>
+
+  <div class="alert alert-success mt-4" role="alert">
+    <strong>Continue learning:</strong> 
+    <a href="Pandas_Part2_Joins_GroupBy.html" class="alert-link">Pandas Part 2: Joins and GroupBy Operations</a>
+  </div>
+
+  <h4 class="mt-5">Additional Resources</h4>
+  <ul>
+    <li><a href="https://pandas.pydata.org/docs/" target="_blank" rel="noopener noreferrer">Official Pandas Documentation</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/index.html" target="_blank" rel="noopener noreferrer">Pandas User Guide</a></li>
+    <li><a href="https://pandas.pydata.org/docs/user_guide/cookbook.html" target="_blank" rel="noopener noreferrer">Pandas Cookbook</a></li>
+  </ul>
+
+  <hr class="mt-5" />
+  <p class="text-muted">
+    <small>Happy coding!</small>
+  </p>
+</div>
+
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+</body>
+</html>
