@@ -143,9 +143,6 @@ html, body {
   /* Topic Filter Styles */
   .topic-filter-container {
     margin-top: 1rem;
-    position: sticky;
-    top: 70px;
-    z-index: 100;
     background-color: #f8f9fa;
   }
 
