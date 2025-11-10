@@ -101,6 +101,9 @@
             <a class="nav-link text-white" href="#" id="home-link">Blog List</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link text-white" href="content/contribute.html" id="contribute-link">Contribute</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-white" href="https://pulkit12dhingra.github.io/portfolio/" target="_blank">Portfolio</a>
           </li>
         </ul>
@@ -315,6 +318,19 @@
         })
         .catch(() => {
           mainContent.innerHTML = "<p class='text-danger'>Could not load About page.</p>";
+        });
+    });
+
+    // Contribute page
+    document.getElementById("contribute-link").addEventListener("click", function (e) {
+      e.preventDefault();
+      fetch("content/contribute.html")
+        .then((res) => res.text())
+        .then((html) => {
+          mainContent.innerHTML = html;
+        })
+        .catch(() => {
+          mainContent.innerHTML = "<p class='text-danger'>Could not load Contribute page.</p>";
         });
     });
 
