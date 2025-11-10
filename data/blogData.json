@@ -3,174 +3,232 @@
     "file": "Hitlog_Processing_Blog.html",
     "title": "Hitlog Processing: Analyzing User Journeys to Identify Influential Content",
     "summary": "Build a production-ready Python application to analyze user journeys and identify which articles drive registrations. Explore timestamp-based and graph-based approaches with clean architecture.",
-    "tags": ["Python", "Data Engineering", "Graph Algorithms", "Production", "Testing", "Architecture"]
+    "tags": ["Python", "Data Engineering", "Graph Algorithms", "Production", "Testing", "Architecture"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "NumPy_Complete_Guide.html",
     "title": "NumPy Complete Guide: From Arrays to Advanced Computing",
     "summary": "Master NumPy from basics to advanced: arrays, operations, indexing, slicing, broadcasting, linear algebra, and performance optimization for numerical computing in Python.",
-    "tags": ["Python", "NumPy", "Data Science", "Linear Algebra", "Tutorial", "Scientific Computing"]
+    "tags": ["Python", "NumPy", "Data Science", "Linear Algebra", "Tutorial", "Scientific Computing"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Pandas_Part3_Advanced.html",
     "title": "Pandas Part 3: Advanced Data Engineering",
     "summary": "Master advanced Pandas techniques: data partitioning, chunking, memory optimization, parallel processing, vectorization, and production-ready best practices for data engineering.",
-    "tags": ["Python", "Pandas", "Data Engineering", "Tutorial", "Advanced"]
+    "tags": ["Python", "Pandas", "Data Engineering", "Tutorial", "Advanced"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Pandas_Part2_Joins_GroupBy.html",
     "title": "Pandas Part 2: Joins and GroupBy Operations",
     "summary": "Master Pandas joins, merges, and GroupBy operations: inner/left/right/outer joins, multi-key merges, aggregations, transforms, pivot tables, and window functions.",
-    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Intermediate"]
+    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Intermediate"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Pandas_Part1_Basics.html",
     "title": "Pandas Part 1: From Installation to Data Cleaning",
     "summary": "Master Pandas fundamentals: installation, data structures, reading/writing files, data cleaning, and filtering operations for effective data manipulation in Python.",
-    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Beginner"]
+    "tags": ["Python", "Pandas", "Data Science", "Tutorial", "Beginner"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Wiki_Hindi_scrapper.html",
     "title": "Deep Dive: Functions in Our Hindi Wikipedia Scraper",
     "summary": "Have you ever wondered how to automatically retrieve and clean Hindi text from Wikipedia? This post walks through the requests and BeautifulSoup modules and explains each function in a reusable scraper class, ending with the full ready-to-run code.",
-    "tags": ["Web Scraping", "Python", "BeautifulSoup", "Wikipedia", "Hindi", "Automation"]
+    "tags": ["Web Scraping", "Python", "BeautifulSoup", "Wikipedia", "Hindi", "Automation"],
+    "topic": "Web Scraping",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "GitHub_Advanced.html",
     "title": "GitHub Advanced: Actions, Workflows, and Open Source Contribution",
     "summary": "Master advanced Git and GitHub: GitHub Actions, CI/CD workflows, .gitignore, pre-commit hooks, contributing to open source, releases, tags, and GitHub Packages.",
-    "tags": ["Git", "GitHub", "GitHub Actions", "CI/CD", "Open Source", "Automation", "DevOps"]
+    "tags": ["Git", "GitHub", "GitHub Actions", "CI/CD", "Open Source", "Automation", "DevOps"],
+    "topic": "Version Control",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "GitHub_Basics.html",
     "title": "GitHub Basics: Mastering Version Control and Collaboration",
     "summary": "Master the fundamentals of Git and GitHub: version control, repositories, branches, commits, pull requests, staging area, and essential CLI commands for modern development.",
-    "tags": ["Git", "GitHub", "Version Control", "CLI", "Collaboration", "Tutorial", "Beginner"]
+    "tags": ["Git", "GitHub", "Version Control", "CLI", "Collaboration", "Tutorial", "Beginner"],
+    "topic": "Version Control",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Blog_Generation_Agent.html",
     "title": "LangGraph Agent to HTML Blog Generator: Building Blogs with AI",
     "summary": "Learn how to generate HTML blog posts from Jupyter notebooks using LangChain, LangGraph, and Ollama. This post walks through loading, retrieving, reasoning, and generating structured blog content with a full pipeline.",
-    "tags": ["AI", "LangChain", "LangGraph", "Ollama", "Agent", "Automation", "NLP"]
+    "tags": ["AI", "LangChain", "LangGraph", "Ollama", "Agent", "Automation", "NLP"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "RAG_with_LangGraphs.html",
     "title": "Graph-Powered RAG with LangChain, Chroma DB, and Gemma 3",
     "summary": "Build an advanced Retrieval-Augmented Generation (RAG) pipeline using LangGraph and Gemma 3 model with detailed code and visualization.",
-    "tags": ["AI", "RAG", "LangChain", "LangGraph", "ChromaDB", "LLM", "Vector Database"]
+    "tags": ["AI", "RAG", "LangChain", "LangGraph", "ChromaDB", "LLM", "Vector Database"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {  
     "file": "Building_a_RAG_Pipeline_with_PDFs.html",
     "title": "Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3",
     "summary": "Step-by-step guide to building a Retrieval-Augmented Generation pipeline using LangChain, HuggingFace embeddings, and your own PDF (resume) as a knowledge base.",
-    "tags": ["AI", "RAG", "LangChain", "PDF", "Embeddings", "HuggingFace", "LLM"]
+    "tags": ["AI", "RAG", "LangChain", "PDF", "Embeddings", "HuggingFace", "LLM"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "LangChain_Document_Loaders.html",
     "title": "LangChain Document Loaders: A Unified Gateway to Your Data",
     "summary": "Explore how to use LangChain's powerful document loaders to bring in data from PDFs, websites, YouTube, CSVs, Notion, and even structured JSON with just a few lines of code.",
-    "tags": ["AI", "LangChain", "Data Processing", "PDF", "Web Scraping", "Python"]
+    "tags": ["AI", "LangChain", "Data Processing", "PDF", "Web Scraping", "Python"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Langchains_with_Ollama.html",
     "title": "LangChain + Ollama: Your Gateway to LLM Apps, Explained with Code",
     "summary": "This blog walks through how to build with LangChain and Ollama covering chat vs. completion models, prompt templates, and hands-on code to get started fast.",
-    "tags": ["AI", "LangChain", "Ollama", "LLM", "Python", "Local Models"]
+    "tags": ["AI", "LangChain", "Ollama", "LLM", "Python", "Local Models"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Setting_up_Ollama.html",
     "title": "Setting Up Ollama",
     "summary": "Get started with Ollama, a no-token, local-friendly way to run LLMs on your machine. Setup steps and essential commands included.",
-    "tags": ["AI", "Ollama", "LLM", "Setup", "Local Models", "Tutorial"]
+    "tags": ["AI", "Ollama", "LLM", "Setup", "Local Models", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Graphs.html",
     "title": "Grid Traversal Algorithms: BFS vs DFS Explained with Code",
     "summary": "Learn how to implement and visualize Breadth-First Search (BFS) and Depth-First Search (DFS) on a 2D matrix. This beginner-friendly guide walks you through both algorithms with code, output, and a comparison table.",
-    "tags": ["Algorithms", "Python", "BFS", "DFS", "Graph Traversal", "Data Structures"]
+    "tags": ["Algorithms", "Python", "BFS", "DFS", "Graph Traversal", "Data Structures"],
+    "topic": "Algorithms & Data Structures",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Tree.html",
     "title": "Binary Search Trees in Python: From Scratch",
     "summary": "Learn how to implement a Binary Search Tree (BST) from scratch in Python, covering insertion, search, deletion, traversal, and visualization.",
-    "tags": ["Data Structures", "Python", "Trees", "BST", "Algorithms", "From Scratch"]
+    "tags": ["Data Structures", "Python", "Trees", "BST", "Algorithms", "From Scratch"],
+    "topic": "Algorithms & Data Structures",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Sorting_algos.html",
     "title": "Sorting Algorithms Demystified: Visualized and Benchmarked in Python",
     "summary": "Explore and compare Bubble, Insertion, Selection, Merge, and Quick Sort through Python code, visual benchmarks, and complexity analysis.",
-    "tags": ["Algorithms", "Python", "Sorting", "Visualization", "Performance", "Data Structures"]
+    "tags": ["Algorithms", "Python", "Sorting", "Visualization", "Performance", "Data Structures"],
+    "topic": "Algorithms & Data Structures",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Searching_algos.html",
     "title": "Exploring Search Algorithms: From Linear to Binary",
     "summary": "Learn the fundamentals of Linear and Binary Search algorithms, their implementation in Python, and when to use each. Includes step-by-step code and comparison.",
-    "tags": ["Algorithms", "Python", "Search", "Binary Search", "Linear Search", "Beginner"]
+    "tags": ["Algorithms", "Python", "Search", "Binary Search", "Linear Search", "Beginner"],
+    "topic": "Algorithms & Data Structures",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Decision_Tree_Regression_from_Scratch.html",
     "title": "Decision Tree Regressor from Scratch: Split, Predict, Repeat",
     "summary": "Explore how decision trees make predictions by learning to split data based on error reduction. This guide walks through a full tree regressor implementation in Python.",
-    "tags": ["Machine Learning", "Python", "Decision Trees", "Regression", "Algorithms", "From Scratch"]
+    "tags": ["Machine Learning", "Python", "Decision Trees", "Regression", "Algorithms", "From Scratch"],
+    "topic": "Machine Learning",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Lasso_Regression_from_Scratch.html",
     "title": "Lasso Regression from Scratch: Feature Selection Meets Regularization",
     "summary": "Learn how to implement Lasso Regression using Coordinate Descent from scratch, and explore how L1 regularization leads to feature selection in high-dimensional data.",
-    "tags": ["Machine Learning", "Python", "Regression", "Lasso", "Regularization", "From Scratch"]
+    "tags": ["Machine Learning", "Python", "Regression", "Lasso", "Regularization", "From Scratch"],
+    "topic": "Machine Learning",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Ridge_Regression_from_Scratch.html",
     "title": "Ridge Regression from Scratch: With Gradient Descent and L2 Regularization",
     "summary": "Explore how to implement Ridge Regression using gradient descent from scratch. Learn why regularization matters and compare performance against OLS and SGD models.",
-    "tags": ["Machine Learning", "Python", "Regression", "Ridge", "Gradient Descent", "From Scratch"]
+    "tags": ["Machine Learning", "Python", "Regression", "Ridge", "Gradient Descent", "From Scratch"],
+    "topic": "Machine Learning",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Linear_Regression_OLS.html",
     "title": "Mastering Linear Regression with OLS: A Hands-On Guide Using California Housing Data",
     "summary": "Dive deep into Ordinary Least Squares (OLS) linear regression with a real-world dataset. This blog walks you through each step from loading data to evaluating model performance.",
-    "tags": ["Machine Learning", "Python", "Regression", "OLS", "Data Science", "Tutorial"]
+    "tags": ["Machine Learning", "Python", "Regression", "OLS", "Data Science", "Tutorial"],
+    "topic": "Machine Learning",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Linear_Regression_from_Scratch.html",
     "title": "Linear Regression from Scratch: With Gradient Descent",
     "summary": "This blog breaks down gradient descent like never before and walks you through building your own predictive model from scratch. Simple, sharp, and hands-on.",
-    "tags": ["Machine Learning", "Python", "Regression", "Gradient Descent", "From Scratch", "Beginner"]
+    "tags": ["Machine Learning", "Python", "Regression", "Gradient Descent", "From Scratch", "Beginner"],
+    "topic": "Machine Learning",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Ruff_Linter_Formatter.html",
     "title": "Ruff: The Blazingly Fast Python Linter and Formatter",
     "summary": "Master Ruff, the all-in-one Python linting and formatting tool that's 10-100x faster than traditional tools. Learn how to replace Flake8, Black, isort, and more with a single command.",
-    "tags": ["Python", "Linting", "Formatting", "Ruff", "Code Quality", "Tools"]
+    "tags": ["Python", "Linting", "Formatting", "Ruff", "Code Quality", "Tools"],
+    "topic": "Python Development",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Pytest_Decorators_Guide.html",
     "title": "Mastering Pytest: A Deep Dive into Decorators and Advanced Testing",
     "summary": "Unlock the full power of pytest by mastering its decorator system. Learn @pytest.mark.parametrize, @pytest.fixture, custom markers, and 10+ essential decorators with practical examples.",
-    "tags": ["Python", "Testing", "Pytest", "Decorators", "Unit Testing", "Tutorial"]
+    "tags": ["Python", "Testing", "Pytest", "Decorators", "Unit Testing", "Tutorial"],
+    "topic": "Python Development",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "UV_Package_Manager.html",
     "title": "UV: The Lightning-Fast Python Package Manager",
     "summary": "Discover UV, the blazingly fast Python package manager built in Rust. Learn how it's 10-100x faster than pip and why it's becoming the go-to tool for modern Python development.",
-    "tags": ["Python", "Package Manager", "UV", "Rust", "Tools", "Performance"]
+    "tags": ["Python", "Package Manager", "UV", "Rust", "Tools", "Performance"],
+    "topic": "Python Development",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Pyproject_TOML_Guide.html",
     "title": "Understanding pyproject.toml: The Modern Python Project Configuration File",
     "summary": "Master pyproject.toml - the unified configuration standard for Python projects. Learn structure, benefits, tool configurations, migration from setup.py, and best practices.",
-    "tags": ["Python", "Configuration", "TOML", "Project Setup", "Best Practices", "Tools"]
+    "tags": ["Python", "Configuration", "TOML", "Project Setup", "Best Practices", "Tools"],
+    "topic": "Python Development",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Python_Setup.html",
     "title": "Setting Up Your Python Environment",
     "summary": "A beginner-friendly guide to creating and managing Python virtual environments, installing packages, and using pip effectively.",
-    "tags": ["Python", "Setup", "Virtual Environment", "Beginner", "pip", "Tutorial"]
+    "tags": ["Python", "Setup", "Virtual Environment", "Beginner", "pip", "Tutorial"],
+    "topic": "Python Development",
+    "contributor": "Pulkit Dhingra"
   },
   {
     "file": "Hello_World.html",
     "title": "Hello World! My First Blog Post",
     "summary": "Kicking off my blog with excitement and a glimpse of what's to come. Let the journey begin!",
-    "tags": ["Blog", "Introduction", "Hello World"]
+    "tags": ["Blog", "Introduction", "Hello World"],
+    "topic": "Blog",
+    "contributor": "Pulkit Dhingra"
   }
 ]

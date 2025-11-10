@@ -139,4 +139,62 @@ html, body {
     white-space: normal;  /* previously set to nowrap */
     word-break: break-word; /* break long words if needed */
   }
+
+  /* Topic Filter Styles */
+  .topic-filter-container {
+    margin-top: 1rem;
+    position: sticky;
+    top: 70px;
+    z-index: 100;
+    background-color: #f8f9fa;
+  }
+
+  .topic-filter-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .topic-filter-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+  }
+
+  .topic-filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 767px) {
+    .topic-filter-container {
+      top: 90px;
+    }
+    
+    .topic-filter-btn {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+    }
+  }
+
+  /* Contributor Info Styles */
+  .contributor-info {
+    display: flex;
+    align-items: center;
+    color: #6c757d;
+    font-size: 0.95rem;
+  }
+
+  .contributor-info i {
+    color: #0d6efd;
+    font-size: 1rem;
+  }
+
+  .contributor-info .text-muted {
+    font-style: italic;
+  }
+
+  .list-group-item:hover .contributor-info i {
+    color: #0a58ca;
+  }
   
