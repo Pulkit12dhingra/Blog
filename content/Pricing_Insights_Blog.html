@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <title>Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing" />
+  <meta property="og:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing" />
+  <meta name="twitter:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <h4 class="mt-4">Introduction & The Problem</h4>
+  <p>
+    In the fast-paced world of e-commerce, understanding price trends and optimizing dynamic pricing strategies is essential for maximizing revenue and staying competitive. But how do you build a robust analytics pipeline that can ingest, clean, and analyze millions of product records from platforms like eBay and Kaggle, and deliver actionable insights to business stakeholders?
+  </p>
+  <p>
+    The <strong>ecommerce-pricing-insights</strong> project tackles this challenge head-on. It provides a production-ready workflow for data engineering, warehousing, and business intelligence, enabling teams to:
+    <ul>
+      <li>Ingest and validate large-scale e-commerce datasets</li>
+      <li>Design and build star-schema data warehouses</li>
+      <li>Analyze price trends, category leaders, and brand performance</li>
+      <li>Implement and test dynamic pricing models</li>
+      <li>Visualize insights with interactive dashboards</li>
+    </ul>
+  </p>
+
+  <h4 class="mt-4">Project Structure & Modular Architecture</h4>
+  <p>
+    The project is organized for clarity, scalability, and maintainability, following best practices in data engineering and analytics:
+  </p>
+  <pre class="bg-light p-3 rounded"><code>ecommerce-pricing-insights/
+├── data/
+│   ├── raw/                      # Raw eBay/Kaggle datasets
+│   └── processed/                # Cleaned and feature-enriched data
+├── notebooks/
+│   ├── apache_spark.ipynb        # Scalable data processing
+│   ├── Data_check.ipynb          # Data validation and exploration
+│   └── Data_cleaning_code.ipynb  # Data cleaning workflows
+├── sql/
+│   ├── ingestion/                # Data ingestion scripts
+│   ├── cleaning/                 # Data quality and validation
+│   ├── schema/                   # Warehouse schema design
+│   ├── performance/              # Query optimization
+│   ├── procedures/               # Stored procedures
+│   └── dynamic_pricing/          # Pricing models and analytics
+├── dashboard/
+│   └── E-commerce-dashboard.twb  # Tableau dashboard
+├── README.md                     # Project documentation
+</code></pre>
+
+  <h5 class="mt-3">Advantages of This Format</h5>
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-layers"></i> Separation of Concerns</h6>
+          <p class="card-text">SQL scripts, notebooks, and dashboards are organized by workflow stage, making it easy to maintain and extend.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-code-square"></i> Testability</h6>
+          <p class="card-text">Each module can be validated independently, and notebooks provide reproducible data checks and cleaning steps.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-arrow-repeat"></i> Reusability</h6>
+          <p class="card-text">Core SQL queries and cleaning routines can be reused across different datasets and reporting needs.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title"><i class="bi bi-arrows-expand"></i> Scalability</h6>
+          <p class="card-text">The architecture supports scaling from small test datasets to millions of records using Spark and optimized SQL.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Tools & Technologies Used</h4>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fab fa-python"></i> Python 3.x</h5>
+          <p class="card-text">Jupyter notebooks for data cleaning, validation, and scalable processing with Apache Spark.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-table"></i> SQL</h5>
+          <p class="card-text">Comprehensive SQL scripts for ingestion, cleaning, schema design, performance tuning, and analytics.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-bar-chart"></i> Tableau</h5>
+          <p class="card-text">Interactive dashboards for visualizing price trends, category leaders, and dynamic pricing insights.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-check2-circle"></i> Pytest</h5>
+          <p class="card-text">Automated testing for data validation and workflow integrity.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-code-slash"></i> SQLFluff</h5>
+          <p class="card-text">SQL linting and formatting for code quality and consistency.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Key Analytics & Dynamic Pricing Models</h4>
+  <p>
+    The project implements several advanced analytics and pricing models:
+  </p>
+  <ul>
+    <li><strong>Price Trend Analysis:</strong> Track average, median, and delta prices across brands and categories.</li>
+    <li><strong>Category & Brand Leaders:</strong> Identify top-performing brands and categories using summary tables and materialized views.</li>
+    <li><strong>Dynamic Pricing Models:</strong> Compare platform pricing and suggest optimal price points for products.</li>
+    <li><strong>Performance Tuning:</strong> Optimize queries for speed and scalability with indexes and query plans.</li>
+    <li><strong>Data Validation:</strong> Ensure data integrity with validation scripts and referential checks.</li>
+  </ul>
+
+  <h4 class="mt-4">Testing & Code Quality</h4>
+  <p>
+    Quality assurance is built into the workflow through automated testing and code linting:
+  </p>
+  <ul>
+    <li>Pytest for validating data and workflow outputs</li>
+    <li>SQLFluff for SQL code style and error checking</li>
+    <li>Jupyter notebooks for reproducible data cleaning and validation</li>
+  </ul>
+
+  <h4 class="mt-4">Usage Example</h4>
+  <p>
+    Typical workflow for running the analytics pipeline:
+  </p>
+  <pre class="bg-light p-3 rounded"><code># Run data cleaning and validation in notebooks
+jupyter notebook notebooks/Data_cleaning_code.ipynb
+jupyter notebook notebooks/Data_check.ipynb
+
+# Execute SQL scripts for ingestion and analytics
+psql -f sql/ingestion/create_tables_2.sql
+psql -f sql/ingestion/ingest_data_1.sql
+psql -f sql/dynamic_pricing/dynamic_pricing_model.sql
+
+# Visualize results in Tableau
+Open dashboard/E-commerce-dashboard.twb
+</code></pre>
+
+  <!-- Sample Tableau image and description removed as requested -->
+
+  <h4 class="mt-4">Data Generation & Testing</h4>
+  <p>
+    The project includes synthetic data and test scripts to validate the pipeline and demonstrate analytics capabilities.
+  </p>
+  <ul>
+    <li>Raw and processed datasets for realistic e-commerce scenarios</li>
+    <li>Automated tests for SQL and Python workflows</li>
+    <li>Reproducible results for business intelligence reporting</li>
+  </ul>
+
+  <h4 class="mt-4">Key Learnings & Best Practices</h4>
+  <div class="row">
+    <div class="col-md-6">
+      <h6><i class="bi bi-lightbulb"></i> Architecture Decisions</h6>
+      <ul>
+        <li>Organize code by workflow stage for clarity</li>
+        <li>Use SQL linting and automated tests for quality</li>
+        <li>Leverage notebooks for exploration and reproducibility</li>
+        <li>Design scalable schemas for analytics</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h6><i class="bi bi-gear"></i> Development Workflow</h6>
+      <ul>
+        <li>Automate repetitive tasks with Makefile or scripts</li>
+        <li>Combine linting, formatting, and tests in CI pipeline</li>
+        <li>Maintain both notebooks and production SQL code</li>
+        <li>Write integration tests for workflow validation</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 class="mt-4">Future Enhancements</h4>
+  <p>
+    Potential extensions to explore:
+  </p>
+  <ul>
+    <li><strong>Real-time price monitoring:</strong> Integrate streaming data sources for live analytics</li>
+    <li><strong>Machine learning models:</strong> Predict optimal prices and demand using ML algorithms</li>
+    <li><strong>Automated reporting:</strong> Schedule dashboard updates and report generation</li>
+    <li><strong>Advanced visualizations:</strong> Interactive charts for price trends and category analysis</li>
+  </ul>
+
+  <h4 class="mt-4">Conclusion</h4>
+  <p>
+    The <strong>ecommerce-pricing-insights</strong> project demonstrates how to build a scalable, production-ready analytics pipeline for e-commerce price trends and dynamic pricing. By following best practices in data engineering, analytics, and business intelligence, the project delivers actionable insights and a foundation for future enhancements.
+  </p>
+  <p>
+    Whether you're optimizing prices, analyzing market trends, or building BI dashboards, this project provides a real-world example of professional analytics development.
+  </p>
+
+  <div class="alert alert-success mt-4">
+    <h5><i class="bi bi-github"></i> View the Full Project</h5>
+    <p class="mb-2">
+      Explore the complete source code, documentation, and examples on GitHub:
+    </p>
+    <a href="https://github.com/Pulkit12dhingra/ecommerce-pricing-insights" target="_blank" class="btn btn-success">
+      <i class="bi bi-github"></i> GitHub Repository
+    </a>
+  </div>
+
+  <p class="fw-bold mt-4">
+    Next up: Integrating machine learning for price prediction and real-time analytics! Stay tuned!
+  </p>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

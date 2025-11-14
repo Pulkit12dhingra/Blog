@@ -231,4 +231,13 @@
     "topic": "Blog",
     "contributor": "Pulkit Dhingra"
   }
+  ,
+  {
+    "file": "Pricing_Insights_Blog.html",
+    "title": "Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing",
+    "summary": "A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau.",
+    "tags": ["Data Engineering", "SQL", "Python", "Tableau", "E-commerce", "Business Intelligence", "Analytics"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
+  }
 ]
