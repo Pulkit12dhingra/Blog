@@ -1,4 +1,13 @@
 [
+  
+  {
+    "file": "Pricing_Insights_Blog.html",
+    "title": "Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing",
+    "summary": "A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau.",
+    "tags": ["Data Engineering", "SQL", "Python", "Tableau", "E-commerce", "Business Intelligence", "Analytics"],
+    "topic": "Data Science",
+    "contributor": "Pulkit Dhingra"
+  },
   {
     "file": "Hitlog_Processing_Blog.html",
     "title": "Hitlog Processing: Analyzing User Journeys to Identify Influential Content",
@@ -229,15 +238,6 @@
     "summary": "Kicking off my blog with excitement and a glimpse of what's to come. Let the journey begin!",
     "tags": ["Blog", "Introduction", "Hello World"],
     "topic": "Blog",
-    "contributor": "Pulkit Dhingra"
-  }
-  ,
-  {
-    "file": "Pricing_Insights_Blog.html",
-    "title": "Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing",
-    "summary": "A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau.",
-    "tags": ["Data Engineering", "SQL", "Python", "Tableau", "E-commerce", "Business Intelligence", "Analytics"],
-    "topic": "Data Science",
     "contributor": "Pulkit Dhingra"
   }
 ]
