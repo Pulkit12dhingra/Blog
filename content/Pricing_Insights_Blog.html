@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <meta name="description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Plotly." />
   <title>Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing | Byte-Sized-Brilliance-AI</title>
   <link rel="icon" type="image/png" href="../img/icon.png" />
 
@@ -14,14 +14,14 @@
 
   <!-- Open Graph -->
   <meta property="og:title" content="Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing" />
-  <meta property="og:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <meta property="og:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Plotly." />
   <meta property="og:image" content="../img/social-preview.jpg" />
   <meta property="og:type" content="article" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing" />
-  <meta name="twitter:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Tableau." />
+  <meta name="twitter:description" content="A deep dive into building a production-ready analytics pipeline for e-commerce price trends, dynamic pricing, and business intelligence using SQL, Python, and Plotly." />
   <meta name="twitter:image" content="../img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
@@ -120,7 +120,7 @@
 │   ├── procedures/               # Stored procedures
 │   └── dynamic_pricing/          # Pricing models and analytics
 ├── dashboard/
-│   └── E-commerce-dashboard.twb  # Tableau dashboard
+│   └── E-commerce-dashboard.py  # Plotly dashboard
 ├── README.md                     # Project documentation
 </code></pre>
 
@@ -181,7 +181,7 @@
     <div class="col-md-4">
       <div class="card h-100">
         <div class="card-body">
-          <h5 class="card-title"><i class="bi bi-bar-chart"></i> Tableau</h5>
+          <h5 class="card-title"><i class="bi bi-bar-chart"></i> Plotly</h5>
           <p class="card-text">Interactive dashboards for visualizing price trends, category leaders, and dynamic pricing insights.</p>
         </div>
       </div>
@@ -239,11 +239,10 @@ psql -f sql/ingestion/create_tables_2.sql
 psql -f sql/ingestion/ingest_data_1.sql
 psql -f sql/dynamic_pricing/dynamic_pricing_model.sql
 
-# Visualize results in Tableau
-Open dashboard/E-commerce-dashboard.twb
+# Visualize results in Dash
+Open dashboard/E-commerce-dashboard.py
 </code></pre>
 
-  <!-- Sample Tableau image and description removed as requested -->
 
   <h4 class="mt-4">Data Generation & Testing</h4>
   <p>
