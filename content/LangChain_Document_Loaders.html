@@ -140,7 +140,7 @@ print(docs[0].page_content[:500])
 <p>
   LangChain also supports structured data ingestion using <code>JSONLoader</code>. This is ideal for structured documents like resumes or API outputs, allowing you to flexibly extract and transform nested data.
 </p>
-<pre class="bg-light p-3 rounded"><code>from langchain.document_loaders import JSONLoader
+<pre class="bg-light p-3 rounded"><code>from langchain_community.document_loaders import JSONLoader
 
 json_loader = JSONLoader(
     file_path="data/Pulkit_Dhingra_Resume.json",

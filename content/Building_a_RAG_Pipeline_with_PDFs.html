@@ -134,7 +134,7 @@ documents = loader.load()
     Chunking is the unsung hero that powers effective document retrieval in any RAG pipeline.
   </p>  
   <pre class="bg-light p-3 rounded"><code>
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = text_splitter.split_documents(documents)
@@ -147,7 +147,7 @@ print(len(chunks))
     for semantic search and similarity tasks — making it ideal for use in RAG pipelines.
   </p>
   <pre class="bg-light p-3 rounded"><code>
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 # Define the Embeddings
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -168,7 +168,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
   </p>
   
   <pre class="bg-light p-3 rounded"><code>
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 # Store chunks in Chroma DB
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")
 retriever = vectorstore.as_retriever()
@@ -179,7 +179,7 @@ retriever = vectorstore.as_retriever()
     Now we initialize our LLM. <strong>Gemma 3B</strong> is a lightweight and capable model that will be used for the generation step in RAG.
   </p>
   <pre class="bg-light p-3 rounded"><code>
-from langchain.llms import Ollama
+from langchain_community.llms import Ollama
 
 # Initialize Ollama with the gemma3 model
 llm = Ollama(model="gemma3")
@@ -191,7 +191,7 @@ llm = Ollama(model="gemma3")
     This step combines the retriever and the LLM into a unified RAG chain. When queried, it retrieves the most relevant chunks and generates an answer.
   </p>
   <pre class="bg-light p-3 rounded"><code>
-from langchain.chains import RetrievalQA
+from langchain.chains import RetrievalQA  # use create_retrieval_chain in langchain>=0.2
 
 # Create RAG pipeline
 

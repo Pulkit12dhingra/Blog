@@ -1,0 +1,727 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
+  <title>Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution" />
+  <meta property="og:description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution" />
+  <meta name="twitter:description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <!-- Series Nav -->
+  <div class="alert alert-info mb-4">
+    <strong>Google ADK Series:</strong>
+    <a href="Google_ADK.html">Part 1: Getting Started</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Multi_Agent.html">Part 2: Multi-Agent Systems</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Sequential_Agent.html">Part 3: Sequential Agents</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Loop_Agent.html">Part 4: Loop Agents</a> &nbsp;|&nbsp;
+    <strong>Part 5: Parallel Agents</strong>
+  </div>
+
+  <h4 class="mt-4">The Problem With Sequential Thinking</h4>
+  <p>
+    In Part 3 we built a pipeline where agents run one after the other. That's fine when Step B genuinely needs Step A's output. But what if three agents are completely independent of each other? Running them sequentially means waiting for Agent 1 to finish before Agent 2 even starts — and Agent 3 waits for both. That's wasted time.
+  </p>
+  <p>
+    Imagine asking your AI system for a market report. It needs to research the news, check stock data, and scan social media sentiment — three tasks that have nothing to do with each other. Running them sequentially takes 3× as long as running them in parallel.
+  </p>
+  <p>
+    The <code>ParallelAgent</code> solves this. It launches all its sub-agents <strong>at the same time</strong> and waits for all of them to finish, then collects their outputs.
+  </p>
+
+  <div class="bg-light border rounded p-3 mb-4">
+    <strong>When to use ParallelAgent:</strong>
+    <ul class="mb-0 mt-2">
+      <li>Multiple independent research or data-gathering tasks</li>
+      <li>Running the same task on different inputs simultaneously (fan-out)</li>
+      <li>Generating multiple variations of something at once</li>
+      <li>Calling multiple external APIs concurrently</li>
+      <li>Any workflow where sub-tasks do not depend on each other's results</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">How ParallelAgent Works</h4>
+  <p>
+    When a <code>ParallelAgent</code> receives a user message, it fires off all its sub-agents simultaneously. Each agent runs in its own execution branch with a copy of the conversation history at the point the parallel section started. When all agents have completed, their outputs are merged back into the main conversation history — in the order the agents were listed in <code>sub_agents</code>.
+  </p>
+  <p>
+    Because each sub-agent gets its own execution branch, they cannot directly read each other's real-time output mid-run. However, they all write to the shared <code>tool_context.state</code> dictionary, so after all agents complete, any downstream agent (e.g., an aggregator in a subsequent <code>SequentialAgent</code> step) can read all their results from state.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>
+# Execution timeline comparison
+
+# Sequential (3 agents × 2 seconds each = 6 seconds total):
+t=0s  agent_1 starts
+t=2s  agent_1 done  →  agent_2 starts
+t=4s  agent_2 done  →  agent_3 starts
+t=6s  agent_3 done
+
+# Parallel (all 3 agents × 2 seconds each = 2 seconds total):
+t=0s  agent_1, agent_2, agent_3 all start simultaneously
+t=2s  all three done
+  </code></pre>
+
+  <h4 class="mt-4">Project: Market Research Dashboard</h4>
+  <p>
+    We will build a system that gathers three types of market intelligence simultaneously, then feeds all the gathered data to a final <strong>aggregator agent</strong> that synthesises a unified report. The full pipeline uses both <code>ParallelAgent</code> and <code>SequentialAgent</code> together — a common real-world pattern.
+  </p>
+  <ul>
+    <li><strong>news_agent</strong> — fetches recent news headlines about a company</li>
+    <li><strong>financials_agent</strong> — retrieves key financial metrics</li>
+    <li><strong>sentiment_agent</strong> — analyses social media sentiment</li>
+    <li><strong>aggregator_agent</strong> — reads all three results from state and writes the final report</li>
+  </ul>
+
+  <pre class="bg-light p-3 rounded"><code>
+market_research/
+├── .env                  # GOOGLE_API_KEY=your_key_here
+├── __init__.py
+└── agent.py
+  </code></pre>
+
+  <h4 class="mt-4">Step 1: Tools for Each Research Agent</h4>
+  <p>
+    Each research agent has a dedicated tool for its job and a dedicated state-saving tool so its results can be retrieved by the aggregator.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# agent.py
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, ParallelAgent, SequentialAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── News tools ────────────────────────────────────────────────────────
+
+def fetch_news(company: str) -> dict:
+    """Fetch recent news headlines for a company.
+
+    Args:
+        company: The company name to search for.
+
+    Returns:
+        Dict with a list of recent news headlines.
+    """
+    # Replace with a real news API (e.g., NewsAPI, SerpAPI) in production
+    return {
+        "company": company,
+        "headlines": [
+            f"{company} reports record Q1 revenue, beating analyst expectations.",
+            f"{company} announces new AI-powered product line at annual conference.",
+            f"Analysts upgrade {company} stock to 'buy' following strong earnings.",
+        ]
+    }
+
+
+def save_news(summary: str, tool_context: ToolContext) -> dict:
+    """Save news summary to shared session state.
+
+    Args:
+        summary: Summarised news findings.
+        tool_context: ADK tool context.
+
+    Returns:
+        Confirmation dict.
+    """
+    tool_context.state["news_summary"] = summary
+    return {"status": "news saved"}
+
+
+# ── Financials tools ──────────────────────────────────────────────────
+
+def fetch_financials(company: str) -> dict:
+    """Fetch key financial metrics for a company.
+
+    Args:
+        company: The company name to look up.
+
+    Returns:
+        Dict with revenue, profit margin, P/E ratio, and market cap.
+    """
+    # Replace with a real financial data API (e.g., Alpha Vantage, Yahoo Finance)
+    return {
+        "company": company,
+        "metrics": {
+            "revenue_growth_yoy": "+18%",
+            "profit_margin": "24%",
+            "pe_ratio": 32.5,
+            "market_cap": "$1.2T",
+            "debt_to_equity": 0.45,
+        }
+    }
+
+
+def save_financials(summary: str, tool_context: ToolContext) -> dict:
+    """Save financials summary to shared session state.
+
+    Args:
+        summary: Summarised financial findings.
+        tool_context: ADK tool context.
+
+    Returns:
+        Confirmation dict.
+    """
+    tool_context.state["financials_summary"] = summary
+    return {"status": "financials saved"}
+
+
+# ── Sentiment tools ───────────────────────────────────────────────────
+
+def fetch_sentiment(company: str) -> dict:
+    """Fetch social media sentiment score for a company.
+
+    Args:
+        company: The company name to analyse.
+
+    Returns:
+        Dict with overall sentiment score and breakdown.
+    """
+    # Replace with a real sentiment API (e.g., Brandwatch, Sprout Social)
+    return {
+        "company": company,
+        "sentiment": {
+            "overall_score": 0.72,      # 0 = very negative, 1 = very positive
+            "positive_posts_pct": 61,
+            "neutral_posts_pct": 22,
+            "negative_posts_pct": 17,
+            "trending_topics": ["AI launch", "earnings beat", "customer service"],
+        }
+    }
+
+
+def save_sentiment(summary: str, tool_context: ToolContext) -> dict:
+    """Save sentiment summary to shared session state.
+
+    Args:
+        summary: Summarised sentiment findings.
+        tool_context: ADK tool context.
+
+    Returns:
+        Confirmation dict.
+    """
+    tool_context.state["sentiment_summary"] = summary
+    return {"status": "sentiment saved"}
+
+
+# ── Aggregator tool ───────────────────────────────────────────────────
+
+def load_all_research(tool_context: ToolContext) -> dict:
+    """Load all three research summaries from shared session state.
+
+    Args:
+        tool_context: ADK tool context.
+
+    Returns:
+        Dict with news, financials, and sentiment summaries.
+    """
+    return {
+        "news": tool_context.state.get("news_summary", "No news data."),
+        "financials": tool_context.state.get("financials_summary", "No financials data."),
+        "sentiment": tool_context.state.get("sentiment_summary", "No sentiment data."),
+    }
+  </code></pre>
+
+  <h4 class="mt-4">Step 2: Build the Three Parallel Research Agents</h4>
+  <p>
+    Each agent is given exactly one job. Their instructions tell them to call their fetch tool, distil the result, and save it to state. They do <em>not</em> produce a long final answer — their job is data collection, not synthesis.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# ── Parallel research agents ──────────────────────────────────────────
+
+news_agent = Agent(
+    name="news_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises recent news for a company.",
+    instruction=(
+        "You are a news research specialist. When given a company name, call fetch_news "
+        "to retrieve recent headlines. Write a 2-3 sentence summary of the key news themes. "
+        "Then call save_news with your summary. Keep it factual and concise."
+    ),
+    tools=[fetch_news, save_news],
+)
+
+financials_agent = Agent(
+    name="financials_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises key financial metrics for a company.",
+    instruction=(
+        "You are a financial data analyst. When given a company name, call fetch_financials "
+        "to retrieve key metrics. Write a 2-3 sentence summary highlighting the most important "
+        "financial signals (growth, margins, valuation). Then call save_financials with your summary."
+    ),
+    tools=[fetch_financials, save_financials],
+)
+
+sentiment_agent = Agent(
+    name="sentiment_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises social media sentiment for a company.",
+    instruction=(
+        "You are a social media analyst. When given a company name, call fetch_sentiment "
+        "to retrieve sentiment data. Write a 2-3 sentence summary of the sentiment landscape "
+        "and key trending topics. Then call save_sentiment with your summary."
+    ),
+    tools=[fetch_sentiment, save_sentiment],
+)
+  </code></pre>
+
+  <h4 class="mt-4">Step 3: Build the Aggregator Agent</h4>
+  <p>
+    This agent runs <em>after</em> all parallel agents complete. It reads the three state summaries and produces a final unified report.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# ── Aggregator agent ──────────────────────────────────────────────────
+
+aggregator_agent = Agent(
+    name="aggregator_agent",
+    model="gemini-2.0-flash",
+    description="Combines news, financial, and sentiment research into a unified market report.",
+    instruction=(
+        "You are a senior market analyst. Call load_all_research to retrieve the summaries "
+        "gathered by the research team. Synthesise all three into a cohesive 200-250 word "
+        "market intelligence report. Structure it with three short sections: "
+        "News & Events, Financial Health, and Market Sentiment. "
+        "End with a 1-sentence overall outlook. Write clearly for a non-technical executive audience."
+    ),
+    tools=[load_all_research],
+)
+  </code></pre>
+
+  <h4 class="mt-4">Step 4: Compose ParallelAgent + SequentialAgent</h4>
+  <p>
+    Here's the key architectural pattern: we wrap the three research agents in a <code>ParallelAgent</code>, then wrap that parallel block <em>together with</em> the aggregator in a <code>SequentialAgent</code>. This gives us: parallel research first, then sequential synthesis.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# ── ParallelAgent — all three researchers run at the same time ────────
+
+research_team = ParallelAgent(
+    name="research_team",
+    description=(
+        "Runs news, financials, and sentiment research concurrently. "
+        "All three agents execute in parallel and save results to shared state."
+    ),
+    sub_agents=[news_agent, financials_agent, sentiment_agent],
+)
+
+
+# ── SequentialAgent — research first, then aggregate ─────────────────
+
+market_report_pipeline = SequentialAgent(
+    name="market_report_pipeline",
+    description=(
+        "Full market intelligence pipeline: parallel research phase followed by "
+        "a sequential aggregation phase. Returns a unified market report."
+    ),
+    sub_agents=[research_team, aggregator_agent],
+)
+
+root_agent = market_report_pipeline
+  </code></pre>
+
+  <h4 class="mt-4">Step 5: The __init__.py</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# __init__.py
+from . import agent
+  </code></pre>
+
+  <h4 class="mt-4">Running the System</h4>
+  <pre class="bg-light p-3 rounded"><code>
+adk run market_research
+  </code></pre>
+  <pre class="bg-light p-3 rounded"><code>
+You: Give me a market report on Apple.
+
+# What happens:
+# SequentialAgent starts
+#   └── Step 1: research_team (ParallelAgent)
+#         ├── news_agent         ──┐
+#         ├── financials_agent   ──┤ all three run at the same time
+#         └── sentiment_agent    ──┘
+#             All three save results to state
+#
+#   └── Step 2: aggregator_agent
+#         └── calls load_all_research()
+#             reads news + financials + sentiment from state
+#             synthesises unified report
+
+Agent:
+## Market Intelligence Report: Apple
+
+**News & Events**
+Apple continues its momentum with record Q1 revenue surpassing analyst forecasts,
+driven by strong iPhone and services performance. The company's new AI-powered product
+announcements have been well-received, leading analysts to upgrade their outlook.
+
+**Financial Health**
+Apple demonstrates robust fundamentals with 18% year-over-year revenue growth and a
+healthy 24% profit margin. The P/E ratio of 32.5 reflects premium market confidence,
+while a conservative debt-to-equity ratio of 0.45 signals strong balance sheet discipline.
+
+**Market Sentiment**
+Social sentiment is broadly positive at 0.72/1.0, with 61% of posts expressing favourable
+views. Key trending topics include the new AI product launch and the earnings beat,
+though 17% negative sentiment around customer service deserves monitoring.
+
+**Overall Outlook:** Apple presents a strong investment profile with accelerating growth,
+solid margins, and broadly positive market perception.
+  </code></pre>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_02_python_v1_java_google_io/02_parallel_agent_research.py" target="_blank" rel="noopener noreferrer">02_parallel_agent_research.py</a></p>
+
+  <h4 class="mt-4">Complete agent.py</h4>
+  <pre class="bg-light p-3 rounded"><code>
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, ParallelAgent, SequentialAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── Tools ─────────────────────────────────────────────────────────────
+
+def fetch_news(company: str) -> dict:
+    """Fetch recent news headlines for a company."""
+    return {
+        "company": company,
+        "headlines": [
+            f"{company} reports record Q1 revenue, beating analyst expectations.",
+            f"{company} announces new AI-powered product line at annual conference.",
+            f"Analysts upgrade {company} stock to 'buy' following strong earnings.",
+        ]
+    }
+
+def save_news(summary: str, tool_context: ToolContext) -> dict:
+    """Save news summary to shared session state."""
+    tool_context.state["news_summary"] = summary
+    return {"status": "news saved"}
+
+def fetch_financials(company: str) -> dict:
+    """Fetch key financial metrics for a company."""
+    return {
+        "company": company,
+        "metrics": {
+            "revenue_growth_yoy": "+18%",
+            "profit_margin": "24%",
+            "pe_ratio": 32.5,
+            "market_cap": "$1.2T",
+            "debt_to_equity": 0.45,
+        }
+    }
+
+def save_financials(summary: str, tool_context: ToolContext) -> dict:
+    """Save financials summary to shared session state."""
+    tool_context.state["financials_summary"] = summary
+    return {"status": "financials saved"}
+
+def fetch_sentiment(company: str) -> dict:
+    """Fetch social media sentiment score for a company."""
+    return {
+        "company": company,
+        "sentiment": {
+            "overall_score": 0.72,
+            "positive_posts_pct": 61,
+            "neutral_posts_pct": 22,
+            "negative_posts_pct": 17,
+            "trending_topics": ["AI launch", "earnings beat", "customer service"],
+        }
+    }
+
+def save_sentiment(summary: str, tool_context: ToolContext) -> dict:
+    """Save sentiment summary to shared session state."""
+    tool_context.state["sentiment_summary"] = summary
+    return {"status": "sentiment saved"}
+
+def load_all_research(tool_context: ToolContext) -> dict:
+    """Load all three research summaries from shared session state."""
+    return {
+        "news": tool_context.state.get("news_summary", "No news data."),
+        "financials": tool_context.state.get("financials_summary", "No financials data."),
+        "sentiment": tool_context.state.get("sentiment_summary", "No sentiment data."),
+    }
+
+# ── Parallel research agents ──────────────────────────────────────────
+
+news_agent = Agent(
+    name="news_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises recent news for a company.",
+    instruction=(
+        "When given a company name, call fetch_news. "
+        "Write a 2-3 sentence summary of key news themes. Call save_news."
+    ),
+    tools=[fetch_news, save_news],
+)
+
+financials_agent = Agent(
+    name="financials_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises key financial metrics for a company.",
+    instruction=(
+        "When given a company name, call fetch_financials. "
+        "Summarise the most important financial signals in 2-3 sentences. Call save_financials."
+    ),
+    tools=[fetch_financials, save_financials],
+)
+
+sentiment_agent = Agent(
+    name="sentiment_agent",
+    model="gemini-2.0-flash",
+    description="Fetches and summarises social media sentiment for a company.",
+    instruction=(
+        "When given a company name, call fetch_sentiment. "
+        "Summarise the sentiment landscape in 2-3 sentences. Call save_sentiment."
+    ),
+    tools=[fetch_sentiment, save_sentiment],
+)
+
+# ── Aggregator ────────────────────────────────────────────────────────
+
+aggregator_agent = Agent(
+    name="aggregator_agent",
+    model="gemini-2.0-flash",
+    description="Combines news, financial, and sentiment research into a unified market report.",
+    instruction=(
+        "Call load_all_research to retrieve all summaries. "
+        "Write a 200-250 word market report with sections: "
+        "News & Events, Financial Health, Market Sentiment, and a 1-sentence outlook."
+    ),
+    tools=[load_all_research],
+)
+
+# ── Compose ───────────────────────────────────────────────────────────
+
+research_team = ParallelAgent(
+    name="research_team",
+    description="Runs news, financials, and sentiment research concurrently.",
+    sub_agents=[news_agent, financials_agent, sentiment_agent],
+)
+
+market_report_pipeline = SequentialAgent(
+    name="market_report_pipeline",
+    description="Parallel research then sequential aggregation for a market report.",
+    sub_agents=[research_team, aggregator_agent],
+)
+
+root_agent = market_report_pipeline
+  </code></pre>
+
+  <h4 class="mt-4">Architecture Diagram</h4>
+  <pre class="bg-light p-3 rounded"><code>
+User input: "Give me a market report on Apple"
+    │
+    ▼
+┌──────────────────────────────────────────────┐
+│          SequentialAgent                     │
+│          market_report_pipeline              │
+│                                              │
+│  Step 1 ┌──────────────────────────────┐     │
+│         │       ParallelAgent          │     │
+│         │       research_team          │     │
+│         │                              │     │
+│         │  news_agent ──────────────┐  │     │
+│         │  financials_agent ─────── ├──┤──── state["news_summary"]
+│         │  sentiment_agent ──────── ┘  │     state["financials_summary"]
+│         │                              │     state["sentiment_summary"]
+│         └──────────────────────────────┘     │
+│                       │                      │
+│                       ▼ (all 3 done)         │
+│  Step 2 ┌──────────────────────────────┐     │
+│         │       aggregator_agent       │     │
+│         │  reads all 3 from state      │     │
+│         │  writes unified report       │     │
+│         └──────────────────────────────┘     │
+└──────────────────────────────────────────────┘
+    │
+    ▼
+Final market report to user
+  </code></pre>
+
+  <h4 class="mt-4">Key Concepts Reference</h4>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Concept</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Execution</strong></td>
+          <td>All sub-agents start simultaneously. <code>ParallelAgent</code> waits for all to finish before returning.</td>
+        </tr>
+        <tr>
+          <td><strong>Context isolation</strong></td>
+          <td>Each sub-agent gets its own execution branch — they cannot read each other's real-time outputs mid-run.</td>
+        </tr>
+        <tr>
+          <td><strong>State sharing</strong></td>
+          <td><code>tool_context.state</code> is shared across all agents. Use it to pass results from parallel agents to downstream agents.</td>
+        </tr>
+        <tr>
+          <td><strong>Output ordering</strong></td>
+          <td>When outputs are merged back into history, they appear in the order agents were listed in <code>sub_agents</code>, regardless of completion order.</td>
+        </tr>
+        <tr>
+          <td><strong>No LLM routing</strong></td>
+          <td><code>ParallelAgent</code> is a workflow agent — it does not use Gemini to decide what to run. All sub-agents always run.</td>
+        </tr>
+        <tr>
+          <td><strong>Combining with SequentialAgent</strong></td>
+          <td>The most powerful pattern: put <code>ParallelAgent</code> inside a <code>SequentialAgent</code> to do parallel work then sequential synthesis.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">Combining All Three Workflow Agents</h4>
+  <p>In real systems, you will often combine all three workflow agents into more complex pipelines. Here is a typical layered pattern:</p>
+
+  <pre class="bg-light p-3 rounded"><code>
+# Real-world pattern: validate → enrich in parallel → review in a loop → finalise
+
+pipeline = SequentialAgent(
+    name="full_pipeline",
+    sub_agents=[
+        validator_agent,                 # Step 1: validate input
+        ParallelAgent(                   # Step 2: enrich from multiple sources at once
+            name="enrichment",
+            sub_agents=[source_a, source_b, source_c],
+        ),
+        LoopAgent(                       # Step 3: iteratively improve until quality passes
+            name="quality_loop",
+            sub_agents=[drafter, reviewer],
+            max_iterations=3,
+        ),
+        publisher_agent,                 # Step 4: publish the final result
+    ],
+)
+  </code></pre>
+
+  <div class="alert alert-success">
+    <strong>ADK Composition Rules:</strong>
+    <ul class="mb-0 mt-2">
+      <li>Any workflow agent can be nested inside another as a sub-agent.</li>
+      <li>A plain <code>Agent</code> can sit alongside workflow agents in the same <code>sub_agents</code> list.</li>
+      <li><code>SequentialAgent</code> + <code>ParallelAgent</code> is the most common pattern: do parallel work, then sequential synthesis.</li>
+      <li><code>LoopAgent</code> is typically placed inside a <code>SequentialAgent</code> as one step of a larger pipeline.</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">When NOT to Use ParallelAgent</h4>
+  <div class="alert alert-warning">
+    <ul class="mb-0">
+      <li><strong>When agents depend on each other.</strong> If Agent B needs Agent A's output, use <code>SequentialAgent</code> — not <code>ParallelAgent</code>.</li>
+      <li><strong>When you have a single-step task.</strong> No benefit to parallelism if there's only one thing to do.</li>
+      <li><strong>When state writes conflict.</strong> If two parallel agents write to the same state key, the last write wins — an unpredictable race condition. Use unique state keys per agent.</li>
+      <li><strong>When you need strict ordering of results.</strong> While output ordering in history is deterministic, execution timing is not. Don't rely on one parallel agent finishing before another.</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    The <code>ParallelAgent</code> is your go-to tool whenever you have multiple independent tasks that can run simultaneously. Combined with <code>SequentialAgent</code> for chaining and <code>LoopAgent</code> for iteration, you have the full ADK workflow toolbox to build sophisticated, production-grade AI pipelines.
+  </p>
+  <p>
+    The key insight from this series: choose your agent type based on your <em>control flow needs</em>, not your <em>data needs</em>. Use <code>SequentialAgent</code> for ordered dependence, <code>LoopAgent</code> for iteration until done, and <code>ParallelAgent</code> for concurrent independence. Layer them freely to model any real-world workflow.
+  </p>
+  <p class="fw-bold">
+    That wraps up the Google ADK workflow agents series. You now have the full toolkit: basic agents (Part 1), multi-agent orchestration (Part 2), sequential pipelines (Part 3), loop-based iteration (Part 4), and parallel execution (Part 5).
+  </p>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

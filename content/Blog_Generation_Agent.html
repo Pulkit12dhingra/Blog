@@ -115,8 +115,8 @@
 </p>
 
 <pre class="bg-light p-3 rounded"><code>import requests
-from langchain.document_loaders import BSHTMLLoader
-from langchain.schema import Document
+from langchain_community.document_loaders import BSHTMLLoader
+from langchain_core.documents import Document
 
 # GitHub repo details
 owner = "Pulkit12dhingra"
@@ -158,7 +158,7 @@ print(f"\\nLoaded {len(documents)} HTML documents into LangChain.")
   We also use a <strong>chunk overlap</strong> (e.g., 50 characters) to maintain context across chunk boundaries. This is crucial because important information (like the end of one paragraph and the start of another) often spans across splits. Overlap ensures smoother transitions and reduces the chances of context loss when retrieving or summarizing.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain.text_splitter import RecursiveCharacterTextSplitter
+<pre class="bg-light p-3 rounded"><code>from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
@@ -187,7 +187,7 @@ chunks = text_splitter.split_documents(documents)
   This improves retrieval accuracy when searching for similar content during generation, ultimately leading to better and more coherent blog outputs.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain.embeddings import HuggingFaceEmbeddings
+<pre class="bg-light p-3 rounded"><code>from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
 </code></pre>
@@ -207,7 +207,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
   Here's how we build it using LangChain:
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain.vectorstores import FAISS
+<pre class="bg-light p-3 rounded"><code>from langchain_community.vectorstores import FAISS
 
 # Create a vectorstore index from the document chunks
 vectorstore = FAISS.from_documents(chunks, embedding=embedding_model)
@@ -241,7 +241,7 @@ retriever = vectorstore.as_retriever()
 </p>
 
 <pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.chains import create_history_aware_retriever
+from langchain.chains import create_history_aware_retriever  # langchain>=0.1
 
 # Instruction for the LLM
 retriever_prompt = (

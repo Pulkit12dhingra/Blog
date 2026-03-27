@@ -1,0 +1,540 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn how to build iterative agent workflows with Google ADK's LoopAgent. Run agents in a loop, control iterations, and signal completion — perfect for refinement, retries, and quality-gating." />
+  <title>Google ADK Part 4: Loop Agents — Iterative Processing with ADK | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Google ADK Part 4: Loop Agents — Iterative Processing with ADK" />
+  <meta property="og:description" content="Learn how to build iterative agent workflows with Google ADK's LoopAgent. Run agents in a loop, control iterations, and signal completion — perfect for refinement, retries, and quality-gating." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google ADK Part 4: Loop Agents — Iterative Processing with ADK" />
+  <meta name="twitter:description" content="Learn how to build iterative agent workflows with Google ADK's LoopAgent. Run agents in a loop, control iterations, and signal completion — perfect for refinement, retries, and quality-gating." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Google ADK Part 4: Loop Agents — Iterative Processing with ADK</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <!-- Series Nav -->
+  <div class="alert alert-info mb-4">
+    <strong>Google ADK Series:</strong>
+    <a href="Google_ADK.html">Part 1: Getting Started</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Multi_Agent.html">Part 2: Multi-Agent Systems</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Sequential_Agent.html">Part 3: Sequential Agents</a> &nbsp;|&nbsp;
+    <strong>Part 4: Loop Agents</strong> &nbsp;|&nbsp;
+    <a href="Google_ADK_Parallel_Agent.html">Part 5: Parallel Agents</a>
+  </div>
+
+  <h4 class="mt-4">Why Do We Need a Loop?</h4>
+  <p>
+    Most real-world tasks aren't one-shot. You ask an agent to draft something, review it, and often it needs another pass. You submit code, it fails a check, so you fix and retry. You send a summary to a quality evaluator and it comes back as "not good enough — try again."
+  </p>
+  <p>
+    The <code>LoopAgent</code> is ADK's answer to this class of problems. It runs its sub-agents in a loop, repeatedly, until either a maximum number of iterations is reached or a sub-agent explicitly signals that the loop should stop. No manual while loops, no callback chains — just a declarative loop wrapper.
+  </p>
+
+  <div class="bg-light border rounded p-3 mb-4">
+    <strong>When to use LoopAgent:</strong>
+    <ul class="mb-0 mt-2">
+      <li>Iterative refinement — keep improving until quality threshold is met</li>
+      <li>Retry with feedback — failed validation triggers another attempt</li>
+      <li>Polling / waiting — check a condition repeatedly until it becomes true</li>
+      <li>Self-correcting pipelines — agent critiques its own output and rewrites</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">How LoopAgent Works</h4>
+  <p>
+    A <code>LoopAgent</code> wraps one or more sub-agents. On each iteration, it runs all sub-agents in order (exactly like a single pass of <code>SequentialAgent</code>). After the last sub-agent finishes, it checks two conditions:
+  </p>
+  <ol>
+    <li>Has <code>max_iterations</code> been reached? If yes, stop.</li>
+    <li>Did any sub-agent's tool call set <code>tool_context.actions.escalate = True</code>? If yes, stop.</li>
+  </ol>
+  <p>
+    If neither condition is true, the loop runs again from the first sub-agent. The conversation history grows with each iteration, so each pass has full context of what happened in previous passes.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>
+# How a loop terminates early — inside a tool function
+def check_quality(score: int, tool_context: ToolContext) -> dict:
+    """Check if content quality is sufficient to stop the loop.
+
+    Args:
+        score: Quality score from 1-10.
+        tool_context: ADK tool context.
+
+    Returns:
+        A dict with pass/fail status. Sets escalate=True if quality passes.
+    """
+    if score >= 8:
+        tool_context.actions.escalate = True   # signals LoopAgent to stop
+        return {"status": "passed", "score": score, "action": "loop complete"}
+    return {"status": "failed", "score": score, "action": "retry"}
+  </code></pre>
+
+  <div class="alert alert-warning mt-2 mb-4">
+    <strong>Important:</strong> Setting <code>tool_context.actions.escalate = True</code> inside a tool is the way a sub-agent signals "we are done, stop looping." Without this, the loop runs until <code>max_iterations</code> is exhausted.
+  </div>
+
+  <h4 class="mt-4">Project: Content Refinement Loop</h4>
+  <p>
+    We will build a loop that iteratively improves a piece of writing:
+  </p>
+  <ul>
+    <li><strong>writer_agent</strong> — writes or rewrites a piece of content, saving it to state</li>
+    <li><strong>critic_agent</strong> — scores the content on a scale of 1–10 and provides improvement notes. If the score reaches 8 or above, it escalates to stop the loop.</li>
+  </ul>
+  <p>
+    The loop runs up to <code>max_iterations=4</code> times. If the critic is satisfied early, it exits before reaching the maximum.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>
+content_loop/
+├── .env                  # GOOGLE_API_KEY=your_key_here
+├── __init__.py
+└── agent.py
+  </code></pre>
+
+  <h4 class="mt-4">Step 1: Define the State Tools</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# agent.py
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, LoopAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── State tools ───────────────────────────────────────────────────────
+
+def save_content(content: str, tool_context: ToolContext) -> dict:
+    """Save the current version of the content to session state.
+
+    Args:
+        content: The written content to save.
+        tool_context: ADK tool context.
+
+    Returns:
+        Confirmation dict with iteration count.
+    """
+    iteration = tool_context.state.get("iteration", 0) + 1
+    tool_context.state["content"] = content
+    tool_context.state["iteration"] = iteration
+    return {"status": "saved", "iteration": iteration}
+
+
+def load_content(tool_context: ToolContext) -> dict:
+    """Load the current content and iteration count from session state.
+
+    Args:
+        tool_context: ADK tool context.
+
+    Returns:
+        Dict with content text and iteration number.
+    """
+    return {
+        "content": tool_context.state.get("content", ""),
+        "iteration": tool_context.state.get("iteration", 0),
+    }
+
+
+def submit_score(score: int, feedback: str, tool_context: ToolContext) -> dict:
+    """Record a quality score and feedback. Escalates loop if score >= 8.
+
+    Args:
+        score: Quality score from 1 to 10.
+        feedback: Specific improvement notes for the writer.
+        tool_context: ADK tool context.
+
+    Returns:
+        Dict with score, feedback, and whether the loop is stopping.
+    """
+    tool_context.state["last_score"] = score
+    tool_context.state["last_feedback"] = feedback
+
+    if score >= 8:
+        tool_context.actions.escalate = True
+        return {
+            "score": score,
+            "feedback": feedback,
+            "loop_status": "complete — quality threshold met",
+        }
+    return {
+        "score": score,
+        "feedback": feedback,
+        "loop_status": f"retry — need score >= 8, got {score}",
+    }
+  </code></pre>
+
+  <h4 class="mt-4">Step 2: Build the Writer and Critic Agents</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# ── Writer agent ──────────────────────────────────────────────────────
+
+writer_agent = Agent(
+    name="writer_agent",
+    model="gemini-2.0-flash",
+    description="Writes or rewrites content, incorporating critic feedback from state.",
+    instruction=(
+        "You are a professional writer. Your job is to write or improve a piece of content. "
+        "First, call load_content. If iteration > 0, you will find previous feedback in the "
+        "conversation history — use it to improve the content. "
+        "Write a compelling 150-200 word paragraph on the topic given by the user. "
+        "Then call save_content with your final text. "
+        "Be specific, concrete, and engaging. Avoid vague statements."
+    ),
+    tools=[load_content, save_content],
+)
+
+
+# ── Critic agent ──────────────────────────────────────────────────────
+
+critic_agent = Agent(
+    name="critic_agent",
+    model="gemini-2.0-flash",
+    description="Reviews content and scores it. Stops the loop if quality is sufficient.",
+    instruction=(
+        "You are a demanding but fair content critic. "
+        "Call load_content to retrieve the latest version of the content. "
+        "Evaluate it strictly on these criteria:\n"
+        "  1. Specificity — does it use concrete examples rather than vague generalisations?\n"
+        "  2. Clarity — is it easy to follow?\n"
+        "  3. Engagement — does it hold attention?\n"
+        "  4. Length — is it between 150-200 words?\n"
+        "Score it from 1 to 10. "
+        "Then call submit_score with your integer score and specific, actionable feedback. "
+        "If the score is 8 or above, the loop will stop automatically. "
+        "Be strict — only award 8+ if the content is genuinely strong."
+    ),
+    tools=[load_content, submit_score],
+)
+  </code></pre>
+
+  <h4 class="mt-4">Step 3: Wrap in a LoopAgent</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# ── Loop ──────────────────────────────────────────────────────────────
+
+refinement_loop = LoopAgent(
+    name="refinement_loop",
+    description=(
+        "Iteratively improves content through write-critique cycles. "
+        "Runs up to 4 iterations or until quality score reaches 8/10."
+    ),
+    sub_agents=[writer_agent, critic_agent],
+    max_iterations=4,
+)
+
+root_agent = refinement_loop
+  </code></pre>
+
+  <h4 class="mt-4">Step 4: The __init__.py</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# __init__.py
+from . import agent
+  </code></pre>
+
+  <h4 class="mt-4">Running the Loop</h4>
+  <pre class="bg-light p-3 rounded"><code>
+adk run content_loop
+  </code></pre>
+  <pre class="bg-light p-3 rounded"><code>
+You: Write about why Python is popular for data science.
+
+# Iteration 1:
+# writer_agent writes a first draft, saves to state
+# critic_agent scores it 5/10 — "too generic, no specific libraries mentioned"
+
+# Iteration 2:
+# writer_agent reads feedback, rewrites with NumPy/Pandas/Scikit-learn examples
+# critic_agent scores it 7/10 — "better, but intro paragraph is weak"
+
+# Iteration 3:
+# writer_agent strengthens the intro
+# critic_agent scores it 9/10 — calls submit_score(9, ...) → escalate=True
+
+# Loop exits after iteration 3 (before reaching max_iterations=4)
+
+Agent: [Final polished 180-word paragraph about Python's data science ecosystem,
+        mentioning NumPy, Pandas, Scikit-learn, and Jupyter with specific examples]
+  </code></pre>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_06_python_2_alpha_graph_workflows/01_loop_agent.py" target="_blank" rel="noopener noreferrer">01_loop_agent.py</a></p>
+
+  <h4 class="mt-4">Complete agent.py</h4>
+  <pre class="bg-light p-3 rounded"><code>
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, LoopAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── Tools ─────────────────────────────────────────────────────────────
+
+def save_content(content: str, tool_context: ToolContext) -> dict:
+    """Save the current version of the content to session state."""
+    iteration = tool_context.state.get("iteration", 0) + 1
+    tool_context.state["content"] = content
+    tool_context.state["iteration"] = iteration
+    return {"status": "saved", "iteration": iteration}
+
+def load_content(tool_context: ToolContext) -> dict:
+    """Load the current content and iteration count from session state."""
+    return {
+        "content": tool_context.state.get("content", ""),
+        "iteration": tool_context.state.get("iteration", 0),
+    }
+
+def submit_score(score: int, feedback: str, tool_context: ToolContext) -> dict:
+    """Record quality score. Escalates loop if score >= 8."""
+    tool_context.state["last_score"] = score
+    tool_context.state["last_feedback"] = feedback
+    if score >= 8:
+        tool_context.actions.escalate = True
+        return {"score": score, "feedback": feedback, "loop_status": "complete"}
+    return {"score": score, "feedback": feedback, "loop_status": f"retry (got {score})"}
+
+# ── Sub-agents ────────────────────────────────────────────────────────
+
+writer_agent = Agent(
+    name="writer_agent",
+    model="gemini-2.0-flash",
+    description="Writes or rewrites content, incorporating critic feedback from state.",
+    instruction=(
+        "You are a professional writer. Call load_content first. "
+        "If iteration > 0, use the feedback in conversation history to improve. "
+        "Write a compelling 150-200 word paragraph on the user's topic. "
+        "Call save_content with your final text."
+    ),
+    tools=[load_content, save_content],
+)
+
+critic_agent = Agent(
+    name="critic_agent",
+    model="gemini-2.0-flash",
+    description="Reviews content and scores it 1-10. Stops loop when score >= 8.",
+    instruction=(
+        "You are a strict content critic. Call load_content. "
+        "Score the text 1-10 on specificity, clarity, engagement, and length (150-200 words). "
+        "Call submit_score with your integer score and actionable feedback. "
+        "Only award 8+ for genuinely strong content."
+    ),
+    tools=[load_content, submit_score],
+)
+
+# ── Loop ──────────────────────────────────────────────────────────────
+
+refinement_loop = LoopAgent(
+    name="refinement_loop",
+    description=(
+        "Iteratively improves content. Runs up to 4 iterations or until score >= 8."
+    ),
+    sub_agents=[writer_agent, critic_agent],
+    max_iterations=4,
+)
+
+root_agent = refinement_loop
+  </code></pre>
+
+  <h4 class="mt-4">Iteration Flow Diagram</h4>
+  <pre class="bg-light p-3 rounded"><code>
+User input
+    │
+    ▼
+┌─────────────────────────────────────┐
+│              LoopAgent              │
+│                                     │
+│  ┌────────────────────────────────┐ │
+│  │       Iteration 1, 2, 3...     │ │
+│  │                                │ │
+│  │   writer_agent                 │ │
+│  │   → reads feedback from state  │ │
+│  │   → writes improved content    │ │
+│  │   → saves to state             │ │
+│  │            │                   │ │
+│  │            ▼                   │ │
+│  │   critic_agent                 │ │
+│  │   → reads content from state   │ │
+│  │   → scores and gives feedback  │ │
+│  │   → if score >= 8: escalate=T  │ │◄── loop exits
+│  │   → else: continue looping     │ │
+│  └────────────────────────────────┘ │
+│                                     │
+│  Also exits when max_iterations=4   │
+└─────────────────────────────────────┘
+    │
+    ▼
+Final response to user
+  </code></pre>
+
+  <h4 class="mt-4">Key Parameters Reference</h4>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Parameter / Concept</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>max_iterations</code></td>
+          <td>Maximum number of loop passes. Loop stops even if <code>escalate</code> never fires. Always set this to avoid infinite loops.</td>
+        </tr>
+        <tr>
+          <td><code>tool_context.actions.escalate</code></td>
+          <td>Set to <code>True</code> inside any tool to signal the <code>LoopAgent</code> to stop after the current iteration completes.</td>
+        </tr>
+        <tr>
+          <td><code>tool_context.state</code></td>
+          <td>Shared dictionary persisting across all iterations and all agents. Use it to track scores, feedback, iteration count, and content versions.</td>
+        </tr>
+        <tr>
+          <td><strong>sub_agents order</strong></td>
+          <td>Within each iteration, sub-agents run in the order listed — just like <code>SequentialAgent</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Conversation history</strong></td>
+          <td>Grows with every iteration. Agents can read previous feedback directly from the history without needing state tools.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">Common Patterns</h4>
+
+  <h5>Pattern 1: Counter-based termination</h5>
+  <p>Use <code>max_iterations</code> as a hard cap. Simple and safe — always terminates.</p>
+  <pre class="bg-light p-3 rounded"><code>
+LoopAgent(name="my_loop", sub_agents=[...], max_iterations=5)
+  </code></pre>
+
+  <h5>Pattern 2: Condition-based termination</h5>
+  <p>A validator tool checks a condition and sets <code>escalate=True</code> when done. Can exit early before reaching <code>max_iterations</code>.</p>
+  <pre class="bg-light p-3 rounded"><code>
+def validate(result: str, tool_context: ToolContext) -> dict:
+    if meets_criteria(result):
+        tool_context.actions.escalate = True
+        return {"status": "done"}
+    return {"status": "retry", "hint": "..."}
+  </code></pre>
+
+  <h5>Pattern 3: Both together (recommended)</h5>
+  <p>Always combine a condition with <code>max_iterations</code> as a safety net. This ensures the loop never runs forever even if the condition is never met.</p>
+  <pre class="bg-light p-3 rounded"><code>
+LoopAgent(
+    name="safe_loop",
+    sub_agents=[generator, validator],
+    max_iterations=10,   # safety cap
+)
+# validator calls tool_context.actions.escalate = True when done
+  </code></pre>
+
+  <h4 class="mt-4">Things to Watch Out For</h4>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <li><strong>Always set max_iterations.</strong> Without it, if <code>escalate</code> is never triggered, the loop runs indefinitely.</li>
+      <li><strong>Growing context window.</strong> Each iteration adds to the conversation history. For many iterations (10+), this can get expensive. Use state tools to pass data instead of relying on history alone.</li>
+      <li><strong>Escalate fires after the full iteration.</strong> Setting <code>escalate=True</code> in a tool does not stop the current agent mid-run. The rest of the current iteration completes, then the loop exits.</li>
+      <li><strong>Track iteration count.</strong> Store it in state so agents know which pass they're on and can adjust their behavior (e.g., be more aggressive on the final allowed pass).</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    The <code>LoopAgent</code> transforms one-shot generation into an iterative improvement process. The combination of <code>max_iterations</code> as a hard cap and <code>tool_context.actions.escalate</code> as an early-exit condition gives you precise control over when to stop — without any manual while-loop boilerplate.
+  </p>
+  <p>
+    The shared state dictionary is your best friend here: use it to track scores, feedback, versions, and iteration counts so your agents have full context at every pass.
+  </p>
+  <p class="fw-bold">
+    Next up: <a href="Google_ADK_Parallel_Agent.html">Part 5 — Parallel Agents</a>, where we run multiple agents concurrently to dramatically speed up tasks that don't depend on each other.
+  </p>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

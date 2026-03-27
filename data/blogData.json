@@ -1,5 +1,52 @@
 [
-  
+  {
+    "file": "Google_ADK_Extras.html",
+    "title": "Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals & More",
+    "summary": "Go beyond the basics with Google ADK: connect Ollama and third-party LLMs via LiteLLM, manage session memory and state, deploy to GCP with Cloud Run or Vertex AI Agent Engine, evaluate model performance with adk eval, and explore callbacks, artifacts, structured output, and guardrails.",
+    "tags": ["AI", "Google ADK", "Ollama", "LiteLLM", "GCP", "Cloud Run", "Vertex AI", "Evaluation", "Callbacks", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Google_ADK_Parallel_Agent.html",
+    "title": "Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution",
+    "summary": "Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents simultaneously and aggregating their results into a unified report.",
+    "tags": ["AI", "Google ADK", "Agents", "Parallel Agent", "Workflow", "Gemini", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Google_ADK_Loop_Agent.html",
+    "title": "Google ADK Part 4: Loop Agents — Iterative Processing with ADK",
+    "summary": "Learn how to build iterative agent workflows with Google ADK's LoopAgent. Run agents in a loop, control max iterations, and signal early completion — perfect for content refinement, retries, and quality-gating.",
+    "tags": ["AI", "Google ADK", "Agents", "Loop Agent", "Workflow", "Gemini", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Google_ADK_Sequential_Agent.html",
+    "title": "Google ADK Part 3: Sequential Agents — Building Step-by-Step Pipelines",
+    "summary": "Learn how to build deterministic agent pipelines with Google ADK's SequentialAgent. Chain multiple agents in a fixed order, pass structured data via shared state, and replace LLM routing with guaranteed step execution.",
+    "tags": ["AI", "Google ADK", "Agents", "Sequential Agent", "Workflow", "Gemini", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Google_ADK_Multi_Agent.html",
+    "title": "Google ADK Part 2: Multi-Agent Systems with Sub-Agents",
+    "summary": "Learn how to build a multi-agent system with Google ADK. Create specialised sub-agents with their own tools and wire them into an orchestrator agent that delegates tasks automatically using Gemini.",
+    "tags": ["AI", "Google ADK", "Agents", "Multi-Agent", "Gemini", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Google_ADK.html",
+    "title": "Google ADK: Building AI Agents with Google's Agent Development Kit",
+    "summary": "Get started with Google's Agent Development Kit (ADK): install it, learn the key CLI commands, build a sample agent, create a custom tool, and run your agent via terminal and the web UI.",
+    "tags": ["AI", "Google ADK", "Agents", "Gemini", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
   {
     "file": "Pricing_Insights_Blog.html",
     "title": "Pricing Insights: Analyzing E-commerce Price Trends & Dynamic Pricing",

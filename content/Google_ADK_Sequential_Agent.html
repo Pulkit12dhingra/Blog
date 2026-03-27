@@ -1,0 +1,572 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn how to build sequential agent pipelines with Google ADK. Use SequentialAgent to chain multiple agents together so each one builds on the previous step's output." />
+  <title>Google ADK Part 3: Sequential Agents — Building Step-by-Step Pipelines | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Google ADK Part 3: Sequential Agents — Building Step-by-Step Pipelines" />
+  <meta property="og:description" content="Learn how to build sequential agent pipelines with Google ADK. Use SequentialAgent to chain multiple agents together so each one builds on the previous step's output." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google ADK Part 3: Sequential Agents — Building Step-by-Step Pipelines" />
+  <meta name="twitter:description" content="Learn how to build sequential agent pipelines with Google ADK. Use SequentialAgent to chain multiple agents together so each one builds on the previous step's output." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Google ADK Part 3: Sequential Agents — Building Step-by-Step Pipelines</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <!-- Series Nav -->
+  <div class="alert alert-info mb-4">
+    <strong>Google ADK Series:</strong>
+    <a href="Google_ADK.html">Part 1: Getting Started</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Multi_Agent.html">Part 2: Multi-Agent Systems</a> &nbsp;|&nbsp;
+    <strong>Part 3: Sequential Agents</strong> &nbsp;|&nbsp;
+    <a href="Google_ADK_Loop_Agent.html">Part 4: Loop Agents</a> &nbsp;|&nbsp;
+    <a href="Google_ADK_Parallel_Agent.html">Part 5: Parallel Agents</a>
+  </div>
+
+  <h4 class="mt-4">What Are Workflow Agents?</h4>
+  <p>
+    In the previous post we built a multi-agent system using a plain <code>Agent</code> as the orchestrator — Gemini decided at runtime which sub-agent to delegate to based on the user's message. That approach is flexible and conversational, but sometimes you need <strong>deterministic, structured control flow</strong>.
+  </p>
+  <p>
+    That's where <strong>Workflow Agents</strong> come in. ADK ships three of them:
+  </p>
+  <ul>
+    <li><code>SequentialAgent</code> — runs sub-agents one after the other in a fixed order</li>
+    <li><code>LoopAgent</code> — repeats sub-agents in a loop until a condition is met</li>
+    <li><code>ParallelAgent</code> — runs sub-agents concurrently, in parallel</li>
+  </ul>
+  <p>
+    Workflow agents do <strong>not</strong> use Gemini to decide what to do next — the execution order is hardcoded into the agent definition itself. This makes them predictable, fast, and easy to reason about.
+  </p>
+
+  <h4 class="mt-4">What Is a SequentialAgent?</h4>
+  <p>
+    A <code>SequentialAgent</code> takes a list of sub-agents and runs them <strong>one by one, in the exact order you declare them</strong>. Each agent's output becomes part of the shared conversation context that the next agent can read from. It is the ADK equivalent of a data pipeline — Step A feeds Step B which feeds Step C.
+  </p>
+
+  <div class="bg-light border rounded p-3 mb-4">
+    <strong>When to use SequentialAgent:</strong>
+    <ul class="mb-0 mt-2">
+      <li>You have a fixed, multi-step process (e.g., research → draft → review)</li>
+      <li>Each step depends on the output of the previous step</li>
+      <li>You need guaranteed execution order, not LLM-decided routing</li>
+      <li>You are building ETL-style pipelines with AI agents</li>
+    </ul>
+  </div>
+
+  <h4 class="mt-4">How Context Flows Between Steps</h4>
+  <p>
+    ADK's session maintains a single shared conversation history. When <code>SequentialAgent</code> runs Step 1, the agent's response is appended to this history. Step 2 then receives the full history including Step 1's output as context. Step 3 receives everything Step 1 and Step 2 produced, and so on.
+  </p>
+  <p>
+    For more structured data sharing, sub-agents can use tools that read from and write to <code>tool_context.state</code> — a dictionary that persists across all agents in a session. This is the recommended pattern when agents need to pass structured results (JSON, lists, numbers) rather than just natural language.
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>
+# State is a dict on tool_context that all agents in a session share
+def save_to_state(key: str, value: str, tool_context: ToolContext) -> dict:
+    tool_context.state[key] = value
+    return {"status": "saved"}
+
+def read_from_state(key: str, tool_context: ToolContext) -> dict:
+    return {"value": tool_context.state.get(key, "")}
+  </code></pre>
+
+  <h4 class="mt-4">Project Structure</h4>
+  <p>We will build a <strong>content creation pipeline</strong> that does three things in sequence:</p>
+  <ol>
+    <li><strong>researcher_agent</strong> — gathers key facts about a given topic</li>
+    <li><strong>writer_agent</strong> — drafts a short blog section based on those facts</li>
+    <li><strong>editor_agent</strong> — polishes the draft for clarity and tone</li>
+  </ol>
+
+  <pre class="bg-light p-3 rounded"><code>
+content_pipeline/
+├── .env                  # GOOGLE_API_KEY=your_key_here
+├── __init__.py
+└── agent.py
+  </code></pre>
+
+  <h4 class="mt-4">Step 1: Install and Configure</h4>
+  <p>Make sure ADK is installed and your API key is set:</p>
+  <pre class="bg-light p-3 rounded"><code>
+pip install google-adk
+  </code></pre>
+  <pre class="bg-light p-3 rounded"><code>
+# .env
+GOOGLE_API_KEY=your_api_key_here
+  </code></pre>
+
+  <h4 class="mt-4">Step 2: Define the Tools</h4>
+  <p>
+    Each agent in our pipeline needs at least one tool to perform its job. We also need shared-state helpers so agents can hand off structured data to each other.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# agent.py
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, SequentialAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── Shared state helpers ──────────────────────────────────────────────
+
+def save_research(facts: str, tool_context: ToolContext) -> dict:
+    """Save research facts to shared session state for downstream agents.
+
+    Args:
+        facts: A string containing the research findings.
+        tool_context: ADK tool context providing access to session state.
+
+    Returns:
+        A dict confirming the save operation.
+    """
+    tool_context.state["research_facts"] = facts
+    return {"status": "research saved", "char_count": len(facts)}
+
+
+def load_research(tool_context: ToolContext) -> dict:
+    """Load previously saved research facts from session state.
+
+    Args:
+        tool_context: ADK tool context providing access to session state.
+
+    Returns:
+        A dict containing the research facts.
+    """
+    facts = tool_context.state.get("research_facts", "No research found.")
+    return {"facts": facts}
+
+
+def save_draft(draft: str, tool_context: ToolContext) -> dict:
+    """Save the written draft to shared session state.
+
+    Args:
+        draft: The written blog draft.
+        tool_context: ADK tool context providing access to session state.
+
+    Returns:
+        A dict confirming the save.
+    """
+    tool_context.state["draft"] = draft
+    return {"status": "draft saved", "char_count": len(draft)}
+
+
+def load_draft(tool_context: ToolContext) -> dict:
+    """Load the previously saved draft from session state.
+
+    Args:
+        tool_context: ADK tool context providing access to session state.
+
+    Returns:
+        A dict containing the draft text.
+    """
+    draft = tool_context.state.get("draft", "No draft found.")
+    return {"draft": draft}
+
+
+# ── Mock research tool (replace with real web search in production) ──
+
+def fetch_facts(topic: str) -> dict:
+    """Fetch key facts about a given topic.
+
+    Args:
+        topic: The subject to research.
+
+    Returns:
+        A dict with bullet-point facts about the topic.
+    """
+    # In a real system, call a search API here
+    return {
+        "topic": topic,
+        "facts": (
+            f"Key facts about {topic}:\n"
+            "- It is a widely studied subject with many real-world applications.\n"
+            "- Recent advances have accelerated its adoption in industry.\n"
+            "- Top practitioners recommend starting with fundamentals before advanced topics.\n"
+            "- Open-source tools have lowered the barrier to entry significantly.\n"
+            "- Community resources and documentation are extensive."
+        )
+    }
+  </code></pre>
+
+  <h4 class="mt-4">Step 3: Build the Three Sub-Agents</h4>
+  <p>
+    Each sub-agent has a focused, single-purpose instruction. Notice how the writer and editor agents are told to use the shared state tools — this is the key to passing structured data through the pipeline.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# ── Sub-agent 1: Researcher ───────────────────────────────────────────
+
+researcher_agent = Agent(
+    name="researcher_agent",
+    model="gemini-2.0-flash",
+    description="Researches a topic and saves facts to shared state.",
+    instruction=(
+        "You are a research assistant. When given a topic, call the fetch_facts tool "
+        "to gather information about it. Then call save_research to store those facts "
+        "in shared state so the next agent can use them. "
+        "Do not write the blog post — just collect and save the facts."
+    ),
+    tools=[fetch_facts, save_research],
+)
+
+
+# ── Sub-agent 2: Writer ───────────────────────────────────────────────
+
+writer_agent = Agent(
+    name="writer_agent",
+    model="gemini-2.0-flash",
+    description="Writes a blog draft based on research facts from shared state.",
+    instruction=(
+        "You are a technical blog writer. Call load_research to retrieve the facts "
+        "collected by the researcher. Use those facts to write a clear, engaging "
+        "200-300 word blog section. Then call save_draft to store your draft in "
+        "shared state. Do not edit the draft yourself — just write and save it."
+    ),
+    tools=[load_research, save_draft],
+)
+
+
+# ── Sub-agent 3: Editor ───────────────────────────────────────────────
+
+editor_agent = Agent(
+    name="editor_agent",
+    model="gemini-2.0-flash",
+    description="Edits and polishes the draft retrieved from shared state.",
+    instruction=(
+        "You are a senior technical editor. Call load_draft to retrieve the draft "
+        "written by the writer agent. Review it for clarity, grammar, and tone. "
+        "Fix any awkward phrasing. Make it concise and professional. "
+        "Output the final polished version directly as your response."
+    ),
+    tools=[load_draft],
+)
+  </code></pre>
+
+  <h4 class="mt-4">Step 4: Wire Them Into a SequentialAgent</h4>
+  <p>
+    Now we wrap all three agents in a <code>SequentialAgent</code>. The <code>sub_agents</code> list defines the exact execution order — ADK will run them left to right, no LLM routing involved.
+  </p>
+  <pre class="bg-light p-3 rounded"><code>
+# ── SequentialAgent pipeline ──────────────────────────────────────────
+
+content_pipeline = SequentialAgent(
+    name="content_pipeline",
+    description=(
+        "A 3-step content creation pipeline: research a topic, write a draft, "
+        "then edit and polish it. Runs researcher → writer → editor in order."
+    ),
+    sub_agents=[researcher_agent, writer_agent, editor_agent],
+)
+
+root_agent = content_pipeline
+  </code></pre>
+
+  <h4 class="mt-4">Step 5: The __init__.py</h4>
+  <pre class="bg-light p-3 rounded"><code>
+# __init__.py
+from . import agent
+  </code></pre>
+
+  <h4 class="mt-4">Step 6: Run the Pipeline</h4>
+  <pre class="bg-light p-3 rounded"><code>
+adk run content_pipeline
+  </code></pre>
+  <pre class="bg-light p-3 rounded"><code>
+# Example interaction
+You: Write a blog post about vector databases.
+
+# What happens internally:
+# 1. researcher_agent calls fetch_facts("vector databases")
+#    → saves facts to state["research_facts"]
+# 2. writer_agent calls load_research()
+#    → reads facts, writes draft, saves to state["draft"]
+# 3. editor_agent calls load_draft()
+#    → reads draft, polishes it, outputs final version
+
+Agent: Vector databases have emerged as a cornerstone of modern AI
+infrastructure. Unlike traditional relational databases that store structured
+rows and columns, vector databases are optimized for storing and querying
+high-dimensional numerical representations — called embeddings — that encode
+the semantic meaning of data...
+[polished 250-word blog section follows]
+  </code></pre>
+
+  <h4 class="mt-4">Using the Web UI</h4>
+  <pre class="bg-light p-3 rounded"><code>
+adk web
+  </code></pre>
+  <p>
+    Open <code>http://localhost:8000</code> in your browser. Select <code>content_pipeline</code> from the agent dropdown and type your topic. You can watch each step execute in the activity panel on the right — researcher fires first, writer second, editor last.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_02_python_v1_java_google_io/01_sequential_agent_pipeline.py" target="_blank" rel="noopener noreferrer">01_sequential_agent_pipeline.py</a></p>
+
+  <h4 class="mt-4">Complete agent.py</h4>
+  <p>Here is the full file for copy-paste convenience:</p>
+  <pre class="bg-light p-3 rounded"><code>
+import os
+from dotenv import load_dotenv
+from google.adk.agents import Agent, SequentialAgent
+from google.adk.tools import ToolContext
+
+load_dotenv()
+
+# ── Tools ─────────────────────────────────────────────────────────────
+
+def fetch_facts(topic: str) -> dict:
+    """Fetch key facts about a given topic."""
+    return {
+        "topic": topic,
+        "facts": (
+            f"Key facts about {topic}:\n"
+            "- It is a widely studied subject with many real-world applications.\n"
+            "- Recent advances have accelerated its adoption in industry.\n"
+            "- Top practitioners recommend starting with fundamentals before advanced topics.\n"
+            "- Open-source tools have lowered the barrier to entry significantly.\n"
+            "- Community resources and documentation are extensive."
+        )
+    }
+
+def save_research(facts: str, tool_context: ToolContext) -> dict:
+    """Save research facts to shared session state."""
+    tool_context.state["research_facts"] = facts
+    return {"status": "research saved", "char_count": len(facts)}
+
+def load_research(tool_context: ToolContext) -> dict:
+    """Load previously saved research facts from session state."""
+    return {"facts": tool_context.state.get("research_facts", "No research found.")}
+
+def save_draft(draft: str, tool_context: ToolContext) -> dict:
+    """Save the written draft to shared session state."""
+    tool_context.state["draft"] = draft
+    return {"status": "draft saved", "char_count": len(draft)}
+
+def load_draft(tool_context: ToolContext) -> dict:
+    """Load the previously saved draft from session state."""
+    return {"draft": tool_context.state.get("draft", "No draft found.")}
+
+# ── Sub-agents ────────────────────────────────────────────────────────
+
+researcher_agent = Agent(
+    name="researcher_agent",
+    model="gemini-2.0-flash",
+    description="Researches a topic and saves facts to shared state.",
+    instruction=(
+        "You are a research assistant. When given a topic, call fetch_facts "
+        "to gather information, then call save_research to store those facts."
+    ),
+    tools=[fetch_facts, save_research],
+)
+
+writer_agent = Agent(
+    name="writer_agent",
+    model="gemini-2.0-flash",
+    description="Writes a blog draft based on research facts from shared state.",
+    instruction=(
+        "You are a technical blog writer. Call load_research to retrieve facts, "
+        "write a 200-300 word blog section, then call save_draft to save it."
+    ),
+    tools=[load_research, save_draft],
+)
+
+editor_agent = Agent(
+    name="editor_agent",
+    model="gemini-2.0-flash",
+    description="Edits and polishes the draft retrieved from shared state.",
+    instruction=(
+        "You are a senior editor. Call load_draft, then polish the text for "
+        "clarity, grammar, and tone. Output the final version directly."
+    ),
+    tools=[load_draft],
+)
+
+# ── Pipeline ──────────────────────────────────────────────────────────
+
+content_pipeline = SequentialAgent(
+    name="content_pipeline",
+    description=(
+        "3-step pipeline: research → write → edit. Runs deterministically in order."
+    ),
+    sub_agents=[researcher_agent, writer_agent, editor_agent],
+)
+
+root_agent = content_pipeline
+  </code></pre>
+
+  <h4 class="mt-4">Key Concepts to Remember</h4>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Concept</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Execution order</strong></td>
+          <td>Always left-to-right in the <code>sub_agents</code> list. Not LLM-decided.</td>
+        </tr>
+        <tr>
+          <td><strong>Context sharing</strong></td>
+          <td>Each agent sees the full conversation history, including all prior agents' outputs.</td>
+        </tr>
+        <tr>
+          <td><strong>Structured data sharing</strong></td>
+          <td>Use <code>tool_context.state</code> (a dict) to pass structured data between steps.</td>
+        </tr>
+        <tr>
+          <td><strong>Agent instructions</strong></td>
+          <td>Each agent's instruction should be scoped to its single responsibility.</td>
+        </tr>
+        <tr>
+          <td><strong>SequentialAgent has no LLM</strong></td>
+          <td>The pipeline itself does not use Gemini. Only the sub-agents do.</td>
+        </tr>
+        <tr>
+          <td><strong>root_agent</strong></td>
+          <td>The <code>SequentialAgent</code> itself is the entry point — set it as <code>root_agent</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">SequentialAgent vs Orchestrator Agent</h4>
+  <p>A common question is when to use a <code>SequentialAgent</code> versus a plain <code>Agent</code> with <code>sub_agents</code> (the pattern from Part 2).</p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th></th>
+          <th>Orchestrator Agent (Part 2)</th>
+          <th>SequentialAgent (Part 3)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Routing</strong></td>
+          <td>Gemini decides dynamically based on user input</td>
+          <td>Hardcoded order, always the same</td>
+        </tr>
+        <tr>
+          <td><strong>Flexibility</strong></td>
+          <td>High — adapts to different inputs</td>
+          <td>Low — fixed pipeline</td>
+        </tr>
+        <tr>
+          <td><strong>Predictability</strong></td>
+          <td>Lower — depends on LLM judgment</td>
+          <td>High — deterministic</td>
+        </tr>
+        <tr>
+          <td><strong>Best for</strong></td>
+          <td>Conversational assistants, task delegation</td>
+          <td>ETL pipelines, document processing, multi-step workflows</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">Final Thoughts</h4>
+  <p>
+    The <code>SequentialAgent</code> gives you assembly-line power for your AI workflows. Once you need guaranteed step ordering — whether it's research → summarise → translate, or validate → enrich → store — reach for <code>SequentialAgent</code> instead of hoping your LLM orchestrator picks the right path.
+  </p>
+  <p>
+    The shared state pattern via <code>tool_context.state</code> is particularly valuable: it lets you move rich, structured data between agents without embedding it all in natural language — keeping your outputs clean and your pipeline robust.
+  </p>
+  <p class="fw-bold">
+    Next up: <a href="Google_ADK_Loop_Agent.html">Part 4 — Loop Agents</a>, where we build agents that iterate until a condition is satisfied. Perfect for retry logic, content refinement, and quality-gating workflows.
+  </p>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,392 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Get started with Google's Agent Development Kit (ADK): install it, learn the key CLI commands, build a sample agent, create a custom tool, and run your agent via terminal and the web UI." />
+  <title>Google ADK: Building AI Agents with Google's Agent Development Kit | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Google ADK: Building AI Agents with Google's Agent Development Kit" />
+  <meta property="og:description" content="Get started with Google's Agent Development Kit (ADK): install it, learn the key CLI commands, build a sample agent, create a custom tool, and run your agent via terminal and the web UI." />
+  <meta property="og:image" content="../img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google ADK: Building AI Agents with Google's Agent Development Kit" />
+  <meta name="twitter:description" content="Get started with Google's Agent Development Kit (ADK): install it, learn the key CLI commands, build a sample agent, create a custom tool, and run your agent via terminal and the web UI." />
+  <meta name="twitter:image" content="../img/social-preview.jpg" />
+
+  <!-- Critical CSS loaded first -->
+  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+
+  <!-- Non-critical CSS loaded asynchronously -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Google ADK — Building AI Agents with Google's Agent Development Kit</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <p>
+    Google's <strong>Agent Development Kit (ADK)</strong> is an open-source Python framework for building, evaluating, and deploying AI agents powered by Gemini models. Unlike higher-level wrappers, ADK gives you direct control over how your agent reasons, what tools it can call, and how it manages conversation state — all with minimal boilerplate.
+  </p>
+
+  <p>
+    If you've worked with <a href="./Langchains_with_Ollama.html">LangChain</a> or <a href="./RAG_with_LangGraphs.html">LangGraph</a> before, ADK will feel familiar in spirit but is tightly integrated with Google's ecosystem (Gemini, Vertex AI, Google Search). This post covers the essentials to get you up and running:
+  </p>
+
+  <ul>
+    <li>Installing ADK and setting up credentials</li>
+    <li>Project structure and key CLI commands</li>
+    <li>Building a basic agent</li>
+    <li>Writing a custom tool and wiring it to the agent</li>
+    <li>Running your agent via <code>adk run</code> and <code>adk web</code></li>
+  </ul>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <h4 class="mt-5">1. Installation</h4>
+
+  <p>
+    ADK requires Python 3.9 or higher. Create a dedicated virtual environment first to keep things clean:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code># Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate      # macOS / Linux
+# .venv\Scripts\activate       # Windows
+
+# Install ADK
+pip install google-adk</code></pre>
+
+  <p>
+    ADK uses Google Gemini models under the hood. You'll need a Gemini API key. Create a <code>.env</code> file at the root of your project:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code># .env
+GOOGLE_GENAI_USE_VERTEXAI=FALSE
+GOOGLE_API_KEY=your_api_key_here</code></pre>
+
+  <p>
+    You can get a free Gemini API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio</a>. ADK automatically picks up the <code>.env</code> file when you run it from the same directory.
+  </p>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <h4 class="mt-5">2. Project Structure &amp; ADK Commands</h4>
+
+  <p>
+    ADK expects a specific folder layout so its CLI knows where to find your agent. The convention is one folder per agent, sitting inside a parent project directory:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>my_project/
+├── .env                  # API keys — never commit this
+└── weather_agent/        # one folder per agent
+    ├── __init__.py       # must expose root_agent
+    └── agent.py          # agent definition and tools</code></pre>
+
+  <p>
+    The folder name (<code>weather_agent</code>) is the agent's identifier used by the CLI. The <code>__init__.py</code> must import and expose <code>root_agent</code> — ADK looks for this name specifically when it loads your agent.
+  </p>
+
+  <h5 class="mt-4">Key CLI Commands</h5>
+
+  <p>All commands are run from <code>my_project/</code> — the parent directory that contains your agent folder.</p>
+
+  <pre class="bg-light p-3 rounded"><code># Run the agent interactively in the terminal
+adk run weather_agent
+
+# Launch the browser-based chat UI at http://localhost:8000
+adk web
+
+# Start a local REST API server for the agent
+adk api_server weather_agent</code></pre>
+
+  <ul>
+    <li><strong><code>adk run</code></strong> — starts an interactive terminal session; type messages, see responses, quit with <code>Ctrl+C</code>.</li>
+    <li><strong><code>adk web</code></strong> — opens a full chat UI in the browser with a built-in tool-call inspector. Great for demos and debugging.</li>
+    <li><strong><code>adk api_server</code></strong> — exposes a REST endpoint so you can call the agent from any external application.</li>
+  </ul>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <h4 class="mt-5">3. Building a Basic Agent</h4>
+
+  <p>
+    An <strong>Agent</strong> in ADK is defined by four core properties:
+  </p>
+
+  <ul>
+    <li><strong>name</strong> — a unique identifier for the agent.</li>
+    <li><strong>model</strong> — the Gemini model to use (e.g. <code>gemini-2.0-flash</code>).</li>
+    <li><strong>description</strong> — used by orchestrators to decide when to delegate to this agent (important for multi-agent setups).</li>
+    <li><strong>instruction</strong> — the system prompt that shapes how the agent behaves.</li>
+  </ul>
+
+  <p>Let's start with the simplest possible agent — no tools, just a Gemini-powered conversational assistant.</p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_01_initial_launch_multi_agent/01_single_agent.py" target="_blank" rel="noopener noreferrer">01_single_agent.py</a></p>
+
+  <p><strong>weather_agent/agent.py</strong></p>
+
+  <pre class="bg-light p-3 rounded"><code>from google.adk.agents import Agent
+
+root_agent = Agent(
+    name="weather_agent",
+    model="gemini-2.0-flash",
+    description="A helpful assistant that answers weather-related questions.",
+    instruction=(
+        "You are a friendly weather assistant. "
+        "Answer the user's questions clearly and concisely. "
+        "If you don't know something, say so honestly."
+    ),
+)</code></pre>
+
+  <p><strong>weather_agent/__init__.py</strong></p>
+
+  <pre class="bg-light p-3 rounded"><code>from . import agent</code></pre>
+
+  <p>
+    That's a working agent. At this point it can hold a conversation using Gemini's built-in knowledge, but it can't call external APIs or run custom logic. That's where <strong>tools</strong> come in.
+  </p>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h4 class="mt-5">4. Building a Custom Tool &amp; Integrating It</h4>
+
+  <p>
+    In ADK a <strong>tool</strong> is simply a Python function. ADK uses the function's name, type hints, and docstring to automatically build a schema that describes the tool to Gemini — so the model knows when and how to call it. No decorators or wrappers are needed.
+  </p>
+
+  <h5 class="mt-4">Writing the Tool</h5>
+
+  <p>
+    Let's write a <code>get_weather</code> tool. In a real project this would call a live weather API; here we return mock data to keep the focus on ADK mechanics:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>def get_weather(city: str) -> dict:
+    """
+    Returns the current weather for the given city.
+
+    Args:
+        city: The name of the city to get weather for.
+
+    Returns:
+        A dictionary with city, temperature, condition, and humidity.
+    """
+    # Replace with a real API call in production (e.g. OpenWeatherMap)
+    mock_data = {
+        "london":   {"temperature": "14°C", "condition": "Cloudy",  "humidity": "78%"},
+        "new york": {"temperature": "22°C", "condition": "Sunny",   "humidity": "55%"},
+        "tokyo":    {"temperature": "18°C", "condition": "Rainy",   "humidity": "85%"},
+    }
+    key = city.lower()
+    if key in mock_data:
+        return {"city": city, **mock_data[key]}
+    return {"city": city, "error": f"No weather data found for '{city}'."}</code></pre>
+
+  <p>Three rules to keep in mind when writing ADK-compatible tools:</p>
+  <ul>
+    <li><strong>Always add type hints</strong> — ADK uses them to build the tool schema for the model.</li>
+    <li><strong>Write a clear docstring</strong> — Gemini reads this to understand when to call the tool.</li>
+    <li><strong>Return a dict or simple type</strong> — ADK serialises the return value back to the model as context.</li>
+  </ul>
+
+  <h5 class="mt-4">Integrating the Tool with the Agent</h5>
+
+  <p>
+    Pass the function directly in the <code>tools</code> list when constructing the agent. Here is the complete <code>agent.py</code> with the tool included:
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_01_initial_launch_multi_agent/02_custom_tool_agent.py" target="_blank" rel="noopener noreferrer">02_custom_tool_agent.py</a></p>
+
+  <pre class="bg-light p-3 rounded"><code>from google.adk.agents import Agent
+
+
+def get_weather(city: str) -> dict:
+    """
+    Returns the current weather for the given city.
+
+    Args:
+        city: The name of the city to get weather for.
+
+    Returns:
+        A dictionary with city, temperature, condition, and humidity.
+    """
+    mock_data = {
+        "london":   {"temperature": "14°C", "condition": "Cloudy",  "humidity": "78%"},
+        "new york": {"temperature": "22°C", "condition": "Sunny",   "humidity": "55%"},
+        "tokyo":    {"temperature": "18°C", "condition": "Rainy",   "humidity": "85%"},
+    }
+    key = city.lower()
+    if key in mock_data:
+        return {"city": city, **mock_data[key]}
+    return {"city": city, "error": f"No weather data found for '{city}'."}
+
+
+root_agent = Agent(
+    name="weather_agent",
+    model="gemini-2.0-flash",
+    description="A helpful assistant that answers weather-related questions.",
+    instruction=(
+        "You are a friendly weather assistant. "
+        "Use the get_weather tool to look up current conditions for any city the user asks about. "
+        "Always present the result in a readable, conversational way."
+    ),
+    tools=[get_weather],   # wire the tool here
+)</code></pre>
+
+  <p>
+    When the user asks <em>"What's the weather in London?"</em>, Gemini recognises the intent, calls <code>get_weather(city="London")</code> automatically, receives the dict back, and formats a natural-language reply — all without you writing any routing logic.
+  </p>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <h4 class="mt-5">5. adk run and adk web</h4>
+
+  <h5 class="mt-4">adk run — Terminal Chat</h5>
+
+  <p>
+    From the <code>my_project/</code> directory run:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>adk run weather_agent</code></pre>
+
+  <p>
+    You get an interactive prompt. Type a message and press Enter:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>User: What is the weather like in Tokyo?
+
+Agent: The current weather in Tokyo is rainy with a temperature of 18°C
+       and humidity at 85%. Make sure to carry an umbrella!
+
+User: What about New York?
+
+Agent: New York is enjoying sunny skies right now — 22°C with 55% humidity.
+       Great day to be outside!
+
+User: exit</code></pre>
+
+  <p>
+    Press <code>Ctrl+C</code> or type <code>exit</code> to end the session. History is held in memory and discarded on exit.
+  </p>
+
+  <h5 class="mt-4">adk web — Browser UI</h5>
+
+  <p>
+    For a more visual experience — especially useful for demos and debugging tool calls:
+  </p>
+
+  <pre class="bg-light p-3 rounded"><code>adk web</code></pre>
+
+  <p>ADK starts a local server:</p>
+
+  <pre class="bg-light p-3 rounded"><code>INFO:     Started server process [12345]
+INFO:     Uvicorn running on http://localhost:8000</code></pre>
+
+  <p>
+    Open <code>http://localhost:8000</code> in your browser. The web UI gives you:
+  </p>
+
+  <ul>
+    <li>A dropdown to select any agent in the project</li>
+    <li>A chat window with real-time streaming responses</li>
+    <li>An <strong>event timeline</strong> that shows every tool call Gemini made, the arguments it passed, and the value your function returned — all collapsible, no extra logging needed</li>
+  </ul>
+
+  <p>
+    The event timeline is the most useful debugging feature ADK ships with. You can see exactly when the model decided to invoke <code>get_weather</code>, what city it passed, and what your mock data returned — without touching a log file.
+  </p>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h4 class="mt-5">6. Conclusion</h4>
+
+  <p>
+    Google ADK keeps the core concepts intentionally simple so you can focus on agent behaviour rather than plumbing. The things worth remembering:
+  </p>
+
+  <ul>
+    <li><strong>One folder = one agent.</strong> The folder name is the agent ID; <code>__init__.py</code> exposes <code>root_agent</code>.</li>
+    <li><strong>Tools are plain Python functions.</strong> Type hints and a docstring are all ADK needs to wire them to Gemini.</li>
+    <li><strong><code>adk run</code></strong> for quick terminal testing; <strong><code>adk web</code></strong> for a visual, debuggable UI.</li>
+    <li>Keep your <code>.env</code> next to the agent folder and never commit it — ADK picks it up automatically.</li>
+  </ul>
+
+  <p>
+    In the next post we'll go further — building <strong>multi-agent pipelines</strong> using <code>SequentialAgent</code> and <code>ParallelAgent</code> so agents can hand off tasks to each other and work concurrently.
+  </p>
+
+  <p class="fw-bold">
+    Start simple, ship a working agent, then layer in complexity — that's the ADK way.
+  </p>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

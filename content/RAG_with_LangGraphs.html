@@ -109,7 +109,7 @@
   <p> Let's start by loading in the pdf dataset using langchains. <code>document_loaders</code> extract text 
     from every PDF file abstracting away the complexity of parsing individual files.</p>
   <pre class="bg-light p-3 rounded"><code>
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 import os
 
 pdf_folder = "data/pdfs"
@@ -155,7 +155,7 @@ chunks = text_splitter.split_documents(all_docs)</code></pre>
 </p>
 
   <pre class="bg-light p-3 rounded"><code>
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")</code></pre>
 
@@ -172,13 +172,13 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 </p>
 
   <pre class="bg-light p-3 rounded"><code>
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")</code></pre>
 
   <h5 class="mt-4"> Initialize Ollama with Gemma 3</h5>
   <pre class="bg-light p-3 rounded"><code>
-from langchain.llms import Ollama
+from langchain_community.llms import Ollama
 
 llm = Ollama(model="gemma3")</code></pre>
 
@@ -188,7 +188,7 @@ llm = Ollama(model="gemma3")</code></pre>
 <h5 class="mt-4">Imports and Definitions</h5>
 <pre class="bg-light p-3 rounded"><code>from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document</code></pre>
 <ul>
   <li><code>START</code>: Defines where the graph begins.</li>
@@ -347,12 +347,12 @@ all_splits = text_splitter.split_documents(all_docs)
 print(f"Split resume pdfs into {len(all_splits)} sub-documents.")
 
 # Embeddings
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # Vectorstore
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 
 vectorstore = Chroma.from_documents(all_splits, embedding=embedding_model, persist_directory="./chroma_db")
 retriever = vectorstore.as_retriever()
@@ -361,7 +361,7 @@ document_ids = vectorstore.add_documents(documents=all_splits)
 print(document_ids[:3])
 
 # LLM Initialization
-from langchain.llms import Ollama
+from langchain_community.llms import Ollama
 
 llm = Ollama(model="gemma3")
 
@@ -369,7 +369,7 @@ llm = Ollama(model="gemma3")
 from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
 from langchain_core.documents import Document
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 prompt = PromptTemplate.from_template(
     """
