@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 
 <body>
@@ -118,7 +120,7 @@
   <p>We’ll generate a random array of integers and apply each sorting algorithm. The goal is to analyze performance through benchmarking and visualize how each method behaves on the same dataset.</p>
 
   <h5>Generate Test Data</h5>
-  <pre class="bg-light p-3 rounded"><code>import random
+  <pre><code class="language-python">import random
 array = random.sample(range(1, 1001), 1000)</code></pre>
 
   <h4 class="mt-4">Sorting Algorithms</h4>
@@ -127,7 +129,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
   <p>
     Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they're in the wrong order. Larger values "bubble up" to the end with each pass.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def bubble_sort(arr):
+  <pre><code class="language-python">def bubble_sort(arr):
     n = len(arr)
     for i in range(n):
         for j in range(n-i-1):
@@ -139,7 +141,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
   <p>
     Insertion Sort builds the sorted array one element at a time. It takes each element and inserts it into its correct position among the already-sorted elements.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def insertion_sort(arr):
+  <pre><code class="language-python">def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
@@ -153,7 +155,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
   <p>
     Selection Sort divides the array into sorted and unsorted regions. It repeatedly selects the minimum element from the unsorted region and moves it to the sorted region.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def selection_sort(arr):
+  <pre><code class="language-python">def selection_sort(arr):
     for i in range(len(arr)):
         min_idx = i
         for j in range(i+1, len(arr)):
@@ -166,7 +168,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
   <p>
     Merge Sort is a divide-and-conquer algorithm. It recursively splits the array into halves, sorts each half, and then merges the sorted halves back together.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def merge_sort(arr):
+  <pre><code class="language-python">def merge_sort(arr):
     if len(arr) > 1:
         mid = len(arr) // 2
         left = arr[:mid]
@@ -195,7 +197,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
   <p>
     Quick Sort selects a 'pivot' element and partitions the array so that elements smaller than the pivot come before it and larger elements come after. It then recursively sorts the partitions.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def quick_sort(arr):
+  <pre><code class="language-python">def quick_sort(arr):
     if len(arr) <= 1:
         return arr
     pivot = arr[0]
@@ -206,7 +208,7 @@ array = random.sample(range(1, 1001), 1000)</code></pre>
 
   <h4 class="mt-4">Benchmarking the Algorithms</h4>
   <p>We’ll time how long each algorithm takes to sort the same array.</p>
-  <pre class="bg-light p-3 rounded"><code>import time
+  <pre><code class="language-python">import time
 
 algorithms = {
     "Bubble": bubble_sort,
@@ -308,10 +310,14 @@ for name, func in algorithms.items():
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

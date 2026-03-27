@@ -26,7 +26,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -76,6 +76,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -105,7 +107,7 @@
   <p>
     The project is organized for clarity, scalability, and maintainability, following best practices in data engineering and analytics:
   </p>
-  <pre class="bg-light p-3 rounded"><code>ecommerce-pricing-insights/
+  <pre><code class="language-python">ecommerce-pricing-insights/
 ├── data/
 │   ├── raw/                      # Raw eBay/Kaggle datasets
 │   └── processed/                # Cleaned and feature-enriched data
@@ -231,7 +233,7 @@
   <p>
     Typical workflow for running the analytics pipeline:
   </p>
-  <pre class="bg-light p-3 rounded"><code># Run data cleaning and validation in notebooks
+  <pre><code class="language-python"># Run data cleaning and validation in notebooks
 jupyter notebook notebooks/Data_cleaning_code.ipynb
 jupyter notebook notebooks/Data_check.ipynb
 
@@ -320,10 +322,14 @@ Open dashboard/E-commerce-dashboard.py
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

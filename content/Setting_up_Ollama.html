@@ -26,7 +26,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -76,6 +76,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 
 <body>
@@ -118,39 +120,39 @@
     <h4 class="mt-4"> Basic Commands</h4>
 
     <h5>📥 Pull a model</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama pull gemma3</code></pre>
+    <pre><code class="language-python">ollama pull gemma3</code></pre>
     <p>This will download the latest version of the specified model.</p>
     <div class="mt-2 mb-4 text-center">
         <img src="../img/Blog_8_1.png" alt="ollama pull" class="img-fluid rounded shadow"/>
     </div>
 
     <h5> Run a model</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama run gemma3</code></pre>
+    <pre><code class="language-python">ollama run gemma3</code></pre>
     <p>Starts an interactive session with the model in your terminal.</p>
     <div class="mt-2 mb-4 text-center">
         <img src="../img/Blog_8_2.png" alt="ollama run" class="img-fluid rounded shadow"/>
     </div>
 
     <h5>📋 List installed models</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama list</code></pre>
+    <pre><code class="language-python">ollama list</code></pre>
     <div class="mt-2 mb-4 text-center">
         <img src="../img/Blog_8_3.png" alt="ollama list" class="img-fluid rounded shadow"/>
     </div>
 
     <h5> Remove a model</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama rm llama2</code></pre>
+    <pre><code class="language-python">ollama rm llama2</code></pre>
     
     <h5> View model info</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama show gemma3</code></pre>
+    <pre><code class="language-python">ollama show gemma3</code></pre>
     <div class="mt-2 mb-4 text-center">
         <img src="../img/Blog_8_4.png" alt="ollama show" class="img-fluid rounded shadow"/>
     </div>
 
     <h5> Start the server manually</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama serve</code></pre>
+    <pre><code class="language-python">ollama serve</code></pre>
 
     <h5> Stop the running model</h5>
-    <pre class="bg-light p-3 rounded"><code>ollama stop</code></pre>
+    <pre><code class="language-python">ollama stop</code></pre>
 
     <h4 class="mt-4">📎 Final Thoughts</h4>
     <p>
@@ -170,10 +172,14 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

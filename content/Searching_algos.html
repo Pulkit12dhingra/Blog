@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -114,7 +116,7 @@
   <p>
     Linear search is the simplest way to find an element in a list: go through each element one by one until you find the target — or exhaust the list.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def linear_search(arr, target):
+  <pre><code class="language-python">def linear_search(arr, target):
     for i in range(len(arr)):
         if arr[i] == target:
             return i
@@ -132,7 +134,7 @@
   <p>
     Binary search is a much faster method — but only works on sorted arrays. It repeatedly divides the search interval in half.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def binary_search(arr, target):
+  <pre><code class="language-python">def binary_search(arr, target):
     low, high = 0, len(arr) - 1
     while low <= high:
         mid = (low + high) // 2
@@ -156,7 +158,7 @@
   <p>
     Binary search can also be implemented recursively, which some find more intuitive:
   </p>
-  <pre class="bg-light p-3 rounded"><code>def binary_search_recursive(arr, target, low, high):
+  <pre><code class="language-python">def binary_search_recursive(arr, target, low, high):
     if low > high:
         return -1
     
@@ -174,7 +176,7 @@
 
   <h4 class="mt-4">Let's Test Them!</h4>
   <p>We’ll use a sample array and search for a number using both methods.</p>
-  <pre class="bg-light p-3 rounded"><code>arr = [2, 4, 6, 8, 10, 12, 14, 16]
+  <pre><code class="language-python">arr = [2, 4, 6, 8, 10, 12, 14, 16]
 target = 10
 
 print("Linear Search:", linear_search(arr, target))
@@ -258,10 +260,14 @@ print("Binary Search:", binary_search(arr, target))</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

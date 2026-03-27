@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
   <div class="container mt-4">
@@ -103,7 +105,7 @@
     </ul>
 
     <h4>📂 Example: Loading Local PDFs</h4>
-    <pre class="bg-light p-3 rounded"><code>
+    <pre><code class="language-python">
 from langchain_community.document_loaders import PyPDFLoader
 loader = PyPDFLoader("Pulkit_Resume__.pdf")
 docs = loader.load()
@@ -113,7 +115,7 @@ print(docs[0].page_content)</code></pre>
 </div>
 
     <h4>📁 DirectoryLoader for Bulk Imports</h4>
-    <pre class="bg-light p-3 rounded"><code>
+    <pre><code class="language-python">
 from langchain_community.document_loaders import DirectoryLoader
 loader = DirectoryLoader("docs/", glob="**/*.txt", show_progress=True)
 docs = loader.load()
@@ -121,7 +123,7 @@ docs = loader.load()
     <p>Loads all text files recursively from a directory — great for datasets or log archives.</p>
 
     <h4>Loading from the Web</h4>
-    <pre class="bg-light p-3 rounded"><code>
+    <pre><code class="language-python">
 from langchain_community.document_loaders import WebBaseLoader
 loader = WebBaseLoader("https://pulkit12dhingra.github.io/Blog/content/Hello_World.html")
 docs = loader.load()
@@ -141,7 +143,7 @@ print(docs[0].page_content[:500])
 <p>
   LangChain also supports structured data ingestion using <code>JSONLoader</code>. This is ideal for structured documents like resumes or API outputs, allowing you to flexibly extract and transform nested data.
 </p>
-<pre class="bg-light p-3 rounded"><code>from langchain_community.document_loaders import JSONLoader
+<pre><code class="language-python">from langchain_community.document_loaders import JSONLoader
 
 json_loader = JSONLoader(
     file_path="data/Pulkit_Dhingra_Resume.json",
@@ -172,14 +174,14 @@ json_docs = json_loader.load()</code></pre>
 
     <h4>📺 Loading from YouTube</h4>
     <p>Transcribe videos into context-aware documents using:</p>
-    <pre class="bg-light p-3 rounded"><code>
+    <pre><code class="language-python">
 from langchain_community.document_loaders import YoutubeLoader
 loader = YoutubeLoader.from_youtube_url("https://youtu.be/QmZIi23cT4w", add_video_info=True)
 docs = loader.load()
     </code></pre>
 
     <h4>🧾 Load CSVs as Documents</h4>
-    <pre class="bg-light p-3 rounded"><code>
+    <pre><code class="language-python">
 from langchain_community.document_loaders.csv_loader import CSVLoader
 loader = CSVLoader(file_path="Pulkit_Dhingra_Resume.csv")
 docs = loader.load()
@@ -209,10 +211,14 @@ docs = loader.load()
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

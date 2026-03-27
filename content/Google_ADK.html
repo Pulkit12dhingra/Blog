@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -108,7 +110,7 @@
     ADK requires Python 3.9 or higher. Create a dedicated virtual environment first to keep things clean:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code># Create and activate a virtual environment
+  <pre><code class="language-python"># Create and activate a virtual environment
 python -m venv .venv
 source .venv/bin/activate      # macOS / Linux
 # .venv\Scripts\activate       # Windows
@@ -120,7 +122,7 @@ pip install google-adk</code></pre>
     ADK uses Google Gemini models under the hood. You'll need a Gemini API key. Create a <code>.env</code> file at the root of your project:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code># .env
+  <pre><code class="language-python"># .env
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_api_key_here</code></pre>
 
@@ -135,7 +137,7 @@ GOOGLE_API_KEY=your_api_key_here</code></pre>
     ADK expects a specific folder layout so its CLI knows where to find your agent. The convention is one folder per agent, sitting inside a parent project directory:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>my_project/
+  <pre><code class="language-python">my_project/
 ├── .env                  # API keys — never commit this
 └── weather_agent/        # one folder per agent
     ├── __init__.py       # must expose root_agent
@@ -149,7 +151,7 @@ GOOGLE_API_KEY=your_api_key_here</code></pre>
 
   <p>All commands are run from <code>my_project/</code> — the parent directory that contains your agent folder.</p>
 
-  <pre class="bg-light p-3 rounded"><code># Run the agent interactively in the terminal
+  <pre><code class="language-python"># Run the agent interactively in the terminal
 adk run weather_agent
 
 # Launch the browser-based chat UI at http://localhost:8000
@@ -184,7 +186,7 @@ adk api_server weather_agent</code></pre>
 
   <p><strong>weather_agent/agent.py</strong></p>
 
-  <pre class="bg-light p-3 rounded"><code>from google.adk.agents import Agent
+  <pre><code class="language-python">from google.adk.agents import Agent
 
 root_agent = Agent(
     name="weather_agent",
@@ -199,7 +201,7 @@ root_agent = Agent(
 
   <p><strong>weather_agent/__init__.py</strong></p>
 
-  <pre class="bg-light p-3 rounded"><code>from . import agent</code></pre>
+  <pre><code class="language-python">from . import agent</code></pre>
 
   <p>
     That's a working agent. At this point it can hold a conversation using Gemini's built-in knowledge, but it can't call external APIs or run custom logic. That's where <strong>tools</strong> come in.
@@ -218,7 +220,7 @@ root_agent = Agent(
     Let's write a <code>get_weather</code> tool. In a real project this would call a live weather API; here we return mock data to keep the focus on ADK mechanics:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>def get_weather(city: str) -> dict:
+  <pre><code class="language-python">def get_weather(city: str) -> dict:
     """
     Returns the current weather for the given city.
 
@@ -254,7 +256,7 @@ root_agent = Agent(
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full runnable code: <a href="https://github.com/Pulkit12dhingra/adk-guide/blob/master/adk-guide/blog_01_initial_launch_multi_agent/02_custom_tool_agent.py" target="_blank" rel="noopener noreferrer">02_custom_tool_agent.py</a></p>
 
-  <pre class="bg-light p-3 rounded"><code>from google.adk.agents import Agent
+  <pre><code class="language-python">from google.adk.agents import Agent
 
 
 def get_weather(city: str) -> dict:
@@ -303,13 +305,13 @@ root_agent = Agent(
     From the <code>my_project/</code> directory run:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>adk run weather_agent</code></pre>
+  <pre><code class="language-python">adk run weather_agent</code></pre>
 
   <p>
     You get an interactive prompt. Type a message and press Enter:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>User: What is the weather like in Tokyo?
+  <pre><code class="language-python">User: What is the weather like in Tokyo?
 
 Agent: The current weather in Tokyo is rainy with a temperature of 18°C
        and humidity at 85%. Make sure to carry an umbrella!
@@ -331,11 +333,11 @@ User: exit</code></pre>
     For a more visual experience — especially useful for demos and debugging tool calls:
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>adk web</code></pre>
+  <pre><code class="language-python">adk web</code></pre>
 
   <p>ADK starts a local server:</p>
 
-  <pre class="bg-light p-3 rounded"><code>INFO:     Started server process [12345]
+  <pre><code class="language-python">INFO:     Started server process [12345]
 INFO:     Uvicorn running on http://localhost:8000</code></pre>
 
   <p>
@@ -384,10 +386,14 @@ INFO:     Uvicorn running on http://localhost:8000</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

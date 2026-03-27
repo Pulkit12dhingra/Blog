@@ -26,7 +26,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -76,6 +76,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -109,7 +111,7 @@
     One of the key strengths of this project is its <strong>clean, modular architecture</strong> following Python 
     best practices for production-ready applications. Let's examine the structure:
   </p>
-  <pre class="bg-light p-3 rounded"><code>hitlog_processing/
+  <pre><code class="language-python">hitlog_processing/
 ├── data/
 │   ├── data_gen.py              # Synthetic data generator
 │   ├── logs/                    # Input CSV files
@@ -238,7 +240,7 @@
     This is the default and simpler implementation. It processes events chronologically for each user, maintaining 
     a set of unique articles seen in the current "journey."
   </p>
-  <pre class="bg-light p-3 rounded"><code>def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
+  <pre><code class="language-python">def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
     weights: dict[str, int] = {}
     names: dict[str, str] = {}
 
@@ -275,7 +277,7 @@
     This approach builds a directed graph where nodes represent pages and edges represent user navigation patterns. 
     It's more complex but extensible for future graph analytics.
   </p>
-  <pre class="bg-light p-3 rounded"><code>def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
+  <pre><code class="language-python">def build_ranking(df: pd.DataFrame) -> pd.DataFrame:
     # Build Node objects for all pages
     nodes = _build_nodes(df)
     
@@ -313,7 +315,7 @@
     The test suite uses <strong>pytest</strong> to validate both approaches against the same sample data, 
     ensuring output consistency:
   </p>
-  <pre class="bg-light p-3 rounded"><code>def test_cli_timestamp_and_graph(sample_csv_path, outputs_dir, run_cli_env):
+  <pre><code class="language-python">def test_cli_timestamp_and_graph(sample_csv_path, outputs_dir, run_cli_env):
     # Run both approaches
     _run_cli(sample_csv_path, out_ts, "timestamp", run_cli_env)
     _run_cli(sample_csv_path, out_gr, "graph", run_cli_env)
@@ -330,7 +332,7 @@
   <p>
     The <code>Makefile</code> provides convenient targets for maintaining code quality:
   </p>
-  <pre class="bg-light p-3 rounded"><code># Format code with Ruff
+  <pre><code class="language-python"># Format code with Ruff
 make format
 
 # Run linter
@@ -347,7 +349,7 @@ make commit
   <p>
     The CLI makes it easy to process hitlog data and generate influence rankings:
   </p>
-  <pre class="bg-light p-3 rounded"><code># Install the package
+  <pre><code class="language-python"># Install the package
 pip install -e .
 
 # Run with timestamp approach (default)
@@ -367,7 +369,7 @@ python -m telegraph_ranker.cli \
   <p>
     The output CSV contains ranked articles sorted by influence score:
   </p>
-  <pre class="bg-light p-3 rounded"><code>page_name,page_url,total
+  <pre><code class="language-python">page_name,page_url,total
 "Breaking: Major Policy Announcement",/articles/major-policy-announcement,47
 "Tech Giants Face New Regulations",/articles/tech-regulations,42
 "Economic Outlook 2025",/articles/economic-outlook-2025,38
@@ -458,10 +460,14 @@ python -m telegraph_ranker.cli \
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

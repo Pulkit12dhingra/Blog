@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -111,7 +113,7 @@
     <p>
       Linear regression models the relationship between features (inputs) and a continuous target (output) by fitting a line.
       The model assumes:
-      <pre class="bg-light p-3 rounded"><code>y = wX + b</code></pre>
+      <pre><code class="language-python">y = wX + b</code></pre>
       Where:
       <ul>
         <li><code>w</code> is the weight (slope)</li>
@@ -127,7 +129,7 @@
     </p>
     <p>
       For linear regression, the most common choice is:
-      <pre class="bg-light p-3 rounded"><code>Mean Squared Error (MSE) = (1/n) * Σ(y_pred - y_true)²</code></pre>
+      <pre><code class="language-python">Mean Squared Error (MSE) = (1/n) * Σ(y_pred - y_true)²</code></pre>
       This gives us a single number — a score. The closer it is to zero, the better our model’s predictions. Our ultimate goal during training is to <strong>minimize this loss</strong>.
     </p>
   
@@ -142,7 +144,7 @@
       It does this by computing the <strong>gradient</strong> of the loss function — i.e., the rate of change of loss with respect to each model parameter (weights and bias):
     </p>
   
-    <pre class="bg-light p-3 rounded"><code>w = w - α * ∂MSE/∂w
+    <pre><code class="language-python">w = w - α * ∂MSE/∂w
   b = b - α * ∂MSE/∂b</code></pre>
   
     <ul>
@@ -155,7 +157,7 @@
     </p>
   
     <h4 class="mt-4">4. Load & Scale the Data</h4>
-    <pre class="bg-light p-3 rounded"><code>from sklearn.datasets import fetch_california_housing
+    <pre><code class="language-python">from sklearn.datasets import fetch_california_housing
   from sklearn.model_selection import train_test_split
   from sklearn.preprocessing import StandardScaler
   
@@ -171,7 +173,7 @@
     <p><strong>Why scale?</strong> Gradient descent converges faster and more reliably when features are on the same scale.</p>
   
     <h4 class="mt-4">5. scikit-learn Linear Regression</h4>
-    <pre class="bg-light p-3 rounded"><code>from sklearn.linear_model import LinearRegression
+    <pre><code class="language-python">from sklearn.linear_model import LinearRegression
   from sklearn.metrics import mean_squared_error, r2_score
   
   model = LinearRegression()
@@ -185,17 +187,17 @@
   
     <h5>Function 1: Prediction</h5>
     <p>This function performs the forward pass and generates predicted values.</p>
-    <pre class="bg-light p-3 rounded"><code>def predict(X, weights, bias):
+    <pre><code class="language-python">def predict(X, weights, bias):
       return np.dot(X, weights) + bias</code></pre>
   
     <h5>Function 2: Loss Calculation</h5>
     <p>This function calculates how far the predicted values are from the actual values using MSE.</p>
-    <pre class="bg-light p-3 rounded"><code>def compute_loss(y_true, y_pred):
+    <pre><code class="language-python">def compute_loss(y_true, y_pred):
       return np.mean((y_true - y_pred) ** 2)</code></pre>
   
     <h5>Function 3: Compute Gradients</h5>
     <p>This function computes the gradients (partial derivatives) of the loss with respect to the weights and bias.</p>
-    <pre class="bg-light p-3 rounded"><code>def compute_gradients(X, y_true, y_pred):
+    <pre><code class="language-python">def compute_gradients(X, y_true, y_pred):
       n = X.shape[0]
       dw = -2/n * np.dot(X.T, (y_true - y_pred))
       db = -2/n * np.sum(y_true - y_pred)
@@ -203,7 +205,7 @@
   
     <h5>Function 4: Training with Gradient Descent</h5>
     <p>This is the core training loop where weights and bias are updated iteratively to minimize loss.</p>
-    <pre class="bg-light p-3 rounded"><code>def train(X, y, lr=0.01, epochs=1000):
+    <pre><code class="language-python">def train(X, y, lr=0.01, epochs=1000):
       n_features = X.shape[1]
       weights = np.zeros(n_features)
       bias = 0
@@ -220,7 +222,7 @@
   
     <h4 class="mt-4">7. Final Combined Code</h4>
     <p>This is the complete training pipeline with all the helper functions integrated.</p>
-    <pre class="bg-light p-3 rounded"><code>import numpy as np
+    <pre><code class="language-python">import numpy as np
   
   def predict(X, weights, bias):
       return np.dot(X, weights) + bias
@@ -310,9 +312,13 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>  

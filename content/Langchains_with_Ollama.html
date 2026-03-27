@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
   <div class="container mt-4">
@@ -107,7 +109,7 @@
     <p>LangChain supports Ollama models — and there are two primary interfaces depending on your use case.</p>
 
     <h5>Option 1: Plain Completion</h5>
-    <pre class="bg-light p-3 rounded"><code>from langchain_community.llms import Ollama
+    <pre><code class="language-python">from langchain_community.llms import Ollama
 
 llm = Ollama(model="gemma3")
 response = llm("What is the capital of France?")
@@ -118,7 +120,7 @@ print(response)</code></pre>
   
 
     <h5>💬 Option 2: Chat Interface</h5>
-    <pre class="bg-light p-3 rounded"><code>from langchain_community.chat_models import ChatOllama
+    <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
 
 model = ChatOllama(model="gemma3")
 model.invoke("Hello, world!")</code></pre>
@@ -146,7 +148,7 @@ model.invoke("Hello, world!")</code></pre>
     </div>
 
     <h4>💬 Using Chat Messages</h4>
-    <pre class="bg-light p-3 rounded"><code>from langchain_community.chat_models import ChatOllama
+    <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 model = ChatOllama(model="gemma3")
@@ -161,21 +163,21 @@ model.invoke(messages)</code></pre>
         <img src="../img/Blog_9_4.png" alt="Chat" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
     </div>
     <p>You can also use streaming to output tokens:</p>
-    <pre class="bg-light p-3 rounded"><code>for token in model.stream(messages):
+    <pre><code class="language-python">for token in model.stream(messages):
     print(token.content, end="|")</code></pre>
 
     <h4>🧱 Prompt Templates: The Real Superpower</h4>
     <p>Prompt templates modularize input to LLMs and come in two main forms:</p>
 
     <h5> String PromptTemplate</h5>
-    <pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import PromptTemplate
+    <pre><code class="language-python">from langchain_core.prompts import PromptTemplate
 
 prompt_template = PromptTemplate.from_template("Tell me a joke about {topic}")
 prompt = prompt_template.invoke({"topic": "Newton"})
 model.invoke(prompt)</code></pre>
 
     <h5>💬 ChatPromptTemplate</h5>
-    <pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import ChatPromptTemplate
+    <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate
 
 prompt_template = ChatPromptTemplate([
     ("system", "You are a comedian"),
@@ -189,7 +191,7 @@ print(response.content)</code></pre>
         <img src="../img/Blog_9_5.png" alt="Chat" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
     </div>
     <h5>🔁 MessagesPlaceholder (Dynamic Insertion)</h5>
-    <pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+    <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
 prompt_template = ChatPromptTemplate([
@@ -222,10 +224,14 @@ print(response.content)</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

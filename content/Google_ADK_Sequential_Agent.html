@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -134,7 +136,7 @@
     For more structured data sharing, sub-agents can use tools that read from and write to <code>tool_context.state</code> — a dictionary that persists across all agents in a session. This is the recommended pattern when agents need to pass structured results (JSON, lists, numbers) rather than just natural language.
   </p>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # State is a dict on tool_context that all agents in a session share
 def save_to_state(key: str, value: str, tool_context: ToolContext) -> dict:
     tool_context.state[key] = value
@@ -152,7 +154,7 @@ def read_from_state(key: str, tool_context: ToolContext) -> dict:
     <li><strong>editor_agent</strong> — polishes the draft for clarity and tone</li>
   </ol>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 content_pipeline/
 ├── .env                  # GOOGLE_API_KEY=your_key_here
 ├── __init__.py
@@ -161,10 +163,10 @@ content_pipeline/
 
   <h4 class="mt-4">Step 1: Install and Configure</h4>
   <p>Make sure ADK is installed and your API key is set:</p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 pip install google-adk
   </code></pre>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # .env
 GOOGLE_API_KEY=your_api_key_here
   </code></pre>
@@ -173,7 +175,7 @@ GOOGLE_API_KEY=your_api_key_here
   <p>
     Each agent in our pipeline needs at least one tool to perform its job. We also need shared-state helpers so agents can hand off structured data to each other.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # agent.py
 import os
 from dotenv import load_dotenv
@@ -267,7 +269,7 @@ def fetch_facts(topic: str) -> dict:
   <p>
     Each sub-agent has a focused, single-purpose instruction. Notice how the writer and editor agents are told to use the shared state tools — this is the key to passing structured data through the pipeline.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # ── Sub-agent 1: Researcher ───────────────────────────────────────────
 
 researcher_agent = Agent(
@@ -320,7 +322,7 @@ editor_agent = Agent(
   <p>
     Now we wrap all three agents in a <code>SequentialAgent</code>. The <code>sub_agents</code> list defines the exact execution order — ADK will run them left to right, no LLM routing involved.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # ── SequentialAgent pipeline ──────────────────────────────────────────
 
 content_pipeline = SequentialAgent(
@@ -336,16 +338,16 @@ root_agent = content_pipeline
   </code></pre>
 
   <h4 class="mt-4">Step 5: The __init__.py</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # __init__.py
 from . import agent
   </code></pre>
 
   <h4 class="mt-4">Step 6: Run the Pipeline</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 adk run content_pipeline
   </code></pre>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Example interaction
 You: Write a blog post about vector databases.
 
@@ -366,7 +368,7 @@ the semantic meaning of data...
   </code></pre>
 
   <h4 class="mt-4">Using the Web UI</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 adk web
   </code></pre>
   <p>
@@ -377,7 +379,7 @@ adk web
 
   <h4 class="mt-4">Complete agent.py</h4>
   <p>Here is the full file for copy-paste convenience:</p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import os
 from dotenv import load_dotenv
 from google.adk.agents import Agent, SequentialAgent
@@ -564,10 +566,14 @@ root_agent = content_pipeline
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 
 <body>
@@ -95,7 +97,7 @@
   </p>
 
   <h4 class="mt-4">🧮 Formula</h4>
-  <pre class="bg-light p-3 rounded"><code>Loss = (1/n) * Σ(yᵢ - ŷᵢ)² + α * Σ|θⱼ|</code></pre>
+  <pre><code class="language-python">Loss = (1/n) * Σ(yᵢ - ŷᵢ)² + α * Σ|θⱼ|</code></pre>
   <ul>
     <li><strong>n</strong>: number of data points</li>
     <li><strong>yᵢ</strong>: actual values</li>
@@ -114,7 +116,7 @@
   <p>
     We also <strong>add a bias (intercept) term</strong> by inserting a column of 1s to the feature matrix. This allows the model to learn a constant offset in the predictions, which is essential for accurate fitting when the target doesn’t naturally pass through the origin.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -141,7 +143,7 @@ X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]
 
 <p>Let’s break down the code:</p>
 
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
 class LassoRegression:
     def __init__(self, alpha=1.0, n_iterations=100, tolerance=1e-4):
         self.alpha = alpha
@@ -152,7 +154,7 @@ class LassoRegression:
   This class initializes the regularization strength <code>alpha</code>, number of iterations, and a convergence <code>tolerance</code> threshold to stop training when improvements become negligible.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
     def soft_threshold(self, rho, alpha):
         if rho < -alpha:
             return rho + alpha
@@ -165,7 +167,7 @@ class LassoRegression:
   The <code>soft_threshold</code> function is the heart of Lasso. It applies the L1 penalty, shrinking coefficients toward zero. If the absolute value of a parameter's gradient is less than alpha, it gets zeroed out — this is how Lasso performs feature selection.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
     def fit(self, X, y):
         m, n = X.shape
         self.coef_ = np.zeros(n)
@@ -198,7 +200,7 @@ class LassoRegression:
   If the change in coefficients is below the defined tolerance across all features, the loop exits early — signaling convergence.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
     def predict(self, X):
         return X @ self.coef_
 </code></pre>
@@ -212,7 +214,7 @@ class LassoRegression:
 
 
   <h4 class="mt-4"> Train and Evaluate the Model</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from sklearn.metrics import mean_squared_error, r2_score
 
 lasso = LassoRegression(alpha=0.1)
@@ -302,10 +304,14 @@ print(" R² Score:", round(r2, 4))
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

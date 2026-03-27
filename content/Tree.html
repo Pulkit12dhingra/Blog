@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 
 <body>
@@ -123,7 +125,7 @@
   </p>
 
   <h4 class="mt-4">Step 1: Define the Tree Node</h4>
-  <pre class="bg-light p-3 rounded"><code>class treeNode:
+  <pre><code class="language-python">class treeNode:
     def __init__(self, value):
         self.value = value
         self.left = None
@@ -133,7 +135,7 @@
   </p>
 
   <h4 class="mt-4">Step 2: Insert Values into the Tree</h4>
-  <pre class="bg-light p-3 rounded"><code>def insert(root, value):
+  <pre><code class="language-python">def insert(root, value):
     if root is None:
         return treeNode(value)
     if value < root.value:
@@ -146,7 +148,7 @@
   </p>
 
   <h4 class="mt-4">Step 3: In-order Traversal (Sorted Output)</h4>
-  <pre class="bg-light p-3 rounded"><code>def inorder_traversal(root):
+  <pre><code class="language-python">def inorder_traversal(root):
     if root is None:
         return []
     return inorder_traversal(root.left) + [root.value] + inorder_traversal(root.right)</code></pre>
@@ -155,7 +157,7 @@
   </p>
 
   <h4 class="mt-4">Step 4: Search for a Value</h4>
-  <pre class="bg-light p-3 rounded"><code>def search(root, value):
+  <pre><code class="language-python">def search(root, value):
     if root is None or root.value == value:
         return root
     if value < root.value:
@@ -172,7 +174,7 @@
     <li><strong>One child:</strong> Replace the node with its child</li>
     <li><strong>Two children:</strong> Replace the node's value with the smallest value from the right subtree (in-order successor), then delete that successor node</li>
   </ul>
-  <pre class="bg-light p-3 rounded"><code>def delete_node(root, value):
+  <pre><code class="language-python">def delete_node(root, value):
     if root is None:
         return root
     if value < root.value:
@@ -192,7 +194,7 @@
     return root</code></pre>
 
   <h4 class="mt-4">Step 6: Display the Tree (Rotated 90°)</h4>
-  <pre class="bg-light p-3 rounded"><code>def display_tree(root, level=0):
+  <pre><code class="language-python">def display_tree(root, level=0):
     if root is not None:
         display_tree(root.right, level + 1)
         print(' ' * 4 * level + '->', root.value)
@@ -202,7 +204,7 @@
   </p>
 
   <h4 class="mt-4">Final Demo</h4>
-  <pre class="bg-light p-3 rounded"><code>if __name__ == "__main__":
+  <pre><code class="language-python">if __name__ == "__main__":
     root = None
     values = [5, 3, 7, 2, 4, 6, 8]
     for value in values:
@@ -287,10 +289,14 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

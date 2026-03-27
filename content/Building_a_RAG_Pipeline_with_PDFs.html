@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -116,7 +118,7 @@
 
   <h4 class="mt-4">📥 Step 1: Load Your PDFs</h4>
   <p>The first step in any RAG pipeline is loading the data you want your model to "know." In our case, this data comes in the form of PDFs. LangChain provides convenient tools like PyPDFDirectoryLoader that scan a directory and automatically extract text from every PDF file it contains. This abstracts away the complexity of parsing individual files and gives you a list of clean, structured documents — perfect for downstream processing. Whether you're indexing research papers, manuals, or even your resume, this loader simplifies it all into a few lines of code.</p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 
 loader = PyPDFDirectoryLoader("./data")
@@ -134,7 +136,7 @@ documents = loader.load()
     This step ensures that when the model retrieves text later, it does so with enough context to generate accurate and coherent responses. 
     Chunking is the unsung hero that powers effective document retrieval in any RAG pipeline.
   </p>  
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
@@ -147,7 +149,7 @@ print(len(chunks))
     <code>sentence-transformers/all-MiniLM-L6-v2</code>. This model is lightweight, fast, and delivers surprisingly strong performance 
     for semantic search and similarity tasks — making it ideal for use in RAG pipelines.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 # Define the Embeddings
@@ -168,7 +170,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
     In short, the vectorstore is the backbone of the “retrieval” part in Retrieval-Augmented Generation.
   </p>
   
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.vectorstores import Chroma
 # Store chunks in Chroma DB
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")
@@ -179,7 +181,7 @@ retriever = vectorstore.as_retriever()
   <p>
     Now we initialize our LLM. <strong>Gemma 3B</strong> is a lightweight and capable model that will be used for the generation step in RAG.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.llms import Ollama
 
 # Initialize Ollama with the gemma3 model
@@ -191,7 +193,7 @@ llm = Ollama(model="gemma3")
   <p>
     This step combines the retriever and the LLM into a unified RAG chain. When queried, it retrieves the most relevant chunks and generates an answer.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain.chains import RetrievalQA  # use create_retrieval_chain in langchain>=0.2
 
 # Create RAG pipeline
@@ -205,7 +207,7 @@ rag_chain = RetrievalQA.from_chain_type(
 
 
   <h4 class="mt-4">❓ Querying the RAG Pipeline</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Now we can query it
 query = "Has pulkit worked on AWS?" 
 response = rag_chain(query)
@@ -213,7 +215,7 @@ response = rag_chain(query)
 print("Answer:", response['result'])
   </code></pre>
 <h3>Output</h3>
-<pre class="bg-light p-3 rounded"><code>Answer: Yes, based on the provided text, 
+<pre><code class="language-python">Answer: Yes, based on the provided text, 
 Pulkit has worked on AWS. Specifically, the Nagarro DevOps Engineer role involved 
 “successfully integrated pipelines with Azure Cloud, AWS Cloud, and Google Cloud services.”</code></pre>
 
@@ -240,10 +242,14 @@ Pulkit has worked on AWS. Specifically, the Nagarro DevOps Engineer role involve
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

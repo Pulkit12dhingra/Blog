@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
       <body>
         <div class="container mt-4">
@@ -106,7 +108,7 @@
           <p>
             Ridge regression adds a penalty to the squared magnitude of weights. This prevents the model from relying too heavily on any single feature:
           </p>
-          <pre class="bg-light p-3 rounded"><code>Loss = MSE + α × Σ(wᵢ²)</code></pre>
+          <pre><code class="language-python">Loss = MSE + α × Σ(wᵢ²)</code></pre>
           <ul>
             <li><strong>MSE</strong>: Mean Squared Error — the average squared difference between predicted and actual target values. This is your primary loss that the model tries to minimize.</li>
             <li><strong>α (alpha)</strong>: Regularization strength — a hyperparameter that controls how much penalty you apply to the weights. A higher α means more regularization (more shrinkage).</li>
@@ -119,7 +121,7 @@
           </p>
         
           <h4 class="mt-4">🏠 Load & Prepare the Data</h4>
-          <pre class="bg-light p-3 rounded"><code>
+          <pre><code class="language-python">
         from sklearn.datasets import fetch_california_housing
         from sklearn.model_selection import train_test_split
         from sklearn.preprocessing import StandardScaler
@@ -139,7 +141,7 @@
         X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]</code></pre>
         
           <h4 class="mt-4"> Ridge Regression (Gradient Descent Implementation)</h4>
-          <pre class="bg-light p-3 rounded"><code>
+          <pre><code class="language-python">
         class RidgeRegressionGD:
             def __init__(self, alpha=1.0, learning_rate=0.01, n_iterations=1000):
                 self.alpha = alpha
@@ -159,7 +161,7 @@
                 return X @ self.weights</code></pre>
         
           <h4 class="mt-4"> Train and Evaluate the Model</h4>
-          <pre class="bg-light p-3 rounded"><code>
+          <pre><code class="language-python">
         from sklearn.metrics import mean_squared_error, r2_score
         
         ridge_gd = RidgeRegressionGD(alpha=1.0, learning_rate=0.1, n_iterations=1000)
@@ -178,7 +180,7 @@
           <h4 class="mt-4"> Compare with OLS and SGD Regressor</h4>
         
           <h5>OLS (LinearRegression)</h5>
-          <pre class="bg-light p-3 rounded"><code>
+          <pre><code class="language-python">
         from sklearn.linear_model import LinearRegression
         
         lr = LinearRegression()
@@ -191,7 +193,7 @@
             <img src="../img/Blog_5_2.png" alt="OLS Linear Regression Results" class="img-fluid rounded shadow"/>
           </div>
           <h5>SGD Regressor (No Regularization)</h5>
-          <pre class="bg-light p-3 rounded"><code>
+          <pre><code class="language-python">
         from sklearn.linear_model import SGDRegressor
         
         sgd = SGDRegressor(penalty=None, max_iter=1000, learning_rate='invscaling', eta0=0.01, random_state=42)
@@ -226,10 +228,14 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

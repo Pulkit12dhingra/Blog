@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -156,7 +158,7 @@
     <strong>Think of commits as save points:</strong> You can travel back to any commit to see what your project looked like at that moment, or even restore your project to that state if needed.
   </div>
 
-  <pre class="bg-light p-3 rounded"><code># Make changes to your files
+  <pre><code class="language-python"># Make changes to your files
 git add file1.py file2.py       # Stage specific files
 git add .                        # Stage all changes
 
@@ -211,7 +213,7 @@ git log --oneline --graph        # Compact, visual format</code></pre>
     <li><strong>Delete:</strong> Clean up the branch once it's merged</li>
   </ol>
 
-  <pre class="bg-light p-3 rounded"><code># Create a new branch
+  <pre><code class="language-python"># Create a new branch
 git branch feature/user-profile
 
 # Switch to that branch
@@ -297,7 +299,7 @@ git branch -d feature/user-profile</code></pre>
     <li>Once approved, the PR is merged</li>
   </ol>
 
-  <pre class="bg-light p-3 rounded"><code># After making commits on your branch
+  <pre><code class="language-python"># After making commits on your branch
 git push origin feature/user-profile
 
 # Then on GitHub:
@@ -361,7 +363,7 @@ git push origin feature/user-profile
                               ←  git reset
                    git checkout --  ←</code></pre>
 
-  <pre class="bg-light p-3 rounded"><code># Check status of files
+  <pre><code class="language-python"># Check status of files
 git status
 
 # Output shows:
@@ -384,7 +386,7 @@ git status
     <li><strong>Unstaging mistakes:</strong> You accidentally staged a file with sensitive data</li>
   </ul>
 
-  <pre class="bg-light p-3 rounded"><code># Add specific files to staging
+  <pre><code class="language-python"># Add specific files to staging
 git add file1.py file2.py
 
 # Add all changes
@@ -417,7 +419,7 @@ git diff --staged</code></pre>
 
   <p><strong>Setup & Configuration:</strong></p>
   <p>These commands configure Git on your machine. You typically run them once after installing Git:</p>
-  <pre class="bg-light p-3 rounded"><code># Configure your identity
+  <pre><code class="language-python"># Configure your identity
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 
@@ -429,7 +431,7 @@ git config --list</code></pre>
 
   <p><strong>Repository Management:</strong></p>
   <p>These commands help you start new projects or connect to existing ones:</p>
-  <pre class="bg-light p-3 rounded"><code># Initialize a new repository
+  <pre><code class="language-python"># Initialize a new repository
 git init
 
 # Clone an existing repository
@@ -445,7 +447,7 @@ git remote -v
 git remote set-url origin https://github.com/username/new-repo.git</code></pre>
 
   <p><strong>Working with Changes:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># See what changed
+  <pre><code class="language-python"># See what changed
 git status                       # Summary of changes
 git diff                         # Detailed changes (unstaged)
 git diff --staged                # Changes in staging area
@@ -470,7 +472,7 @@ git log --author="Name"          # Filter by author</code></pre>
     <li><strong>pull:</strong> Downloads changes AND merges them into your current branch (fetch + merge)</li>
     <li><strong>push:</strong> Uploads your local commits to the remote repository</li>
   </ul>
-  <pre class="bg-light p-3 rounded"><code># Fetch changes from remote (doesn't merge)
+  <pre><code class="language-python"># Fetch changes from remote (doesn't merge)
 git fetch origin
 
 # Pull changes (fetch + merge)
@@ -487,7 +489,7 @@ git push -u origin main          # First push
 git push --force origin main</code></pre>
 
   <p><strong>Undoing Changes:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># Undo last commit (keep changes)
+  <pre><code class="language-python"># Undo last commit (keep changes)
 git reset --soft HEAD~1
 
 # Undo last commit (discard changes)
@@ -512,7 +514,7 @@ git clean -fd</code></pre>
   <p>
     This is the most common workflow you'll use as a developer. It follows the pattern: sync with main → create branch → develop → push → open PR → merge → clean up. This keeps your work isolated until it's ready to merge.
   </p>
-  <pre class="bg-light p-3 rounded"><code># 1. Update main branch
+  <pre><code class="language-python"># 1. Update main branch
 git checkout main
 git pull origin main
 
@@ -537,7 +539,7 @@ git branch -d feature/new-feature</code></pre>
   <p>
     When contributing to open source, you'll fork someone else's repository. This workflow keeps your fork synchronized with the original project (called "upstream"), ensuring you have the latest changes before making contributions.
   </p>
-  <pre class="bg-light p-3 rounded"><code># Add original repo as upstream
+  <pre><code class="language-python"># Add original repo as upstream
 git remote add upstream https://github.com/original/repo.git
 
 # Fetch from upstream
@@ -578,7 +580,7 @@ git push origin main</code></pre>
   </ul>
 
   <p><strong>How to resolve conflicts:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># When you encounter a conflict during merge/pull:
+  <pre><code class="language-python"># When you encounter a conflict during merge/pull:
 # 1. Git marks conflicted files in your working directory
 git status  # Shows which files have conflicts
 
@@ -645,10 +647,14 @@ git commit -m "Resolve merge conflict in conflicted-file.py"</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

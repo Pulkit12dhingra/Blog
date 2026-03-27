@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -116,7 +118,7 @@
 
   <h4 class="mt-4">The Matrix</h4>
   <p>We’ll work with a 5×5 binary grid where 1s represent paths and 0s represent walls.</p>
-  <pre class="bg-light p-3 rounded"><code>matrix = [[1,1,0,0,0],
+  <pre><code class="language-python">matrix = [[1,1,0,0,0],
           [0,1,0,1,0],
           [0,1,1,1,0],
           [1,1,0,1,1],
@@ -125,7 +127,7 @@
 
   <h3 class="mt-4">Part 1: Breadth-First Search (BFS)</h3>
   <p>BFS visits nodes layer by layer. It uses a <strong>queue</strong> to explore all neighbors before moving deeper. This guarantees finding the shortest path in unweighted graphs.</p>
-  <pre class="bg-light p-3 rounded"><code>from collections import deque
+  <pre><code class="language-python">from collections import deque
 
 def bfs(matrix, start):
     n = len(matrix)
@@ -159,7 +161,7 @@ def bfs(matrix, start):
 
   <h3 class="mt-4">Part 2: Depth-First Search (DFS)</h3>
   <p>DFS dives deep before backtracking. It uses a <strong>stack</strong> to go as far as possible before reversing.</p>
-  <pre class="bg-light p-3 rounded"><code>def dfs(matrix, start):
+  <pre><code class="language-python">def dfs(matrix, start):
     n = len(matrix)
     stack = [start]
     visited = set([start])
@@ -281,10 +283,14 @@ def bfs(matrix, start):
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

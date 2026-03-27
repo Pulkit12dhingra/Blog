@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -117,7 +119,7 @@
 
   <h4 class="mt-4">Installation</h4>
   <p>Install Ruff using pip or UV:</p>
-  <pre class="bg-light p-3 rounded"><code># Using pip
+  <pre><code class="language-python"># Using pip
 pip install ruff
 
 # Using UV (even faster!)
@@ -130,7 +132,7 @@ uv add ruff --dev</code></pre>
 
   <h5 class="mt-3">Linting Your Code</h5>
   <p>Run Ruff on your Python files or directories:</p>
-  <pre class="bg-light p-3 rounded"><code># Lint a single file
+  <pre><code class="language-python"># Lint a single file
 ruff check script.py
 
 # Lint entire directory
@@ -144,7 +146,7 @@ ruff check . --fix --show-fixes</code></pre>
 
   <h5 class="mt-3">Formatting Your Code</h5>
   <p>Ruff includes a formatter compatible with Black:</p>
-  <pre class="bg-light p-3 rounded"><code># Format files
+  <pre><code class="language-python"># Format files
 ruff format .
 
 # Check formatting without changes
@@ -154,14 +156,14 @@ ruff format . --check
 ruff format script.py</code></pre>
 
   <h5 class="mt-3">Running Both Together</h5>
-  <pre class="bg-light p-3 rounded"><code># Lint and format in one go
+  <pre><code class="language-python"># Lint and format in one go
 ruff check . --fix && ruff format .</code></pre>
 
   <h4 class="mt-4">Configuration</h4>
   <p>Configure Ruff using <code>pyproject.toml</code>, <code>ruff.toml</code>, or <code>.ruff.toml</code>:</p>
 
   <h5 class="mt-3">Basic Configuration (pyproject.toml)</h5>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 # Set line length
 line-length = 88
 
@@ -277,17 +279,17 @@ indent-style = "space"</code></pre>
 
   <h5 class="mt-3">1. Replacing Flake8 + Black + isort</h5>
   <p>Before (multiple tools):</p>
-  <pre class="bg-light p-3 rounded"><code>flake8 .
+  <pre><code class="language-python">flake8 .
 black .
 isort .</code></pre>
 
   <p>After (just Ruff):</p>
-  <pre class="bg-light p-3 rounded"><code>ruff check . --fix
+  <pre><code class="language-python">ruff check . --fix
 ruff format .</code></pre>
 
   <h5 class="mt-3">2. Pre-commit Hook</h5>
   <p>Add to <code>.pre-commit-config.yaml</code>:</p>
-  <pre class="bg-light p-3 rounded"><code>repos:
+  <pre><code class="language-python">repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.10
     hooks:
@@ -299,7 +301,7 @@ ruff format .</code></pre>
 
   <h5 class="mt-3">3. CI/CD Integration</h5>
   <p>GitHub Actions example:</p>
-  <pre class="bg-light p-3 rounded"><code>- name: Install Ruff
+  <pre><code class="language-python">- name: Install Ruff
   run: pip install ruff
 
 - name: Run Ruff linter
@@ -310,7 +312,7 @@ ruff format .</code></pre>
 
   <h5 class="mt-3">4. VS Code Integration</h5>
   <p>Install the Ruff extension and add to <code>settings.json</code>:</p>
-  <pre class="bg-light p-3 rounded"><code>{
+  <pre><code class="language-python">{
   "[python]": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -325,7 +327,7 @@ ruff format .</code></pre>
 
   <h5 class="mt-3">Ignoring Violations</h5>
   <p>Ignore specific lines or blocks:</p>
-  <pre class="bg-light p-3 rounded"><code># Ignore entire file
+  <pre><code class="language-python"># Ignore entire file
 # ruff: noqa
 
 # Ignore specific line
@@ -338,13 +340,13 @@ import os  # noqa: F401
 result = eval(user_input)  # noqa: S307, E501</code></pre>
 
   <h5 class="mt-3">Per-File Configuration</h5>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports OK in __init__
 "tests/*" = ["S101"]      # Assert statements OK in tests</code></pre>
 
   <h5 class="mt-3">Custom Import Order</h5>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff.isort]
+  <pre><code class="language-python">[tool.ruff.isort]
 known-first-party = ["myapp"]
 section-order = [
     "future",
@@ -355,7 +357,7 @@ section-order = [
 ]</code></pre>
 
   <h5 class="mt-3">Docstring Checks</h5>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 select = ["D"]  # Enable docstring checks
 
 [tool.ruff.pydocstyle]
@@ -400,7 +402,7 @@ convention = "google"  # or "numpy", "pep257"</code></pre>
 
   <h5 class="mt-3">Example 1: Unused Imports</h5>
   <p>Before:</p>
-  <pre class="bg-light p-3 rounded"><code>import os
+  <pre><code class="language-python">import os
 import sys
 import pandas as pd  # unused
 
@@ -408,19 +410,19 @@ def main():
     print("Hello World")</code></pre>
 
   <p>Ruff will detect and can auto-remove:</p>
-  <pre class="bg-light p-3 rounded"><code>$ ruff check . --fix
+  <pre><code class="language-python">$ ruff check . --fix
 Fixed 1 error:
 - F401 [*] `pandas` imported but unused</code></pre>
 
   <h5 class="mt-3">Example 2: Import Sorting</h5>
   <p>Before:</p>
-  <pre class="bg-light p-3 rounded"><code>from myapp import utils
+  <pre><code class="language-python">from myapp import utils
 import sys
 from typing import List
 import os</code></pre>
 
   <p>After Ruff format:</p>
-  <pre class="bg-light p-3 rounded"><code>import os
+  <pre><code class="language-python">import os
 import sys
 from typing import List
 
@@ -428,13 +430,13 @@ from myapp import utils</code></pre>
 
   <h5 class="mt-3">Example 3: Code Modernization</h5>
   <p>Before (Python 3.7 style):</p>
-  <pre class="bg-light p-3 rounded"><code>from typing import List
+  <pre><code class="language-python">from typing import List
 
 def process(items: List[str]) -> None:
     pass</code></pre>
 
   <p>After Ruff with pyupgrade:</p>
-  <pre class="bg-light p-3 rounded"><code>def process(items: list[str]) -> None:
+  <pre><code class="language-python">def process(items: list[str]) -> None:
     pass</code></pre>
 
   <h4 class="mt-4">Common Ruff Commands</h4>
@@ -501,7 +503,7 @@ def process(items: List[str]) -> None:
 
   <h5 class="mt-3">From Flake8</h5>
   <p>Most Flake8 configuration translates directly:</p>
-  <pre class="bg-light p-3 rounded"><code># Old: .flake8 or setup.cfg
+  <pre><code class="language-python"># Old: .flake8 or setup.cfg
 [flake8]
 max-line-length = 88
 ignore = E203, W503
@@ -514,7 +516,7 @@ ignore = ["E203", "W503"]
 exclude = [".git", "__pycache__"]</code></pre>
 
   <h5 class="mt-3">From Black + isort</h5>
-  <pre class="bg-light p-3 rounded"><code># Old: multiple tools
+  <pre><code class="language-python"># Old: multiple tools
 black .
 isort .
 
@@ -526,12 +528,12 @@ ruff check . --select I --fix  # Import sorting</code></pre>
 
   <h5 class="mt-3">Too Many Errors?</h5>
   <p>Start with minimal rules and gradually enable more:</p>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 select = ["E4", "E7", "E9", "F"]  # Critical errors only</code></pre>
 
   <h5 class="mt-3">False Positives?</h5>
   <p>Ignore specific rules or files:</p>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 ignore = ["E501"]  # Ignore line length
 
 [tool.ruff.per-file-ignores]
@@ -539,7 +541,7 @@ ignore = ["E501"]  # Ignore line length
 
   <h5 class="mt-3">Conflicts with Black?</h5>
   <p>Ruff's formatter is Black-compatible, but if needed:</p>
-  <pre class="bg-light p-3 rounded"><code>[tool.ruff]
+  <pre><code class="language-python">[tool.ruff]
 # Ignore rules that conflict with Black
 ignore = ["E501", "W505"]</code></pre>
 
@@ -575,10 +577,14 @@ ignore = ["E501", "W505"]</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

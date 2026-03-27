@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
   <div class="container mt-4">
@@ -92,7 +94,7 @@
     <p>
       Before we begin, make sure you have Python installed on your system. You'll also need to install two essential libraries:
     </p>
-    <pre class="bg-light p-3 rounded"><code>pip install requests beautifulsoup4</code></pre>
+    <pre><code class="language-python">pip install requests beautifulsoup4</code></pre>
     <p>
       <strong>What you'll learn:</strong>
     </p>
@@ -107,7 +109,7 @@
     <p>
       The <code>requests</code> library is Python’s standard for HTTP communication. It abstracts away lower-level networking details, allowing you to send GET, POST, and other HTTP requests with ease.
     </p>
-    <pre class="bg-light p-3 rounded"><code>import requests</code></pre>
+    <pre><code class="language-python">import requests</code></pre>
     <p>
       <strong>Key features:</strong>
     </p>
@@ -121,11 +123,11 @@
     <p>
       <code>BeautifulSoup</code> from the <code>bs4</code> package parses HTML or XML documents into a navigable tree structure. You can search, traverse, and modify elements easily.
     </p>
-    <pre class="bg-light p-3 rounded"><code>from bs4 import BeautifulSoup</code></pre>
+    <pre><code class="language-python">from bs4 import BeautifulSoup</code></pre>
     <p>
       <strong>Common usage:</strong>
     </p>
-    <pre class="bg-light p-3 rounded"><code>html_content = response.text
+    <pre><code class="language-python">html_content = response.text
 soup = BeautifulSoup(html_content, 'html.parser')
 title = soup.find('title').get_text()</code></pre>
 
@@ -133,7 +135,7 @@ title = soup.find('title').get_text()</code></pre>
     <p>
       The constructor sets up the scraper with the target URL. It runs once when you create your scraper object.
     </p>
-    <pre class="bg-light p-3 rounded"><code>def __init__(self, url):
+    <pre><code class="language-python">def __init__(self, url):
     self.url = url</code></pre>
     <ul>
       <li><strong>Parameter:</strong> <code>url</code> (string) — the full web address of the Wikipedia page you want to scrape.</li>
@@ -144,7 +146,7 @@ title = soup.find('title').get_text()</code></pre>
     <p>
       This method does the heavy lifting: it downloads the page, parses the HTML, extracts and cleans text.
     </p>
-    <pre class="bg-light p-3 rounded"><code>def scrape(self):
+    <pre><code class="language-python">def scrape(self):
     response = requests.get(self.url)
     response.encoding = 'utf-8'
     if response.status_code != 200:
@@ -177,7 +179,7 @@ title = soup.find('title').get_text()</code></pre>
     <p>
       After scraping, <code>save()</code> persists the text to disk so you can process or analyze it offline.
     </p>
-    <pre class="bg-light p-3 rounded"><code>def save(self, text, filename="hindi_text.txt"):
+    <pre><code class="language-python">def save(self, text, filename="hindi_text.txt"):
     with open(filename, "w", encoding="utf-8") as f:
         f.write(text)
     print(f" Text saved to {filename}")</code></pre>
@@ -195,7 +197,7 @@ title = soup.find('title').get_text()</code></pre>
     <p>
       Here's the full, ready-to-run <code>HindiWikipediaScraper</code> combining all three methods. Copy, paste, and execute!
     </p>
-    <pre class="bg-light p-3 rounded"><code>import requests
+    <pre><code class="language-python">import requests
 from bs4 import BeautifulSoup
 import re
 
@@ -303,10 +305,14 @@ scraper.save(text)</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

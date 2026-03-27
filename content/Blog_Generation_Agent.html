@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -115,7 +117,7 @@
   We use the GitHub API to access <code>.html</code> files from the blog repository. Each file is loaded and wrapped into a LangChain <code>Document</code> using <code>BSHTMLLoader</code>, preparing them for further chunking and embedding.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>import requests
+<pre><code class="language-python">import requests
 from langchain_community.document_loaders import BSHTMLLoader
 from langchain_core.documents import Document
 
@@ -159,7 +161,7 @@ print(f"\\nLoaded {len(documents)} HTML documents into LangChain.")
   We also use a <strong>chunk overlap</strong> (e.g., 50 characters) to maintain context across chunk boundaries. This is crucial because important information (like the end of one paragraph and the start of another) often spans across splits. Overlap ensures smoother transitions and reduces the chances of context loss when retrieving or summarizing.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain_text_splitters import RecursiveCharacterTextSplitter
+<pre><code class="language-python">from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500,
@@ -188,7 +190,7 @@ chunks = text_splitter.split_documents(documents)
   This improves retrieval accuracy when searching for similar content during generation, ultimately leading to better and more coherent blog outputs.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain_community.embeddings import HuggingFaceEmbeddings
+<pre><code class="language-python">from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
 </code></pre>
@@ -208,7 +210,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
   Here's how we build it using LangChain:
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain_community.vectorstores import FAISS
+<pre><code class="language-python">from langchain_community.vectorstores import FAISS
 
 # Create a vectorstore index from the document chunks
 vectorstore = FAISS.from_documents(chunks, embedding=embedding_model)
@@ -220,7 +222,7 @@ retriever = vectorstore.as_retriever()
 
   <h5> Ollama LLM Setup</h5>
   <p>We use the <code>qwen2.5-coder:7b</code> model from Ollama with a custom streaming callback.</p>
-  <pre class="bg-light p-3 rounded"><code>llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
+  <pre><code class="language-python">llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
 
 <h5>History-Aware Question Rewriting</h5>
 <p>
@@ -241,7 +243,7 @@ retriever = vectorstore.as_retriever()
   Here's how we define and initialize it:
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+<pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever  # langchain>=0.1
 
 # Instruction for the LLM
@@ -271,7 +273,7 @@ history_aware_retriever = create_history_aware_retriever(
 
   <h5> Graph State Definition</h5>
   <p>Defines the format and keys of the state that passes through the LangGraph nodes.</p>
-  <pre class="bg-light p-3 rounded"><code>class GraphState(TypedDict):
+  <pre><code class="language-python">class GraphState(TypedDict):
     query: str
     chat_history: List[BaseMessage]
     documents: List
@@ -295,7 +297,7 @@ history_aware_retriever = create_history_aware_retriever(
   Here’s the minimal function definition:
 </p>
 
-<pre class="bg-light p-3 rounded"><code>def input_node(state: GraphState) -> GraphState:
+<pre><code class="language-python">def input_node(state: GraphState) -> GraphState:
     return state
 </code></pre>
 
@@ -320,7 +322,7 @@ history_aware_retriever = create_history_aware_retriever(
   The documents retrieved are then stored in the shared <code>state</code> dictionary under the <code>"documents"</code> key. These documents are what the model will use later to reason and generate an answer.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>def retrieve_node(state: GraphState) -> GraphState:
+<pre><code class="language-python">def retrieve_node(state: GraphState) -> GraphState:
     standalone_question = history_aware_retriever.invoke({
         "chat_history": state["chat_history"],
         "input": state["query"]
@@ -345,7 +347,7 @@ history_aware_retriever = create_history_aware_retriever(
   The generated reasoning is then stored in the shared <code>state</code> under the key <code>"reasoning"</code>, which will later be used alongside the retrieved docs to form the final answer.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>from langchain_core.prompts import PromptTemplate
+<pre><code class="language-python">from langchain_core.prompts import PromptTemplate
 
 # Self-reasoning node
 def self_reasoning_node(state: GraphState) -> GraphState:
@@ -377,7 +379,7 @@ def self_reasoning_node(state: GraphState) -> GraphState:
   The formatted prompt is passed to the language model, and the resulting answer is stored in the shared <code>state</code> under the key <code>"answer"</code>.
 </p>
 
-<pre class="bg-light p-3 rounded"><code># Answer generation node
+<pre><code class="language-python"># Answer generation node
 def generate_answer_node(state: GraphState) -> GraphState:
     full_context = f"{state['reasoning']}\n\n{state['documents']}"
     final_prompt = PromptTemplate.from_template(
@@ -405,7 +407,7 @@ def generate_answer_node(state: GraphState) -> GraphState:
   This node acts as the <em>finish point</em> in the graph, ensuring that the result of the computation is returned cleanly to the caller — for display, storage, or further processing.
 </p>
 
-<pre class="bg-light p-3 rounded"><code># Output node
+<pre><code class="language-python"># Output node
 def output_node(state: GraphState) -> GraphState:
     return state
 </code></pre>
@@ -432,7 +434,7 @@ def output_node(state: GraphState) -> GraphState:
   Below is the code that constructs and wires the graph together:
 </p>
 
-<pre class="bg-light p-3 rounded"><code>graph = StateGraph(GraphState)
+<pre><code class="language-python">graph = StateGraph(GraphState)
 
 # Add all nodes
 graph.add_node("input", input_node)
@@ -468,7 +470,7 @@ graph.set_finish_point("output")
 <p>
   We use LangChain's <code>NotebookLoader</code> to read the contents of a Jupyter notebook. This includes both code and output (like print statements and plots), which will be passed into the graph as context.
 </p>
-<pre class="bg-light p-3 rounded"><code>from langchain_community.document_loaders import NotebookLoader
+<pre><code class="language-python">from langchain_community.document_loaders import NotebookLoader
 
 notebook_loader = NotebookLoader(
     "sample_notebook.ipynb",     # Replace with your notebook path
@@ -486,7 +488,7 @@ notebook_text = notebook_docs[0].page_content
   To make sure the generated blog has the correct metadata and structure, we provide a reference <code>&lt;head&gt;</code> section from a previous blog post. This tells the model exactly how to format the result.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>example_head = \"\"\"&lt;head&gt;
+<pre><code class="language-python">example_head = \"\"\"&lt;head&gt;
   &lt;meta charset="UTF-8" /&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
   &lt;title&gt;Byte-Sized-Brilliance-AI&lt;/title&gt;
@@ -498,7 +500,7 @@ notebook_text = notebook_docs[0].page_content
 <p>
   The query instructs the model to use the notebook content to write a full HTML blog, starting from the provided <code>&lt;head&gt;</code> section and embedding code explanations throughout.
 </p>
-<pre class="bg-light p-3 rounded"><code>example_query = (
+<pre><code class="language-python">example_query = (
     "Based on the following Jupyter notebook python code, generate a sample HTML blog "
     "that explains all the code in the notebook content. "
     "Make sure to add all the code references that you are explaining along with the text\\n"
@@ -517,7 +519,7 @@ notebook_text = notebook_docs[0].page_content
   Finally, we invoke the compiled LangGraph app with our query. The graph processes it through all nodes — retrieval, reasoning, and generation — and produces a ready-to-publish HTML blog.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>result = app.invoke({
+<pre><code class="language-python">result = app.invoke({
     "query": example_query,
     "chat_history": []
 })
@@ -552,10 +554,14 @@ print("\\n\\nFinal Answer:\\n", result["answer"])
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

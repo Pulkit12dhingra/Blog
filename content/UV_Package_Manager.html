@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -106,21 +108,21 @@
 
   <h4 class="mt-4">Installation</h4>
   <p>Installing UV is straightforward. On macOS and Linux:</p>
-  <pre class="bg-light p-3 rounded"><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+  <pre><code class="language-python">curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
 
   <p>On Windows (PowerShell):</p>
-  <pre class="bg-light p-3 rounded"><code>powershell -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
+  <pre><code class="language-python">powershell -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
 
   <p>Or using pip:</p>
-  <pre class="bg-light p-3 rounded"><code>pip install uv</code></pre>
+  <pre><code class="language-python">pip install uv</code></pre>
 
   <h4 class="mt-4">Basic Commands</h4>
 
   <h5 class="mt-3">Creating a Virtual Environment</h5>
   <p>UV makes creating virtual environments incredibly simple:</p>
-  <pre class="bg-light p-3 rounded"><code>uv venv</code></pre>
+  <pre><code class="language-python">uv venv</code></pre>
   <p>This creates a <code>.venv</code> directory in your current folder. To activate it:</p>
-  <pre class="bg-light p-3 rounded"><code># On macOS/Linux
+  <pre><code class="language-python"># On macOS/Linux
 source .venv/bin/activate
 
 # On Windows
@@ -128,7 +130,7 @@ source .venv/bin/activate
 
   <h5 class="mt-3">Installing Packages</h5>
   <p>Install packages just like you would with pip, but much faster:</p>
-  <pre class="bg-light p-3 rounded"><code># Install a single package
+  <pre><code class="language-python"># Install a single package
 uv pip install requests
 
 # Install from requirements.txt
@@ -139,25 +141,25 @@ uv pip install "numpy==1.24.0"</code></pre>
 
   <h5 class="mt-3">Syncing Dependencies</h5>
   <p>UV can sync your environment to match a requirements file exactly:</p>
-  <pre class="bg-light p-3 rounded"><code>uv pip sync requirements.txt</code></pre>
+  <pre><code class="language-python">uv pip sync requirements.txt</code></pre>
   <p>This ensures your environment has exactly what's specified — no more, no less.</p>
 
   <h5 class="mt-3">Compiling Dependencies</h5>
   <p>Generate a locked requirements file with resolved dependencies:</p>
-  <pre class="bg-light p-3 rounded"><code>uv pip compile requirements.in -o requirements.txt</code></pre>
+  <pre><code class="language-python">uv pip compile requirements.in -o requirements.txt</code></pre>
 
   <h4 class="mt-4">Project Management with UV</h4>
   <p>UV also supports full project workflows similar to poetry:</p>
 
   <h5 class="mt-3">Initialize a New Project</h5>
-  <pre class="bg-light p-3 rounded"><code>uv init my-project
+  <pre><code class="language-python">uv init my-project
 cd my-project</code></pre>
 
   <h5 class="mt-3">Add Dependencies</h5>
-  <pre class="bg-light p-3 rounded"><code>uv add requests pandas numpy</code></pre>
+  <pre><code class="language-python">uv add requests pandas numpy</code></pre>
 
   <h5 class="mt-3">Run Scripts in Project Environment</h5>
-  <pre class="bg-light p-3 rounded"><code>uv run python main.py</code></pre>
+  <pre><code class="language-python">uv run python main.py</code></pre>
 
   <h4 class="mt-4">Performance Comparison</h4>
   <p>Let's look at some real-world benchmarks comparing UV to pip:</p>
@@ -202,7 +204,7 @@ cd my-project</code></pre>
 
   <h5 class="mt-3">Python Version Management</h5>
   <p>UV can even manage Python versions for you:</p>
-  <pre class="bg-light p-3 rounded"><code># Install a specific Python version
+  <pre><code class="language-python"># Install a specific Python version
 uv python install 3.11
 
 # List available Python versions
@@ -213,7 +215,7 @@ uv venv --python 3.11</code></pre>
 
   <h5 class="mt-3">Cache Management</h5>
   <p>UV caches packages for faster reinstalls. Manage the cache with:</p>
-  <pre class="bg-light p-3 rounded"><code># Show cache info
+  <pre><code class="language-python"># Show cache info
 uv cache info
 
 # Clear the cache
@@ -221,7 +223,7 @@ uv cache clean</code></pre>
 
   <h5 class="mt-3">Lock Files</h5>
   <p>Generate reproducible builds with lock files:</p>
-  <pre class="bg-light p-3 rounded"><code>uv lock</code></pre>
+  <pre><code class="language-python">uv lock</code></pre>
 
   <h4 class="mt-4">Migration from pip</h4>
   <p>Switching from pip to UV is straightforward. Here's a quick migration guide:</p>
@@ -269,28 +271,28 @@ uv cache clean</code></pre>
   <h4 class="mt-4">Common Use Cases</h4>
 
   <h5 class="mt-3">Data Science Projects</h5>
-  <pre class="bg-light p-3 rounded"><code>uv venv
+  <pre><code class="language-python">uv venv
 uv pip install pandas numpy matplotlib scikit-learn jupyter</code></pre>
 
   <h5 class="mt-3">Web Development</h5>
-  <pre class="bg-light p-3 rounded"><code>uv venv
+  <pre><code class="language-python">uv venv
 uv pip install django djangorestframework psycopg2-binary</code></pre>
 
   <h5 class="mt-3">Machine Learning</h5>
-  <pre class="bg-light p-3 rounded"><code>uv venv --python 3.11
+  <pre><code class="language-python">uv venv --python 3.11
 uv pip install torch torchvision transformers datasets</code></pre>
 
   <h4 class="mt-4">Troubleshooting</h4>
 
   <h5 class="mt-3">Check UV Version</h5>
-  <pre class="bg-light p-3 rounded"><code>uv --version</code></pre>
+  <pre><code class="language-python">uv --version</code></pre>
 
   <h5 class="mt-3">Update UV</h5>
-  <pre class="bg-light p-3 rounded"><code>uv self update</code></pre>
+  <pre><code class="language-python">uv self update</code></pre>
 
   <h5 class="mt-3">Verbose Output</h5>
   <p>For debugging, use the verbose flag:</p>
-  <pre class="bg-light p-3 rounded"><code>uv pip install package --verbose</code></pre>
+  <pre><code class="language-python">uv pip install package --verbose</code></pre>
 
   <h4 class="mt-4">Final Thoughts</h4>
   <p>
@@ -323,10 +325,14 @@ uv pip install torch torchvision transformers datasets</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

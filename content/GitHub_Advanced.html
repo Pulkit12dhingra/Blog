@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -119,7 +121,7 @@
   <p>
     You should create a <code>.gitignore</code> file at the root of your repository before making your first commit. GitHub can generate language-specific templates for you, or you can create one manually.
   </p>
-  <pre class="bg-light p-3 rounded"><code># Create .gitignore in your repository root
+  <pre><code class="language-python"># Create .gitignore in your repository root
 touch .gitignore
 
 # Or use GitHub's template when creating a new repo
@@ -127,7 +129,7 @@ touch .gitignore
 
   <h5 class="mt-3">Common .gitignore Patterns</h5>
   <p><strong>Python Example:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># .gitignore for Python projects
+  <pre><code class="language-python"># .gitignore for Python projects
 
 # Byte-compiled files
 __pycache__/
@@ -168,7 +170,7 @@ Thumbs.db
 *.log</code></pre>
 
   <p><strong>Node.js Example:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># .gitignore for Node.js projects
+  <pre><code class="language-python"># .gitignore for Node.js projects
 
 # Dependencies
 node_modules/
@@ -194,7 +196,7 @@ npm-debug.log*
 .idea/</code></pre>
 
   <h5 class="mt-3">Advanced .gitignore Patterns</h5>
-  <pre class="bg-light p-3 rounded"><code># Ignore all .txt files
+  <pre><code class="language-python"># Ignore all .txt files
 *.txt
 
 # But don't ignore requirements.txt
@@ -210,7 +212,7 @@ npm-debug.log*
 logs/**/*.log</code></pre>
 
   <h5 class="mt-3">Already Committed Files?</h5>
-  <pre class="bg-light p-3 rounded"><code># Remove file from Git but keep it locally
+  <pre><code class="language-python"># Remove file from Git but keep it locally
 git rm --cached filename
 
 # Remove directory from Git but keep it locally
@@ -223,7 +225,7 @@ git commit -m "Remove ignored files from tracking"</code></pre>
   <p>
     Beyond project-specific ignores, you can configure a global <code>.gitignore</code> for files that should be ignored across ALL your repositories on your machine. This is perfect for OS-specific files (<code>.DS_Store</code> on Mac) and personal IDE settings.
   </p>
-  <pre class="bg-light p-3 rounded"><code># Create global gitignore for OS/IDE files
+  <pre><code class="language-python"># Create global gitignore for OS/IDE files
 git config --global core.excludesfile ~/.gitignore_global
 
 # Add common patterns to ~/.gitignore_global
@@ -279,7 +281,7 @@ echo ".idea/" >> ~/.gitignore_global</code></pre>
   </ul>
 
   <h5 class="mt-3">Installing Pre-Commit</h5>
-  <pre class="bg-light p-3 rounded"><code># Install pre-commit (Python required)
+  <pre><code class="language-python"># Install pre-commit (Python required)
 pip install pre-commit
 
 # Or with pipx (isolated installation)
@@ -304,7 +306,7 @@ pre-commit install</code></pre>
   </ul>
 
   <p>Create this file in your repository root:</p>
-  <pre class="bg-light p-3 rounded"><code># .pre-commit-config.yaml
+  <pre><code class="language-python"># .pre-commit-config.yaml
 
 repos:
   # General code quality checks
@@ -348,7 +350,7 @@ repos:
         additional_dependencies: [types-requests]</code></pre>
 
   <h5 class="mt-3">Running Pre-Commit</h5>
-  <pre class="bg-light p-3 rounded"><code># Run on staged files (happens automatically on commit)
+  <pre><code class="language-python"># Run on staged files (happens automatically on commit)
 pre-commit run
 
 # Run on all files
@@ -361,7 +363,7 @@ pre-commit autoupdate
 git commit --no-verify -m "Emergency fix"</code></pre>
 
   <h5 class="mt-3">Example Workflow</h5>
-  <pre class="bg-light p-3 rounded"><code># Make changes to your code
+  <pre><code class="language-python"># Make changes to your code
 echo "def hello():" > test.py
 echo "    print('hello')" >> test.py
 
@@ -388,7 +390,7 @@ git commit -m "Add hello function"</code></pre>
   <h5 class="mt-3">Language-Specific Examples</h5>
   
   <p><strong>JavaScript/TypeScript:</strong></p>
-  <pre class="bg-light p-3 rounded"><code>repos:
+  <pre><code class="language-python">repos:
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.56.0
     hooks:
@@ -402,7 +404,7 @@ git commit -m "Add hello function"</code></pre>
       - id: prettier</code></pre>
 
   <p><strong>Ruff (Fast Python Linter):</strong></p>
-  <pre class="bg-light p-3 rounded"><code>repos:
+  <pre><code class="language-python">repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.11
     hooks:
@@ -458,7 +460,7 @@ git commit -m "Add hello function"</code></pre>
     Workflows are stored in <code>.github/workflows/</code> directory in your repository. Each YAML file represents one workflow. GitHub automatically detects and runs these when events occur.
   </p>
   <p>Create <code>.github/workflows/ci.yml</code> in your repository:</p>
-  <pre class="bg-light p-3 rounded"><code>name: CI
+  <pre><code class="language-python">name: CI
 
 # Trigger workflow on push or pull request to main
 on:
@@ -500,7 +502,7 @@ jobs:
   <h5 class="mt-3">Common Workflow Examples</h5>
 
   <p><strong>Lint and Format Check:</strong></p>
-  <pre class="bg-light p-3 rounded"><code>name: Lint
+  <pre><code class="language-python">name: Lint
 
 on: [push, pull_request]
 
@@ -518,7 +520,7 @@ jobs:
         run: ruff check .</code></pre>
 
   <p><strong>Multi-OS and Multi-Version Testing:</strong></p>
-  <pre class="bg-light p-3 rounded"><code>name: Test Matrix
+  <pre><code class="language-python">name: Test Matrix
 
 on: [push, pull_request]
 
@@ -539,7 +541,7 @@ jobs:
       - run: pytest</code></pre>
 
   <p><strong>Deploy to GitHub Pages:</strong></p>
-  <pre class="bg-light p-3 rounded"><code>name: Deploy
+  <pre><code class="language-python">name: Deploy
 
 on:
   push:
@@ -562,7 +564,7 @@ jobs:
   <p>
     Never hardcode sensitive information in workflows! GitHub provides encrypted secret storage accessible only during workflow execution. Secrets are masked in logs and never exposed.
   </p>
-  <pre class="bg-light p-3 rounded"><code># In your workflow
+  <pre><code class="language-python"># In your workflow
 env:
   API_KEY: ${{ secrets.API_KEY }}
 
@@ -625,7 +627,7 @@ env:
   <p>
     <strong>Forking</strong> creates your personal copy of the repository on GitHub. You'll make changes in your fork, then propose them back to the original repository. This protects the original repo from unauthorized changes.
   </p>
-  <pre class="bg-light p-3 rounded"><code># 1. Fork the repository on GitHub (click "Fork" button)
+  <pre><code class="language-python"># 1. Fork the repository on GitHub (click "Fork" button)
 
 # 2. Clone YOUR fork
 git clone https://github.com/YOUR-USERNAME/project.git
@@ -643,7 +645,7 @@ git remote -v
   <p>
     Always sync with upstream before starting work to ensure you have the latest changes. Then create a descriptive branch name that references the issue number and briefly describes what you're fixing.
   </p>
-  <pre class="bg-light p-3 rounded"><code># Always sync with upstream first
+  <pre><code class="language-python"># Always sync with upstream first
 git checkout main
 git fetch upstream
 git merge upstream/main
@@ -652,7 +654,7 @@ git merge upstream/main
 git checkout -b fix/issue-123-typo-in-readme</code></pre>
 
   <h5 class="mt-3">Step 4: Make Changes</h5>
-  <pre class="bg-light p-3 rounded"><code># Make your changes
+  <pre><code class="language-python"># Make your changes
 # Follow the project's style guide
 # Add tests if applicable
 # Update documentation
@@ -665,7 +667,7 @@ git add .
 git commit -m "Fix typo in README.md installation section"</code></pre>
 
   <h5 class="mt-3">Step 5: Push and Create Pull Request</h5>
-  <pre class="bg-light p-3 rounded"><code># Push to YOUR fork
+  <pre><code class="language-python"># Push to YOUR fork
 git push origin fix/issue-123-typo-in-readme
 
 # Go to GitHub and click "Create Pull Request"
@@ -675,7 +677,7 @@ git push origin fix/issue-123-typo-in-readme
 # - Link to related issue: "Fixes #123"</code></pre>
 
   <h5 class="mt-3">Step 6: Respond to Feedback</h5>
-  <pre class="bg-light p-3 rounded"><code># Maintainers may request changes
+  <pre><code class="language-python"># Maintainers may request changes
 # Make additional commits on the same branch
 git add .
 git commit -m "Address review feedback"
@@ -684,7 +686,7 @@ git push origin fix/issue-123-typo-in-readme
 # PR automatically updates with new commits</code></pre>
 
   <h5 class="mt-3">Step 7: Keep Your Fork Synced</h5>
-  <pre class="bg-light p-3 rounded"><code># Regularly sync your fork with upstream
+  <pre><code class="language-python"># Regularly sync your fork with upstream
 git checkout main
 git fetch upstream
 git merge upstream/main
@@ -717,7 +719,7 @@ git push origin main</code></pre>
   </ul>
 
   <p>Tags mark specific points in history, typically for releases:</p>
-  <pre class="bg-light p-3 rounded"><code># Create lightweight tag
+  <pre><code class="language-python"># Create lightweight tag
 git tag v1.0.0
 
 # Create annotated tag (recommended for releases)
@@ -764,7 +766,7 @@ git checkout v1.0.0</code></pre>
   </ul>
 
   <p>Releases are GitHub's way of packaging and distributing software:</p>
-  <pre class="bg-light p-3 rounded"><code># 1. Create and push a tag
+  <pre><code class="language-python"># 1. Create and push a tag
 git tag -a v1.0.0 -m "Initial release"
 git push origin v1.0.0
 
@@ -777,7 +779,7 @@ git push origin v1.0.0
 #    - Click "Publish release"</code></pre>
 
   <h5 class="mt-3">Automated Releases with GitHub Actions</h5>
-  <pre class="bg-light p-3 rounded"><code>name: Release
+  <pre><code class="language-python">name: Release
 
 on:
   push:
@@ -818,7 +820,7 @@ jobs:
   <p>Publish packages (npm, Docker, Maven, NuGet, etc.) to GitHub:</p>
   
   <p><strong>Publish Docker Image:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># .github/workflows/publish-docker.yml
+  <pre><code class="language-python"># .github/workflows/publish-docker.yml
 name: Publish Docker Image
 
 on:
@@ -849,7 +851,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}</code></pre>
 
   <p><strong>Publish Python Package:</strong></p>
-  <pre class="bg-light p-3 rounded"><code># .github/workflows/publish-pypi.yml
+  <pre><code class="language-python"># .github/workflows/publish-pypi.yml
 name: Publish to PyPI
 
 on:
@@ -952,10 +954,14 @@ jobs:
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

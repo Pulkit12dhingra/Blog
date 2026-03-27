@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -114,7 +116,7 @@
   </p>
 
   <h4 class="mt-4">Installation</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Install ADK with LiteLLM support
 pip install google-adk[litellm]
 
@@ -128,7 +130,7 @@ ollama pull llama3.2
   <p>
     Ollama runs a local server at <code>http://localhost:11434</code>. LiteLLM can talk to it using the <code>ollama/</code> model prefix. This means your agent never makes an outbound API call — everything stays on your machine.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
 
@@ -147,7 +149,7 @@ root_agent = agent
   </code></pre>
 
   <h4 class="mt-4">Using OpenAI Models</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import os
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
@@ -165,7 +167,7 @@ agent = Agent(
   </code></pre>
 
   <h4 class="mt-4">Using Anthropic Claude</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import os
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
@@ -182,7 +184,7 @@ agent = Agent(
   </code></pre>
 
   <h4 class="mt-4">Using Azure OpenAI</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import os
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
@@ -204,7 +206,7 @@ agent = Agent(
   <p>
     One powerful pattern is using different models for different agents based on cost and capability. Use a large model for complex reasoning and a small local model for simple data transformation steps.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.agents import Agent, SequentialAgent
 from google.adk.models.lite_llm import LiteLlm
 
@@ -310,7 +312,7 @@ root_agent = pipeline
   <p>
     Stores everything in process memory. Fast, no setup required. Sessions are lost when the process restarts. Good for development and testing.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 
@@ -327,7 +329,7 @@ runner = Runner(
   <p>
     Persists sessions to a SQLite database (or any SQLAlchemy-compatible database). Sessions survive process restarts. Use this for local development when you need persistence.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.sessions import DatabaseSessionService
 from google.adk.runners import Runner
 
@@ -350,7 +352,7 @@ runner = Runner(
   <p>
     Stores sessions in Vertex AI's managed infrastructure. The right choice when deploying to GCP — no database to manage, sessions are automatically persisted, scaled, and secured.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.sessions import VertexAiSessionService
 from google.adk.runners import Runner
 
@@ -370,7 +372,7 @@ runner = Runner(
   <p>
     When you use <code>adk run</code> or <code>adk web</code>, ADK manages the <code>Runner</code> for you. For production deployments — or when you want full control — you construct it yourself.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types as genai_types
@@ -409,7 +411,7 @@ for event in runner.run(
   <p>
     Session state only lasts for one conversation. For information that should persist across multiple sessions — user preferences, past interactions, accumulated knowledge — use the <code>MemoryService</code>.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.memory import InMemoryMemoryService
 from google.adk.runners import Runner
 
@@ -425,7 +427,7 @@ runner = Runner(
   <p>
     Tools can then read from and write to long-term memory using <code>tool_context.search_memory()</code> and by adding memories via the session's <code>memory_service</code>.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.tools import ToolContext
 
 def remember_preference(preference: str, tool_context: ToolContext) -> dict:
@@ -463,7 +465,7 @@ def recall_context(query: str, tool_context: ToolContext) -> dict:
   </p>
 
   <h5>Reading Events from the Runner</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 for event in runner.run(user_id="u1", session_id=session.id, new_message=message):
     # Every event has a type you can inspect
     print(f"Event type: {event.__class__.__name__}")
@@ -489,7 +491,7 @@ for event in runner.run(user_id="u1", session_id=session.id, new_message=message
   <p>
     For local development, you can also export traces to any OpenTelemetry-compatible backend (Jaeger, Zipkin, etc.) by configuring the standard OpenTelemetry SDK before initialising ADK.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Enable OpenTelemetry tracing locally (optional)
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -517,7 +519,7 @@ trace.set_tracer_provider(provider)
   </ul>
 
   <h4 class="mt-4">Prerequisites</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Install the Google Cloud SDK
 # https://cloud.google.com/sdk/docs/install
 
@@ -540,7 +542,7 @@ gcloud services enable cloudbuild.googleapis.com
   <p>
     Cloud Run wraps your agent in an HTTP container. ADK handles the Dockerfile and container build automatically. Your agent becomes a REST endpoint that any client can call.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # From the directory CONTAINING your agent folder (not inside it)
 adk deploy cloud_run \
   --project=my-gcp-project \
@@ -557,7 +559,7 @@ adk deploy cloud_run \
     <li>Deploy the image to Cloud Run</li>
     <li>Print the public HTTPS URL of your agent service</li>
   </ol>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # The deployed service exposes a standard ADK REST API:
 
 # Send a message
@@ -576,7 +578,7 @@ Content-Type: application/json
   </code></pre>
 
   <h5>Adding environment variables for the deployed service</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 adk deploy cloud_run \
   --project=my-gcp-project \
   --region=us-central1 \
@@ -589,7 +591,7 @@ adk deploy cloud_run \
     <strong>Security note:</strong> Never pass API keys directly in CLI flags for production deployments. Instead, store secrets in <strong>Google Secret Manager</strong> and reference them with <code>--set-secrets</code>. This prevents your keys from appearing in Cloud Shell history or build logs.
   </div>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Store your key in Secret Manager first
 echo -n "your_api_key" | gcloud secrets create GOOGLE_API_KEY --data-file=-
 
@@ -606,7 +608,7 @@ adk deploy cloud_run \
   <p>
     Agent Engine is Google's fully managed runtime for ADK agents. It handles session persistence, scaling, monitoring, and authentication automatically. You upload your agent code; Google runs it.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 adk deploy agent_engine \
   --project=my-gcp-project \
   --region=us-central1 \
@@ -617,7 +619,7 @@ adk deploy agent_engine \
   </p>
 
   <h5>Programmatic deployment (for CI/CD)</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import vertexai
 from vertexai.preview import reasoning_engines
 
@@ -640,7 +642,7 @@ print("Deployed agent resource name:", deployed_agent.resource_name)
   </code></pre>
 
   <h5>Querying your deployed Agent Engine</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import vertexai
 from vertexai.preview import reasoning_engines
 
@@ -698,7 +700,7 @@ print(response)
   <p>
     Eval data is a JSON file. Each entry has a <code>query</code> (the user input), an optional <code>expected_tool_use</code> list (what tools should be called), and an optional <code>reference</code> (the ideal final answer for semantic comparison).
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 // eval_data.json
 [
   {
@@ -730,7 +732,7 @@ print(response)
   </code></pre>
 
   <h4 class="mt-4">Running the Evaluation</h4>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Basic eval run
 adk eval my_agent_folder/ eval_data.json
 
@@ -742,7 +744,7 @@ adk eval my_agent_folder/ eval_data.json --verbose
   </code></pre>
 
   <h5>Sample output</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 ADK Evaluation Report
 =====================
 Total cases:          3
@@ -791,7 +793,7 @@ All cases passed.
   <p>
     For CI/CD pipelines you can run evals in Python, check scores programmatically, and fail a deployment if quality drops below a threshold.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.evaluation import AgentEvaluator
 
 evaluator = AgentEvaluator()
@@ -834,7 +836,7 @@ if tool_accuracy < 0.90 or response_sim < 0.75:
   </p>
 
   <h5>before_model_callback — inspect or modify the LLM request</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
 import time
@@ -863,7 +865,7 @@ agent = Agent(
   <p>
     If your callback returns an <code>LlmResponse</code> instead of <code>None</code>, ADK skips the actual model call and uses your response instead. This is useful for caching, guardrails, or injecting canned responses during testing.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
 from google.genai import types as genai_types
@@ -904,7 +906,7 @@ agent = Agent(
   </code></pre>
 
   <h5>before_tool_callback — validate or transform tool arguments</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.tools.base_tool import BaseTool
 from google.adk.tools.tool_context import ToolContext
 
@@ -957,7 +959,7 @@ agent = Agent(
   <p>
     ADK's artifact system lets agents save and retrieve files — generated PDFs, images, CSV exports, audio clips — within a session. Artifacts are stored outside the conversation history so they don't bloat the context window.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from google.adk.tools import ToolContext
 import google.genai.types as genai_types
 
@@ -1001,14 +1003,14 @@ def load_report(tool_context: ToolContext) -> dict:
   <p>
     Beyond <code>adk run</code> (terminal) and <code>adk web</code> (browser UI), ADK provides a third mode: <code>adk api_server</code>. This starts a local FastAPI server that exposes your agent via a standard HTTP REST API — useful for integrating your agent into a frontend, Postman testing, or building your own UI on top.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Start the local REST API server
 adk api_server my_agent_folder/
 
 # Server starts at http://localhost:8000
 # Auto-generated docs at http://localhost:8000/docs
   </code></pre>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 # Example API call with curl
 curl -X POST http://localhost:8000/run \
   -H "Content-Type: application/json" \
@@ -1028,7 +1030,7 @@ curl -X POST http://localhost:8000/run \
   <p>
     When your tools need to call external APIs that require authentication — OAuth 2.0, API keys, service accounts — ADK provides a structured way to handle credentials via <code>ToolAuthContext</code>. This keeps credentials out of your tool code and out of the conversation history.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 import os
 from google.adk.tools import ToolContext
 
@@ -1062,7 +1064,7 @@ def call_external_api(endpoint: str, tool_context: ToolContext) -> dict:
   <p>
     By default, agents return free-form text. If your downstream system needs structured JSON — for example, to feed into a database or another API — set <code>output_schema</code> on the agent. ADK instructs Gemini to return a response conforming to the schema.
   </p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from pydantic import BaseModel
 from google.adk.agents import Agent
 
@@ -1167,10 +1169,14 @@ root_agent = structured_agent
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>

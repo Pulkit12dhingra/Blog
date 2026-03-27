@@ -25,7 +25,7 @@
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
   <!-- Critical CSS loaded first -->
-  <link rel="stylesheet" href="../data/style.css?v=1.0.0" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
 
   <!-- Non-critical CSS loaded asynchronously -->
   <link
@@ -75,6 +75,8 @@
       }, 1500);
     });
   </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
 </head>
 <body>
 <div class="container mt-4">
@@ -109,7 +111,7 @@
   <h5 class="mt-4">📥 Load the PDFs</h5>
   <p> Let's start by loading in the pdf dataset using langchains. <code>document_loaders</code> extract text 
     from every PDF file abstracting away the complexity of parsing individual files.</p>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.document_loaders import PyPDFLoader
 import os
 
@@ -135,7 +137,7 @@ for filename in os.listdir(pdf_folder):
   The resulting <code>chunks</code> list contains smaller document segments that are suitable for vector embedding, retrieval, and input to the LLM.
 </p>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -155,7 +157,7 @@ chunks = text_splitter.split_documents(all_docs)</code></pre>
   This setup enables our RAG pipeline to reason over large documents by mapping both queries and document chunks into the same embedding space.
 </p>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")</code></pre>
@@ -172,13 +174,13 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
   This vectorstore acts as the memory for our RAG system. When a user asks a question, we’ll search this database to find the most semantically similar document chunks and use them as context for generating answers.
 </p>
 
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.vectorstores import Chroma
 
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")</code></pre>
 
   <h5 class="mt-4"> Initialize Ollama with Gemma 3</h5>
-  <pre class="bg-light p-3 rounded"><code>
+  <pre><code class="language-python">
 from langchain_community.llms import Ollama
 
 llm = Ollama(model="gemma3")</code></pre>
@@ -187,7 +189,7 @@ llm = Ollama(model="gemma3")</code></pre>
 <p>This section walks through each part of the LangGraph-powered RAG implementation, explaining every node and design decision in detail.</p>
 
 <h5 class="mt-4">Imports and Definitions</h5>
-<pre class="bg-light p-3 rounded"><code>from langgraph.graph import START, StateGraph
+<pre><code class="language-python">from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document</code></pre>
@@ -203,14 +205,14 @@ from langchain_core.documents import Document</code></pre>
 <p>
 The shared memory between graph nodes. Each node receives and returns this dictionary-like state.
 </p>
-<pre class="bg-light p-3 rounded"><code>class State(TypedDict):
+<pre><code class="language-python">class State(TypedDict):
     question: str
     context: List[Document]
     answer: str</code></pre>
 
 
 <h5 class="mt-4">🧾 Prompt Template</h5>
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
 prompt = PromptTemplate.from_template("""
 You are an expert assistant. Use the following context to answer the question.
 If the answer cannot be found in the context, just say you don't know — don't make anything up.
@@ -229,7 +231,7 @@ This prompt keeps responses grounded and avoids hallucination by instructing the
 <p>
 This node performs semantic search using the input question. The top-matching documents are inserted into the <code>context</code>.
 </p>
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
   def retrieve(state: State):
     retrieved_docs = vectorstore.similarity_search(state["question"])
     return {"context": retrieved_docs}</code></pre>
@@ -239,7 +241,7 @@ This node performs semantic search using the input question. The top-matching do
 <p>
 This node merges the retrieved docs, formats them using the prompt, and sends it to the LLM to get a final answer.
 </p>
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
   def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     messages = prompt.invoke({"question": state["question"], "context": docs_content})
@@ -251,21 +253,21 @@ This node merges the retrieved docs, formats them using the prompt, and sends it
 <p>
 This configures your RAG application as a graph, starting from <code>retrieve</code> and flowing into <code>generate</code>. The graph is then compiled for execution.
 </p>
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
 graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()</code></pre>
 
 
 <h5 class="mt-4">❓ Running a Query</h5>
-<pre class="bg-light p-3 rounded"><code>response = graph.invoke({"question": "What is my name?"})
+<pre><code class="language-python">response = graph.invoke({"question": "What is my name?"})
 print(response["answer"])</code></pre>
 <p>
 This triggers the entire graph: retrieval ➝ prompt formatting ➝ answer generation — and prints the final result.
 </p>
 
 <h5 class="mt-4"> Visualizing the Graph</h5>
-<pre class="bg-light p-3 rounded"><code>from IPython.display import Image, display
+<pre><code class="language-python">from IPython.display import Image, display
 display(Image(graph.get_graph().draw_mermaid_png()))</code></pre>
 <p>
 This generates a Mermaid-style flowchart image, showing the structure of your application.
@@ -321,7 +323,7 @@ Each node is modular and self-contained, making your RAG app highly testable, ma
   This modular, graph-based setup makes it easy to scale, debug, and extend.
 </p>
 
-<pre class="bg-light p-3 rounded"><code>
+<pre><code class="language-python">
 # Load the documents
 import os
 from langchain.document_loaders import PyPDFLoader
@@ -441,10 +443,14 @@ for step in graph.stream(
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2025 Byte-Sized-Brilliance-AI. All rights reserved.
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
 
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
 </body>
 </html>
