@@ -271,6 +271,43 @@
     });
   }
 
+  // ── Article JSON-LD Structured Data ───────────────────────
+  function injectArticleSchema() {
+    const title = document.querySelector('meta[property="og:title"]');
+    const desc  = document.querySelector('meta[property="og:description"]');
+    const url   = document.querySelector('meta[property="og:url"]');
+    const image = document.querySelector('meta[property="og:image"]');
+    if (!title || !url) return;
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': title.content,
+      'description': desc ? desc.content : '',
+      'url': url.content,
+      'image': image ? image.content : 'https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg',
+      'author': {
+        '@type': 'Person',
+        'name': 'Pulkit Dhingra',
+        'url': 'https://pulkit12dhingra.github.io/Blog/'
+      },
+      'publisher': {
+        '@type': 'Person',
+        'name': 'Pulkit Dhingra',
+        'url': 'https://pulkit12dhingra.github.io/Blog/'
+      },
+      'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id': url.content
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
   // ── Bootstrap Icons polyfill check ────────────────────────────
   function ensureBootstrapIcons() {
     const links = Array.from(document.querySelectorAll('link[href]'));
@@ -286,6 +323,7 @@
   // ── Init ───────────────────────────────────────────────────────
   function init() {
     ensureBootstrapIcons();
+    injectArticleSchema();
     initProgressBar();
     injectReadTime();
     injectTOC();

@@ -1,0 +1,17 @@
+{
+  "name": "Byte-Sized-Brilliance-AI",
+  "short_name": "BSB-AI",
+  "description": "Tutorials, projects, and insights into AI, machine learning, Python, and data science by Pulkit Dhingra.",
+  "start_url": "/Blog/",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#4f6ef7",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "img/icon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
