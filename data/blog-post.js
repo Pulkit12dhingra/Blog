@@ -198,6 +198,79 @@
     }
   }
 
+  // ── Reading Progress Bar ───────────────────────────────────────
+  function initProgressBar() {
+    const bar = document.createElement('div');
+    bar.id = 'reading-progress';
+    document.body.prepend(bar);
+
+    function updateProgress() {
+      const scrollTop  = window.scrollY || document.documentElement.scrollTop;
+      const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+      bar.style.width = pct + '%';
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  }
+
+  // ── Scroll-Reveal for sections ─────────────────────────────────
+  function initScrollReveal() {
+    const headings = document.querySelectorAll('h4');
+    if (!headings.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    headings.forEach(h => observer.observe(h));
+  }
+
+  // ── TOC Active Section via IntersectionObserver ────────────────
+  function initTOCHighlight() {
+    const toc = document.getElementById('post-toc');
+    if (!toc) return;
+
+    const headings = Array.from(document.querySelectorAll('h4[id], h5[id]'));
+    if (!headings.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = entry.target.id;
+        const link = toc.querySelector(`a[href="#${id}"]`);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          toc.querySelectorAll('a').forEach(a => a.classList.remove('toc-active'));
+          link.classList.add('toc-active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px' });
+
+    headings.forEach(h => observer.observe(h));
+  }
+
+  // ── Back to Top Button ─────────────────────────────────────────
+  function initBackToTop() {
+    const btn = document.createElement('button');
+    btn.id = 'back-to-top';
+    btn.setAttribute('aria-label', 'Back to top');
+    btn.innerHTML = '<i class="bi bi-arrow-up"></i>';
+    document.body.appendChild(btn);
+
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
   // ── Bootstrap Icons polyfill check ────────────────────────────
   function ensureBootstrapIcons() {
     const links = Array.from(document.querySelectorAll('link[href]'));
@@ -213,15 +286,21 @@
   // ── Init ───────────────────────────────────────────────────────
   function init() {
     ensureBootstrapIcons();
+    initProgressBar();
     injectReadTime();
     injectTOC();
     addCodeCopyButtons();
+    initScrollReveal();
+    initBackToTop();
+
+    // TOC highlight runs after TOC is in DOM
+    setTimeout(initTOCHighlight, 100);
 
     // Prev/next requires blog data
     fetch('../data/blogData.json?v=2.2', { cache: 'no-cache' })
       .then(r => r.json())
       .then(data => injectPrevNext(data))
-      .catch(() => {}); // silently skip if fetch fails
+      .catch(() => {});
   }
 
   if (document.readyState === 'loading') {

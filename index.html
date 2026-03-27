@@ -200,11 +200,19 @@
       localStorage.setItem('theme', theme);
     }
 
-    // Apply saved theme on load
     applyTheme(localStorage.getItem('theme') || 'light');
 
     darkToggle.addEventListener('click', function() {
+      // Spin animation on toggle
+      darkToggle.classList.add('spinning');
+      darkToggle.addEventListener('animationend', () => darkToggle.classList.remove('spinning'), { once: true });
       applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+
+    // ── Navbar scroll shadow ───────────────────────────────────
+    const navbar = document.querySelector('.custom-navbar');
+    document.getElementById('main-content').addEventListener('scroll', function() {
+      navbar.classList.toggle('scrolled', this.scrollTop > 40);
     });
 
     // ── Sidebar Toggle ─────────────────────────────────────────
@@ -243,7 +251,7 @@
         html += `<p class="text-muted">No posts found for this filter.</p>`;
       } else {
         html += `<div class="blog-card-list">`;
-        data.forEach(post => {
+        data.forEach((post, i) => {
           const safeTitle     = escapeHtml(post.title);
           const safeSummary   = escapeHtml(post.summary);
           const safeFile      = escapeHtml(post.file);
@@ -258,8 +266,9 @@
             ? `<span class="badge-topic ${badgeClass}">${safeTopic}</span>`
             : '';
 
+          // --card-i drives the stagger delay in CSS
           html += `
-          <a href="content/${safeFile}" class="blog-card">
+          <a href="content/${safeFile}" class="blog-card" style="--card-i:${i}">
             ${topicBadge}
             <div class="blog-card-title">${safeTitle}</div>
             <div class="blog-card-summary">${safeSummary}</div>
@@ -279,7 +288,30 @@
       });
     }
 
+    // ── Skeleton Loading ───────────────────────────────────────
+    function showSkeleton(count = 5) {
+      const filterHtml = document.querySelector('.topic-filter-container').outerHTML;
+      let html = filterHtml + `<h2 class="section-heading">Latest Posts</h2><div class="blog-card-list">`;
+      for (let i = 0; i < count; i++) {
+        html += `
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-badge"></div>
+          <div class="skeleton-line skeleton-title"></div>
+          <div class="skeleton-line skeleton-text"></div>
+          <div class="skeleton-line skeleton-text short"></div>
+          <div class="skeleton-line skeleton-tags"></div>
+        </div>`;
+      }
+      html += `</div>`;
+      mainScroll.innerHTML = html;
+      // Re-attach filter buttons after skeleton render
+      document.querySelectorAll('.topic-filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() { filterByTopic(this.getAttribute('data-topic')); });
+      });
+    }
+
     // ── Data Fetching ──────────────────────────────────────────
+    showSkeleton();
     fetch('data/blogData.json?v=2.2', { cache: 'no-cache' })
       .then(res => res.json())
       .then(data => {
@@ -319,7 +351,15 @@
       document.querySelectorAll('.topic-filter-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-topic') === topic);
       });
-      performSearch();
+
+      // Fade out → re-render → fade in
+      const list = document.querySelector('.blog-card-list');
+      if (list) {
+        list.classList.add('fading');
+        setTimeout(() => performSearch(), 180);
+      } else {
+        performSearch();
+      }
     }
 
     document.querySelectorAll('.topic-filter-btn').forEach(btn => {
