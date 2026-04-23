@@ -1,0 +1,421 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Python_Subprocess.html" />
+  <meta name="description" content="Master Python subprocess: run shell commands, spawn isolated processes, pipe data via stdin/stdout, enforce hard timeouts, and use asyncio.create_subprocess_exec for non-blocking process management." />
+  <title>Python Concurrency Part 2: subprocess — Isolated Processes, Pipes & Async Execution | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="Python Concurrency Part 2: subprocess — Isolated Processes, Pipes & Async Execution" />
+  <meta property="og:description" content="Master Python subprocess: run shell commands, spawn isolated processes, pipe data via stdin/stdout, enforce hard timeouts, and use asyncio.create_subprocess_exec for non-blocking process management." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Python_Subprocess.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Python Concurrency Part 2: subprocess — Isolated Processes, Pipes & Async Execution" />
+  <meta name="twitter:description" content="Master Python subprocess: run shell commands, spawn isolated processes, pipe data via stdin/stdout, enforce hard timeouts, and use asyncio.create_subprocess_exec for non-blocking process management." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Python Concurrency Part 2 — subprocess: Isolated Processes, Pipes &amp; Async Execution</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <p>
+    Python's <strong>subprocess</strong> module lets you spawn a new OS process, send data to it, read its output, and wait for it to complete — all from within your Python program. Unlike threads or asyncio coroutines, a subprocess runs in a <em>completely separate OS process</em> with its own memory, interpreter, and GIL.
+  </p>
+
+  <p>
+    This is Part 2 of a six-part series on Python concurrency. In Part 1 we covered <a href="./Python_Asyncio.html">asyncio</a>. Here we cover subprocess:
+  </p>
+
+  <ul>
+    <li><code>subprocess.run()</code> — the simple blocking call</li>
+    <li><code>subprocess.Popen()</code> — full control over a running process</li>
+    <li>stdin/stdout piping — sending and receiving data as JSON</li>
+    <li><code>asyncio.create_subprocess_exec()</code> — non-blocking subprocess inside an async program</li>
+    <li>Hard timeouts and process killing</li>
+    <li>When to use subprocess vs asyncio vs threads</li>
+  </ul>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <h4 class="mt-5">1. Why Subprocess?</h4>
+
+  <p>
+    The key reason to use subprocess over threads or asyncio is <strong>isolation</strong>. A subprocess is a completely separate OS process — it has its own memory space, its own Python interpreter, and its own GIL. This gives you three guarantees you can't get from threads or coroutines:
+  </p>
+
+  <ul>
+    <li><strong>Crash isolation</strong> — if the subprocess raises an unhandled exception or segfaults, your main program continues running unaffected.</li>
+    <li><strong>Hard timeout</strong> — you can call <code>process.kill()</code> to terminate the subprocess unconditionally, even if it's stuck in an infinite loop or blocking on I/O. There is no equivalent for a hung thread.</li>
+    <li><strong>Security sandbox</strong> — in agentic systems where an LLM generates code to execute, running that code in a subprocess (with restricted permissions, resource limits, or a jail) keeps the host process safe.</li>
+  </ul>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If you let users upload spreadsheets and run heavy parsing logic on them, one malformed file should not take down your whole web app. Running that parser in a subprocess keeps the main service alive even if the child crashes.</div>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <h4 class="mt-5">2. subprocess.run() — The Simple Way</h4>
+
+  <p>
+    <code>subprocess.run()</code> is the high-level, blocking interface. It runs a command, waits for it to complete, and returns a <code>CompletedProcess</code> object with the return code and output.
+  </p>
+
+  <pre><code class="language-python">import subprocess
+
+# Run a simple shell command
+result = subprocess.run(
+    ["echo", "Hello from subprocess"],
+    capture_output=True,    # capture stdout and stderr
+    text=True,              # decode bytes to str automatically
+)
+print(result.stdout)        # Hello from subprocess
+print(result.returncode)    # 0 (success)</code></pre>
+
+  <pre><code class="language-python"># Run Python code in a subprocess
+result = subprocess.run(
+    ["python3", "-c", "import sys; print(sys.version)"],
+    capture_output=True,
+    text=True,
+)
+print(result.stdout)</code></pre>
+
+  <pre><code class="language-python"># Check return code — raises CalledProcessError if non-zero
+result = subprocess.run(
+    ["python3", "-c", "raise ValueError('oops')"],
+    capture_output=True,
+    text=True,
+    check=True,             # raise on non-zero exit code
+)
+# Raises: subprocess.CalledProcessError</code></pre>
+
+  <p>
+    <code>subprocess.run()</code> <strong>blocks</strong> the calling thread until the command finishes. For a quick one-shot command where you don't need concurrency, this is fine. For long-running commands or use inside an async program, use the async variant covered in Section 4.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This is a good fit when your deployment script just needs to run <code>git</code>, <code>ffmpeg</code>, or a one-off CLI command and wait for the result before continuing. It keeps the code simple when parallelism is not the goal.</div>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <h4 class="mt-5">3. subprocess.Popen() — Full Process Control</h4>
+
+  <p>
+    <code>subprocess.Popen()</code> gives you a live handle to the running process. You can write to its stdin, read from its stdout/stderr, and check or wait on its status — all while it's still running.
+  </p>
+
+  <pre><code class="language-python">import subprocess
+import json
+
+# Script that reads JSON from stdin, processes it, prints JSON to stdout
+script = """
+import sys, json
+data = json.load(sys.stdin)
+result = {"count": len(data), "doubled": [x * 2 for x in data]}
+print(json.dumps(result))
+"""
+
+proc = subprocess.Popen(
+    ["python3", "-c", script],
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
+
+# Send data to stdin, read stdout — communicate() handles both safely
+input_data = json.dumps([1, 2, 3, 4, 5]).encode()
+stdout, stderr = proc.communicate(input=input_data)
+
+result = json.loads(stdout.decode())
+print(result)    # {'count': 5, 'doubled': [2, 4, 6, 8, 10]}</code></pre>
+
+  <p>
+    Always prefer <code>communicate()</code> over manually writing to <code>proc.stdin</code> and reading from <code>proc.stdout</code>. The manual approach can deadlock if the subprocess's stdout buffer fills up while you're still writing to stdin.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Suppose you launch a reporting script, stream JSON into it, and expect a large JSON result back. <code>Popen</code> gives you full control over that running process so your parent app can exchange data instead of only waiting for a final exit code.</div>
+
+  <h5 class="mt-4">Enforcing a Timeout</h5>
+
+  <pre><code class="language-python">try:
+    stdout, stderr = proc.communicate(input=input_data, timeout=10)
+except subprocess.TimeoutExpired:
+    proc.kill()                  # hard kill — SIGKILL on Unix
+    stdout, stderr = proc.communicate()   # drain remaining output
+    print("Process timed out and was killed")</code></pre>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h4 class="mt-5">4. asyncio.create_subprocess_exec() — Non-Blocking Subprocess</h4>
+
+  <p>
+    <code>subprocess.run()</code> and <code>Popen.communicate()</code> both block the calling thread. Inside an asyncio program this is a problem — a blocked thread freezes the event loop, preventing all other coroutines from running.
+  </p>
+
+  <p>
+    The solution is <code>asyncio.create_subprocess_exec()</code>. It spawns the subprocess the same way, but <code>proc.communicate()</code> becomes an awaitable coroutine — the event loop can run other tasks while waiting for the subprocess to finish.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Imagine an async chatbot that needs to call an OCR script on an uploaded image. If that OCR call blocks the event loop, every other user waits too. The async subprocess version lets the bot keep serving other requests while OCR is running.</div>
+
+  <pre><code class="language-python">import asyncio
+import json
+import sys
+
+async def run_in_subprocess(data: list) -> dict:
+    script = """
+import sys, json
+data = json.load(sys.stdin)
+print(json.dumps({"count": len(data), "sum": sum(data)}))
+"""
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, "-c", script,   # sys.executable = same Python as parent
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    payload = json.dumps(data).encode()
+
+    # communicate() is awaitable — does NOT block the event loop
+    stdout, stderr = await proc.communicate(input=payload)
+
+    if proc.returncode != 0:
+        raise RuntimeError(f"Subprocess failed: {stderr.decode()}")
+
+    return json.loads(stdout.decode())
+
+async def main():
+    result = await run_in_subprocess([10, 20, 30, 40])
+    print(result)    # {'count': 4, 'sum': 100}
+
+asyncio.run(main())</code></pre>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <h4 class="mt-5">5. Hard Timeouts with asyncio</h4>
+
+  <p>
+    Combining <code>asyncio.wait_for()</code> with the subprocess gives you a hard timeout that the event loop enforces. If the process doesn't finish in time, it's killed immediately.
+  </p>
+
+  <pre><code class="language-python">async def run_with_timeout(data: list, timeout: float = 10.0) -> dict:
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, "analysis_script.py",
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    try:
+        stdout, stderr = await asyncio.wait_for(
+            proc.communicate(input=json.dumps(data).encode()),
+            timeout=timeout,
+        )
+    except asyncio.TimeoutError:
+        proc.kill()
+        await proc.wait()   # reap the zombie process
+        return {"error": f"Timed out after {timeout}s"}
+
+    return json.loads(stdout.decode())</code></pre>
+
+  <p>
+    This pattern is one of subprocess's biggest advantages over threads: there is no reliable way to kill a hung thread in Python, but you can always kill a process.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If a PDF extraction script occasionally hangs forever on a corrupt file, a hard timeout prevents one bad input from tying up worker capacity for minutes or hours. That directly protects latency and resource usage in production.</div>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h4 class="mt-5">6. The JSON Pipe Protocol</h4>
+
+  <p>
+    When parent and child processes need to exchange structured data, a clean pattern is to use <strong>JSON over stdin/stdout</strong>. The parent serialises its input, writes it to stdin, and reads JSON back from stdout. The child reads stdin, does its work, and prints JSON to stdout.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This is useful when one service prepares a batch of orders, sends them to a pricing script, and receives a structured summary back. JSON pipes keep the interface explicit and easy to debug without tightly coupling both programs.</div>
+
+  <p>
+    This is the pattern used throughout the Research Agent project. Here's a minimal standalone example of both sides:
+  </p>
+
+  <p><strong>analysis_script.py</strong> (the child process):</p>
+
+  <pre><code class="language-python">import json
+import sys
+from collections import Counter
+
+def analyse(items: list) -> dict:
+    return {
+        "count": len(items),
+        "unique": len(set(items)),
+        "top": Counter(items).most_common(3),
+    }
+
+if __name__ == "__main__":
+    try:
+        raw = sys.stdin.read()
+        items = json.loads(raw)
+        print(json.dumps(analyse(items)))   # stdout → parent reads this
+    except Exception as e:
+        print(json.dumps({"error": str(e)}), file=sys.stderr)
+        sys.exit(1)</code></pre>
+
+  <p><strong>main.py</strong> (the parent process):</p>
+
+  <pre><code class="language-python">import asyncio, json, sys
+from pathlib import Path
+
+async def analyse_in_subprocess(items: list) -> dict:
+    script = Path("analysis_script.py")
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, str(script),
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, _ = await asyncio.wait_for(
+        proc.communicate(input=json.dumps(items).encode()),
+        timeout=15,
+    )
+    return json.loads(stdout.decode())
+
+async def main():
+    data = ["apple", "banana", "apple", "cherry", "banana", "apple"]
+    result = await analyse_in_subprocess(data)
+    print(result)
+
+asyncio.run(main())
+# {'count': 6, 'unique': 3, 'top': [['apple', 3], ['banana', 2], ['cherry', 1]]}</code></pre>
+
+  <!-- ===================== SECTION 7 ===================== -->
+  <h4 class="mt-5">7. subprocess in the Research Agent</h4>
+
+  <p>
+    In the Research Agent project, the <code>analysis_agent</code> uses exactly this pattern. The orchestrator calls <code>run_analysis(articles)</code>, which spawns <code>analysis_script.py</code> in an isolated subprocess, sends article data via stdin as JSON, and reads the stats report back from stdout.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/subprocess_analysis/analysis_agent.py" target="_blank" rel="noopener noreferrer">agents/subprocess_analysis/analysis_agent.py</a></p>
+
+  <pre><code class="language-python"># agents/subprocess_analysis/analysis_agent.py (excerpt)
+import asyncio, json, sys
+from pathlib import Path
+
+_SCRIPT_PATH = Path(__file__).parent / "analysis_script.py"
+
+async def run_analysis(articles: list) -> dict:
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, str(_SCRIPT_PATH),
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    payload = json.dumps([a.to_dict() for a in articles]).encode()
+    try:
+        stdout, stderr = await asyncio.wait_for(
+            proc.communicate(input=payload),
+            timeout=15,           # hard kill if script hangs
+        )
+    except asyncio.TimeoutError:
+        proc.kill()
+        await proc.wait()
+        return {}                 # safe default — orchestrator continues
+    return json.loads(stdout.decode())</code></pre>
+
+  <p>
+    The analysis script itself (<a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/subprocess_analysis/analysis_script.py" target="_blank" rel="noopener noreferrer">analysis_script.py</a>) is completely standalone — it imports nothing from the main project, reads from stdin, and writes to stdout. This isolation means a bug in the analysis logic can never corrupt the orchestrator's state.
+  </p>
+
+  <!-- ===================== SECTION 8 ===================== -->
+  <h4 class="mt-5">8. When to Use subprocess</h4>
+
+  <table class="table table-bordered table-sm mt-3">
+    <thead class="table-dark">
+      <tr><th>Use subprocess when…</th><th>Don't use subprocess when…</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>You need crash isolation (a bug can't corrupt the parent)</td><td>You're just doing I/O — asyncio or threads are lighter</td></tr>
+      <tr><td>You need a hard, enforceable timeout</td><td>You need to share in-memory objects between caller and callee</td></tr>
+      <tr><td>Running untrusted or LLM-generated code safely</td><td>The overhead of process spawning (~50–100ms) is too high for your use case</td></tr>
+      <tr><td>Calling a CLI tool or a different language runtime</td><td>The work is purely CPU-bound Python — use ProcessPoolExecutor instead</td></tr>
+      <tr><td>Running a script that has its own dependencies/environment</td><td>You just need parallel I/O — that's asyncio's job</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If you are simply making 50 HTTP calls, subprocess is usually unnecessary overhead. If you are executing a separate toolchain, untrusted code, or a job you may need to kill hard, subprocess is usually the safer boundary.</div>
+
+  <!-- ===================== SECTION 9 ===================== -->
+  <h4 class="mt-5">9. Conclusion</h4>
+
+  <p>
+    subprocess is Python's tool for full process isolation. Its strengths — crash safety, hard timeouts, and the ability to kill a hung process — make it the right choice wherever you need the child process to be truly independent of the parent. The <code>asyncio.create_subprocess_exec()</code> variant integrates it cleanly into an async program without blocking the event loop.
+  </p>
+
+  <p>
+    In the next post we'll look at <strong>threading</strong> — the right tool when you need to run a synchronous, blocking library (like <code>sqlite3</code>) alongside async code without freezing the event loop.
+  </p>
+
+  <p class="fw-bold">
+    Isolation is not overhead — it's a feature. A subprocess that can crash safely is worth far more than a thread that can bring down everything with it.
+  </p>
+
+  <div class="d-flex justify-content-between mt-5">
+    <a href="./Python_Asyncio.html" class="btn btn-outline-secondary">← Part 1: asyncio</a>
+    <a href="./Python_Threading.html" class="btn btn-outline-primary">Next: Threading →</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,5 +1,53 @@
 [
   {
+    "file": "Python_Concurrency_Project_Part3.html",
+    "title": "Python Concurrency Part 6: Embeddings, Orchestrator & End-to-End Walkthrough",
+    "summary": "Complete the concurrent research agent with a ProcessPoolExecutor embedding agent for CPU-bound numpy work, a LangChain + Ollama orchestrator that coordinates all agents, and a step-by-step end-to-end walkthrough of every pipeline stage.",
+    "tags": ["Python", "asyncio", "ProcessPoolExecutor", "LangChain", "Ollama", "Embeddings", "Concurrency", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Python_Concurrency_Project_Part2.html",
+    "title": "Python Concurrency Part 5: Memory Agent, Token Optimizer & Analysis Agent",
+    "summary": "Build the threading-based SQLite memory agent with fire-and-forget state sync, a rolling LLM token optimizer that compresses conversation history, and the subprocess-based analysis agent with hard timeout enforcement and JSON pipe protocol.",
+    "tags": ["Python", "threading", "subprocess", "asyncio", "SQLite", "LangChain", "Concurrency", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Python_Concurrency_Project_Part1.html",
+    "title": "Python Concurrency Part 4: Research Agent — Architecture & Async Fetch Agent",
+    "summary": "Build a concurrent agentic research bot in Python. Part 4 covers the project architecture, core data models, session registry, and the asyncio-powered fetch agent that queries Wikipedia and HackerNews in parallel with asyncio.gather().",
+    "tags": ["Python", "asyncio", "aiohttp", "LangChain", "Ollama", "Concurrency", "Multi-Agent", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Python_Threading.html",
+    "title": "Python Concurrency Part 3: Threading — ThreadPoolExecutor & the GIL",
+    "summary": "Master Python threading: understand the GIL, when threads beat async for blocking libraries, ThreadPoolExecutor, loop.run_in_executor(), thread-safe patterns with Lock and RLock, and thread-local storage — with real examples from the research agent memory layer.",
+    "tags": ["Python", "threading", "ThreadPoolExecutor", "GIL", "Concurrency", "SQLite", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Python_Subprocess.html",
+    "title": "Python Concurrency Part 2: Subprocess — Process Isolation & Async Pipes",
+    "summary": "Learn when and how to use Python subprocesses: subprocess.run(), Popen(), asyncio.create_subprocess_exec(), the JSON stdin/stdout pipe protocol, hard timeouts with asyncio.wait_for(), and why isolation matters for agentic systems.",
+    "tags": ["Python", "subprocess", "asyncio", "Process", "Concurrency", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Python_Asyncio.html",
+    "title": "Python Concurrency Part 1: asyncio — Coroutines, Tasks & Synchronisation",
+    "summary": "A complete asyncio guide: coroutines, the event loop, async/await, create_task, gather, TaskGroup, Futures, and all four synchronisation primitives (Lock, Semaphore, Event, Condition) — with runnable notebook examples throughout.",
+    "tags": ["Python", "asyncio", "Coroutines", "Concurrency", "Event Loop", "Tutorial"],
+    "topic": "Python",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
     "file": "Google_ADK_Extras.html",
     "title": "Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals & More",
     "summary": "Go beyond the basics with Google ADK: connect Ollama and third-party LLMs via LiteLLM, manage session memory and state, deploy to GCP with Cloud Run or Vertex AI Agent Engine, evaluate model performance with adk eval, and explore callbacks, artifacts, structured output, and guardrails.",

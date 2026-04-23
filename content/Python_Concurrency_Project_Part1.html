@@ -1,0 +1,367 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Python_Concurrency_Project_Part1.html" />
+  <meta name="description" content="Build a concurrent agentic research bot in Python. Part 1 covers the project architecture, core data models, and the asyncio-powered fetch agent that queries Wikipedia and HackerNews in parallel." />
+  <title>Python Concurrency Part 4: Research Agent — Architecture & Async Fetch Agent | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="Python Concurrency Part 4: Research Agent — Architecture & Async Fetch Agent" />
+  <meta property="og:description" content="Build a concurrent agentic research bot in Python. Part 1 covers the project architecture, core data models, and the asyncio-powered fetch agent that queries Wikipedia and HackerNews in parallel." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Python_Concurrency_Project_Part1.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Python Concurrency Part 4: Research Agent — Architecture & Async Fetch Agent" />
+  <meta name="twitter:description" content="Build a concurrent agentic research bot in Python. Part 1 covers the project architecture, core data models, and the asyncio-powered fetch agent that queries Wikipedia and HackerNews in parallel." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Python Concurrency Part 4 — Research Agent: Architecture &amp; Async Fetch Agent</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <p>
+    In the first three parts of this series we covered the theory: <a href="./Python_Asyncio.html">asyncio</a> for I/O concurrency, <a href="./Python_Subprocess.html">subprocess</a> for isolation, and <a href="./Python_Threading.html">threading</a> for bridging sync libraries. Now we put all three to work in a single project.
+  </p>
+
+  <p>
+    We're building a <strong>Research Agent</strong> — an agentic chatbot that answers research questions by fetching live data from Wikipedia and HackerNews, running stats analysis, generating embeddings, and synthesizing an answer via a local <a href="./Setting_up_Ollama.html">Ollama</a> LLM. Each part of the pipeline uses a different concurrency tool, chosen deliberately for its workload type.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <h4 class="mt-5">1. What We're Building</h4>
+
+  <p>
+    Ask the Research Agent a question like <em>"What is the transformer architecture?"</em> and it will:
+  </p>
+
+  <ol>
+    <li>Extract search keywords from the question using an LLM (<a href="./Langchains_with_Ollama.html">LangChain + Ollama</a>)</li>
+    <li>Simultaneously fetch articles from Wikipedia and HackerNews — <strong>asyncio</strong></li>
+    <li>Save the conversation to SQLite in the background — <strong>threading</strong></li>
+    <li>Run keyword and relevance analysis in an isolated script — <strong>subprocess</strong></li>
+    <li>Generate embeddings to find the most relevant articles — <strong>ProcessPoolExecutor</strong></li>
+    <li>Synthesize a final answer with the LLM</li>
+  </ol>
+
+  <pre><code class="language-python">research_agent/
+├── main.py                              # CLI entry point
+├── requirements.txt
+├── core/
+│   ├── config.py                        # All tunable parameters
+│   ├── models.py                        # Shared dataclasses
+│   └── state.py                         # In-memory session registry
+├── agents/
+│   ├── async_fetch/
+│   │   └── fetch_agent.py               # asyncio — Wikipedia + HackerNews
+│   ├── threaded_memory/
+│   │   └── memory_agent.py              # threading — SQLite memory
+│   └── subprocess_analysis/
+│       ├── analysis_agent.py            # subprocess caller
+│       └── analysis_script.py           # isolated analysis script
+├── utils/
+│   ├── embeddings.py                    # ProcessPoolExecutor
+│   └── token_optimizer.py              # LLM summarization
+└── orchestrator/
+    └── pipeline.py                      # LangChain + Ollama orchestrator</code></pre>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <h4 class="mt-5">2. The Architecture</h4>
+
+  <p>
+    The orchestrator sits at the top and coordinates everything. Two things happen in sequence (they depend on each other), and four things happen in parallel (they're independent):
+  </p>
+
+  <pre><code class="language-python">User Question
+      │
+      ▼
+┌──────────────────────────────────────────────────┐
+│                  ORCHESTRATOR                    │
+│                                                  │
+│  Step 1: LLM extracts search topics (sequential) │
+│                                                  │
+│  Step 2: asyncio.gather() — all in parallel:     │
+│    ├── fetch_agent      ← asyncio                │
+│    ├── memory restore   ← threading              │
+│    ├── analysis_agent   ← subprocess             │
+│    └── embedding_agent  ← ProcessPoolExecutor    │
+│                                                  │
+│  Step 3: LLM synthesizes answer (sequential)     │
+│                                                  │
+│  Background (fire-and-forget):                   │
+│    ├── token_optimizer  ← asyncio task           │
+│    └── memory save      ← threading task         │
+└──────────────────────────────────────────────────┘</code></pre>
+
+  <p>
+    The decision of <em>what runs in parallel vs sequence</em> is the orchestrator's core job. The fetch, memory, analysis, and embedding agents are all independent of each other for a given question — they can all start simultaneously. The LLM synthesis must wait because it needs the articles, embeddings, and analysis report first.
+  </p>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <h4 class="mt-5">3. Core Layer — Config, Models, State</h4>
+
+  <h5 class="mt-4">config.py</h5>
+  <p>
+    All tunable parameters in one place — no magic numbers scattered across files.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/core/config.py" target="_blank" rel="noopener noreferrer">core/config.py</a></p>
+
+  <pre><code class="language-python">from dataclasses import dataclass
+
+@dataclass
+class Config:
+    # LLM
+    ollama_model: str = "llama3.2"
+    ollama_base_url: str = "http://localhost:11434"
+    llm_temperature: float = 0.3
+
+    # Memory
+    db_path: str = "agent_memory.db"
+    max_thread_workers: int = 2
+
+    # Token optimization
+    summarize_after_n_messages: int = 6
+    keep_recent_n_messages: int = 3
+
+    # Fetch
+    fetch_timeout_seconds: int = 8
+    max_articles_per_source: int = 3
+
+    # Subprocess
+    subprocess_timeout_seconds: int = 15
+
+    # Embeddings
+    embedding_dim: int = 32
+    embedding_workers: int = 2
+
+config = Config()</code></pre>
+
+  <h5 class="mt-4">models.py — Shared Dataclasses</h5>
+  <p>
+    Pure dataclasses with no business logic. Every agent operates on these types, keeping the interfaces consistent.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/core/models.py" target="_blank" rel="noopener noreferrer">core/models.py</a></p>
+
+  <pre><code class="language-python">from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Optional
+
+@dataclass
+class Article:
+    source: str          # "Wikipedia", "HackerNews", etc.
+    title: str
+    content: str
+    url: str
+    relevance: float = 0.8
+
+    def to_dict(self) -> dict:
+        return {"source": self.source, "title": self.title,
+                "content": self.content, "url": self.url, "relevance": self.relevance}
+
+@dataclass
+class Message:
+    role: str            # "user" | "assistant"
+    content: str
+    timestamp: datetime = field(default_factory=datetime.now)
+
+@dataclass
+class ConversationState:
+    """
+    Two-tier memory:
+      Short-term → messages list (in RAM, instant)
+      Long-term  → synced to SQLite via threading
+    """
+    session_id: str
+    messages: list[Message] = field(default_factory=list)
+    summary: str = ""                    # rolling summary of older messages
+    articles: list[Article] = field(default_factory=list)
+    embeddings: list[list[float]] = field(default_factory=list)
+    last_analysis: Optional[object] = None</code></pre>
+
+  <h5 class="mt-4">state.py — Session Registry</h5>
+  <p>
+    A lightweight in-memory registry. In production this would be Redis or a distributed store; for a single-process bot a dict is sufficient.
+  </p>
+
+  <pre><code class="language-python">import uuid
+from core.models import ConversationState
+
+_sessions: dict[str, ConversationState] = {}
+
+def get_or_create(session_id: str | None = None) -> ConversationState:
+    if session_id is None:
+        session_id = str(uuid.uuid4())[:8]
+    if session_id not in _sessions:
+        _sessions[session_id] = ConversationState(session_id=session_id)
+    return _sessions[session_id]</code></pre>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h4 class="mt-5">4. The Fetch Agent — asyncio in Practice</h4>
+
+  <p>
+    The fetch agent hits three sources simultaneously. All three are network I/O — the ideal workload for asyncio. We use <code>aiohttp</code> (an async HTTP client) so every <code>await session.get(url)</code> suspends only that coroutine, letting the others make progress.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/async_fetch/fetch_agent.py" target="_blank" rel="noopener noreferrer">agents/async_fetch/fetch_agent.py</a></p>
+
+  <pre><code class="language-python">import asyncio
+import aiohttp
+from core.config import config
+from core.models import Article
+
+_TIMEOUT = aiohttp.ClientTimeout(total=config.fetch_timeout_seconds)
+
+async def _fetch_wikipedia_summary(session, query: str) -> list[Article]:
+    url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{query.replace(' ', '_')}"
+    try:
+        async with session.get(url, timeout=_TIMEOUT) as resp:
+            if resp.status != 200:
+                return []
+            data = await resp.json()
+            return [Article(
+                source="Wikipedia",
+                title=data.get("title", ""),
+                content=data.get("extract", "")[:600],
+                url=data.get("content_urls", {}).get("desktop", {}).get("page", ""),
+                relevance=0.92,
+            )]
+    except Exception as exc:
+        print(f"  [FETCH] wikipedia_summary error: {exc}")
+        return []
+
+async def _fetch_hackernews(session, query: str) -> list[Article]:
+    url = f"https://hn.algolia.com/api/v1/search?query={query.replace(' ', '+')}&tags=story"
+    try:
+        async with session.get(url, timeout=_TIMEOUT) as resp:
+            if resp.status != 200:
+                return []
+            data = await resp.json()
+            return [
+                Article(source="HackerNews", title=h["title"],
+                        content=h.get("story_text", h.get("title", ""))[:400],
+                        url=h.get("url", ""), relevance=0.70)
+                for h in data.get("hits", [])[:3] if h.get("title")
+            ]
+    except Exception as exc:
+        print(f"  [FETCH] hackernews error: {exc}")
+        return []</code></pre>
+
+  <p>The public entry point fires all three sources at once:</p>
+
+  <pre><code class="language-python">async def run_fetch_agents(query: str) -> list[Article]:
+    """
+    All three fetches start simultaneously.
+    Total time = slowest source, not sum of all sources.
+    return_exceptions=True: one failing source doesn't abort the others.
+    """
+    async with aiohttp.ClientSession() as session:
+        results = await asyncio.gather(
+            _fetch_wikipedia_summary(session, query),
+            _fetch_wikipedia_search(session, query),
+            _fetch_hackernews(session, query),
+            return_exceptions=True,
+        )
+    return [a for batch in results if isinstance(batch, list) for a in batch]</code></pre>
+
+  <p>
+    Three sources with latencies of 0.8s, 1.2s, and 0.5s complete in ~1.2 s total, not 2.5 s. The <code>return_exceptions=True</code> flag is critical for resilience — if Wikipedia is rate-limiting, HackerNews results still arrive.
+  </p>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <h4 class="mt-5">5. Setup &amp; Dependencies</h4>
+
+  <pre><code class="language-python"># requirements.txt
+aiohttp>=3.9.0
+langchain-core>=0.2.0
+langchain-ollama>=0.1.0
+numpy>=1.26.0</code></pre>
+
+  <pre><code class="language-python"># Install Ollama and pull the model
+# https://ollama.com
+ollama pull llama3.2
+
+# Install Python dependencies
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h4 class="mt-5">6. Conclusion</h4>
+
+  <p>
+    This post established the project foundation: the file structure, the shared data models, the session registry, and the first agent — the asyncio-powered fetch layer. The key takeaway from the fetch agent is that <code>asyncio.gather()</code> is not just a convenience — it's a fundamental shift in how wall time scales with the number of I/O sources.
+  </p>
+
+  <p>
+    In Part 5 we build the <strong>memory agent</strong> (threading + sqlite3) and the <strong>analysis agent</strong> (subprocess) — the two agents that handle persistence and isolated computation.
+  </p>
+
+  <div class="d-flex justify-content-between mt-5">
+    <a href="./Python_Threading.html" class="btn btn-outline-secondary">← Part 3: Threading</a>
+    <a href="./Python_Concurrency_Project_Part2.html" class="btn btn-outline-primary">Next: Memory &amp; Analysis Agents →</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

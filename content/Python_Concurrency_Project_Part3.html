@@ -1,0 +1,490 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Python_Concurrency_Project_Part3.html" />
+  <meta name="description" content="Build a concurrent research agent in Python. Part 6 covers ProcessPoolExecutor for CPU-bound embeddings, the LangChain + Ollama orchestrator, main.py, and a full end-to-end walkthrough of what happens when a user asks a question." />
+  <title>Python Concurrency Part 6: Embeddings, Orchestrator &amp; End-to-End Walkthrough | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="Python Concurrency Part 6: Embeddings, Orchestrator &amp; End-to-End Walkthrough" />
+  <meta property="og:description" content="Build a concurrent research agent in Python. Part 6 covers ProcessPoolExecutor for CPU-bound embeddings, the LangChain + Ollama orchestrator, main.py, and a full end-to-end walkthrough of what happens when a user asks a question." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Python_Concurrency_Project_Part3.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Python Concurrency Part 6: Embeddings, Orchestrator &amp; End-to-End Walkthrough" />
+  <meta name="twitter:description" content="Build a concurrent research agent in Python. Part 6 covers ProcessPoolExecutor for CPU-bound embeddings, the LangChain + Ollama orchestrator, main.py, and a full end-to-end walkthrough of what happens when a user asks a question." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Python Concurrency Part 6 — Embeddings, Orchestrator &amp; End-to-End Walkthrough</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <p>
+    We've built the fetch agent (asyncio), the memory agent (threading), and the analysis agent (subprocess). In this final part we add the fourth concurrency primitive — <strong>ProcessPoolExecutor</strong> for CPU-bound embedding generation — and then wire everything together in the <strong>LangChain + Ollama orchestrator</strong>. We close with a complete end-to-end walkthrough of a single user turn.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <h4 class="mt-5">1. Embedding Agent — ProcessPoolExecutor for CPU-Bound Work</h4>
+
+  <p>
+    Embedding generation — converting text into dense numeric vectors — is CPU-bound. It involves matrix multiplications that peg the CPU at 100%. Python's GIL (Global Interpreter Lock) means that even if you put this work in a thread, only one thread executes Python bytecode at a time. For CPU-bound work, threads give you concurrency but not true parallelism — they still take turns on a single core.
+  </p>
+
+  <p>
+    <code>ProcessPoolExecutor</code> spawns separate Python interpreter processes, each with their own GIL. Numpy operations in a worker process run truly in parallel with the event loop in the main process — the main process can continue awaiting network responses while the worker is crunching numbers on a different core.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/utils/embeddings.py" target="_blank" rel="noopener noreferrer">utils/embeddings.py</a></p>
+
+  <h5 class="mt-4">The worker function — runs in a separate process</h5>
+
+  <p>
+    The worker function must be at module level (not a lambda or closure). This is a hard requirement of the "spawn" start method used on macOS — the function must be picklable so it can be sent to the worker process. Lambdas and nested functions are not picklable.
+  </p>
+
+  <pre><code class="language-python">import numpy as np
+from core.config import config
+
+# Must be a top-level function — required for pickle serialisation
+def _compute_embeddings(texts: list[str]) -> list[list[float]]:
+    """
+    CPU-bound embedding computation. Runs inside a worker process.
+
+    In production, replace with a real model:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+        return model.encode(texts).tolist()
+
+    Here we use deterministic hash-based vectors for a self-contained demo.
+    """
+    dim = config.embedding_dim
+    embeddings = []
+
+    for text in texts:
+        vec = np.zeros(dim, dtype=np.float32)
+        words = text.lower().split()
+        for i, word in enumerate(words[:dim]):
+            h = hash(word) % (10 ** 6)
+            vec[i % dim] += (h / 10 ** 6) - 0.5
+        # L2 normalise so cosine similarity = dot product
+        norm = np.linalg.norm(vec) + 1e-8
+        embeddings.append((vec / norm).tolist())
+
+    return embeddings</code></pre>
+
+  <h5 class="mt-4">The async interface — bridging process pool into the event loop</h5>
+
+  <pre><code class="language-python">from concurrent.futures import ProcessPoolExecutor
+
+async def generate_embeddings(texts: list[str]) -> list[list[float]]:
+    """
+    Dispatch CPU-bound work to a process pool.
+    The event loop is free while workers are crunching numbers.
+    """
+    if not texts:
+        return []
+
+    loop = asyncio.get_event_loop()
+    with ProcessPoolExecutor(max_workers=config.embedding_workers) as pool:
+        embeddings = await loop.run_in_executor(pool, _compute_embeddings, texts)
+
+    return embeddings</code></pre>
+
+  <p>
+    <code>loop.run_in_executor(pool, fn, args)</code> submits the function to the process pool and returns a Future. The event loop can await this Future without blocking — other coroutines continue to run. When the worker process completes the computation, the Future resolves and execution returns to <code>generate_embeddings()</code>.
+  </p>
+
+  <h5 class="mt-4">Similarity search</h5>
+
+  <p>
+    Once we have embeddings for all articles and for the query, we rank articles by cosine similarity to find the most relevant ones to inject into the LLM's context. Because all vectors are L2-normalised, cosine similarity reduces to a dot product.
+  </p>
+
+  <pre><code class="language-python">def cosine_similarity(v1: list[float], v2: list[float]) -> float:
+    """Dot product of two pre-normalised vectors = cosine similarity."""
+    a = np.array(v1, dtype=np.float32)
+    b = np.array(v2, dtype=np.float32)
+    return float(np.dot(a, b))
+
+
+def find_most_relevant(
+    query_embedding: list[float],
+    article_embeddings: list[list[float]],
+    top_k: int = 3,
+) -> list[int]:
+    """Return indices of the top-k most similar articles to the query."""
+    scores = [
+        (i, cosine_similarity(query_embedding, emb))
+        for i, emb in enumerate(article_embeddings)
+    ]
+    scores.sort(key=lambda x: x[1], reverse=True)
+    return [i for i, _ in scores[:top_k]]</code></pre>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <h4 class="mt-5">2. Orchestrator — Coordinating Everything with LangChain</h4>
+
+  <p>
+    The orchestrator is the brain of the system. It owns two LangChain chains built with <a href="./Langchains_with_Ollama.html">ChatOllama</a> and uses <code>asyncio.gather()</code> to run all agents in parallel. It is <em>stateless</em> — all session data lives in <code>ConversationState</code> objects passed in by the caller, so one <code>ResearchPipeline</code> instance can serve multiple concurrent sessions.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/orchestrator/pipeline.py" target="_blank" rel="noopener noreferrer">orchestrator/pipeline.py</a></p>
+
+  <h5 class="mt-4">The two LangChain chains</h5>
+
+  <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama import ChatOllama
+
+class ResearchPipeline:
+    def __init__(self) -> None:
+        self.llm = ChatOllama(
+            model=config.ollama_model,       # e.g. "llama3.2"
+            base_url=config.ollama_base_url, # "http://localhost:11434"
+            temperature=config.llm_temperature,
+        )
+
+        # Chain 1: extract 1-3 search keywords from the user's question
+        self._topic_prompt = ChatPromptTemplate.from_messages([
+            ("system",
+             "Extract 1-3 concise search keywords from the user's question. "
+             "Return ONLY a comma-separated list — no explanation, no numbering. "
+             "Example: 'transformer architecture, attention mechanism'"),
+            ("human", "{question}"),
+        ])
+        self._topic_chain = self._topic_prompt | self.llm | StrOutputParser()
+
+        # Chain 2: synthesize final answer from context + history + analysis
+        self._synthesis_prompt = ChatPromptTemplate.from_messages([
+            ("system",
+             "You are a research assistant. Answer the user's question using "
+             "the provided source context. Be accurate, concise, and cite sources "
+             "where relevant. If the context is insufficient, say so honestly."),
+            ("human",
+             "Question: {question}\n\n"
+             "--- Source Context ---\n{context}\n\n"
+             "--- Conversation History ---\n{history}\n\n"
+             "--- Analysis Report ---\n{analysis}\n\n"
+             "Provide a clear, well-structured answer:"),
+        ])
+        self._synthesis_chain = (
+            self._synthesis_prompt | self.llm | StrOutputParser()
+        )</code></pre>
+
+  <h5 class="mt-4">The pipeline run() method — step by step</h5>
+
+  <pre><code class="language-python">async def run(self, question: str, state: ConversationState) -> str:
+    # 1. Record user message
+    state.messages.append(Message(role="user", content=question))
+
+    # 2. Sequential: extract search topics (agents need these keywords)
+    topics_raw = await self._topic_chain.ainvoke({"question": question})
+    topics = [t.strip() for t in topics_raw.split(",") if t.strip()]
+    primary_topic = topics[0]
+
+    # 3. Parallel: fetch + memory restore (fetch and analysis/embed need articles first)
+    (articles, _, _, _) = await asyncio.gather(
+        run_fetch_agents(primary_topic),   # asyncio — Wikipedia + HackerNews
+        _noop_analysis(),                  # placeholder
+        _noop_embeddings(),                # placeholder
+        load_state(state.session_id, state),  # threading — SQLite read
+    )
+
+    # 4. Parallel: analysis + embedding on the freshly fetched articles
+    analysis, embeddings = await asyncio.gather(
+        run_analysis(articles),            # subprocess — isolated stats
+        generate_embeddings(              # ProcessPoolExecutor — CPU-bound
+            [f"{a.title} {a.content}" for a in articles]
+        ),
+    )
+
+    # 5. Embed the query, find most relevant articles
+    q_embeddings = await generate_embeddings([question])
+    top_indices = find_most_relevant(q_embeddings[0], embeddings, top_k=4)
+    relevant_articles = [articles[i] for i in top_indices]
+
+    # 6. Sequential: synthesize the final answer
+    answer = await self._synthesis_chain.ainvoke({
+        "question": question,
+        "context": _format_context(relevant_articles),
+        "history": build_history_context(state),
+        "analysis": analysis.summary_text() if analysis else "N/A",
+    })
+
+    # 7. Record answer + fire background tasks
+    state.messages.append(Message(role="assistant", content=answer))
+    asyncio.create_task(maybe_summarize(state, self.llm))  # async background
+    asyncio.create_task(save_state(state))                 # threading background
+
+    return answer</code></pre>
+
+  <p>
+    The two-phase gather is a deliberate design. Analysis and embedding depend on having the articles from the fetch agent, so they can't all run in a single <code>gather()</code> call. The first gather fetches articles and restores memory simultaneously. The second gather then runs analysis and embedding on those articles simultaneously. Within each phase, all work is parallel.
+  </p>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <h4 class="mt-5">3. main.py — CLI Entry Point</h4>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/main.py" target="_blank" rel="noopener noreferrer">main.py</a></p>
+
+  <p>
+    The entry point has two modes: interactive (multi-turn chat) and demo (three preset questions that also trigger token optimization). One important setup line comes first: <code>multiprocessing.set_start_method("fork")</code>. On macOS, the default start method is "spawn" which requires all worker functions to be picklable — using "fork" is faster and avoids the need to re-import modules in each worker.
+  </p>
+
+  <pre><code class="language-python">import asyncio, argparse, multiprocessing, sys
+
+# Must be set before any ProcessPoolExecutor is created
+if sys.platform != "win32":
+    multiprocessing.set_start_method("fork", force=True)
+
+
+async def _chat_loop(session_id: str | None) -> None:
+    """Interactive multi-turn conversation loop."""
+    from agents.threaded_memory.memory_agent import init_db
+    from orchestrator.pipeline import ResearchPipeline
+
+    await init_db()
+    pipeline = ResearchPipeline()
+    state = state_store.get_or_create(session_id)
+
+    while True:
+        try:
+            question = input("You: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            break
+        if not question or question.lower() in {"quit", "exit"}:
+            break
+        answer = await pipeline.run(question, state)
+        print(f"\nAssistant:\n{answer}\n")
+
+
+async def _demo_run() -> None:
+    """3-turn demo that triggers token optimization."""
+    config.summarize_after_n_messages = 4   # lower threshold for demo
+
+    await init_db()
+    pipeline = ResearchPipeline()
+    state = state_store.get_or_create("demo-session")
+
+    questions = [
+        "What is the transformer architecture in machine learning?",
+        "How does attention mechanism work in transformers?",
+        "What are the main differences between GPT and BERT?",
+    ]
+    for q in questions:
+        answer = await pipeline.run(q, state)
+        print(f"\nAssistant:\n{answer}\n")
+        await asyncio.sleep(0.5)   # allow background tasks to flush
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--session", default=None)
+    parser.add_argument("--demo", action="store_true")
+    args = parser.parse_args()
+
+    if args.demo:
+        asyncio.run(_demo_run())
+    else:
+        asyncio.run(_chat_loop(args.session))
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h4 class="mt-5">4. End-to-End Walkthrough</h4>
+
+  <p>
+    Here's exactly what happens when the user types <em>"What is the transformer architecture in machine learning?"</em>:
+  </p>
+
+  <pre><code class="language-python">═══════════════════════════════════════════════
+  User: "What is the transformer architecture?"
+═══════════════════════════════════════════════
+
+[Step 1] LLM extracts topics (sequential)
+  → "transformer architecture, attention mechanism"
+
+[Step 2] First gather — fetch + memory restore in parallel
+  ├── [ASYNC]  fetch_agent → Wikipedia: "Transformer (deep learning)"
+  ├── [ASYNC]  fetch_agent → Wikipedia search: 3 related articles
+  ├── [ASYNC]  fetch_agent → HackerNews: top posts matching topic
+  └── [THREAD] memory_agent.load_state() → restores prior session from SQLite
+
+  All four finish in ~1.5s (vs ~4.5s sequential)
+
+[Step 2b] Second gather — analysis + embedding in parallel
+  ├── [SUBPROC] analysis_script.py → receives 8 articles via stdin JSON
+  │             → computes avg relevance, keyword freq, top articles
+  │             → returns JSON via stdout
+  └── [PROCESS] _compute_embeddings(8 article texts)
+                → numpy matrix ops across 128-dim vectors
+                → returns 8 normalised vectors
+
+[Step 3] Embed query + find top-4 most relevant articles
+  [PROCESS] _compute_embeddings(["What is the transformer..."])
+  → cosine similarity ranking → top 4 article indices
+
+[Step 4] LLM synthesizes final answer (sequential)
+  → synthesis_chain.ainvoke({question, context, history, analysis})
+  → streams response from Ollama
+
+[Step 5] Background tasks (fire-and-forget)
+  asyncio.create_task(maybe_summarize(state, llm))   ← async
+  asyncio.create_task(save_state(state))             ← threading
+  ↑ Both scheduled but NOT awaited — user sees answer immediately
+
+═══════════════════════════════════════════════
+  Total wall time: ~3-5s  (sequential ≈ 10-15s)
+═══════════════════════════════════════════════</code></pre>
+
+  <p>
+    The speedup comes entirely from the parallel phases. Network I/O (Wikipedia + HackerNews) normally dominates latency. By running all three fetch coroutines simultaneously plus memory restore, what would take 3-4 seconds sequentially takes about 1.5 seconds — the wall time of the slowest single fetch, not the sum.
+  </p>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <h4 class="mt-5">5. Running the Project</h4>
+
+  <pre><code class="language-python"># 1. Install Ollama and pull the model
+# https://ollama.com
+ollama pull llama3.2
+
+# 2. Install dependencies
+python -m venv .venv
+source .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# 3. Interactive mode
+python main.py
+
+# 4. Resume a previous session
+python main.py --session my-session-id
+
+# 5. Non-interactive demo (3 turns, triggers token optimization)
+python main.py --demo</code></pre>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h4 class="mt-5">6. Concurrency Decision Guide</h4>
+
+  <p>
+    The table below summarises every concurrency decision made in the project. Use it as a reference when designing your own agent systems.
+  </p>
+
+  <pre><code class="language-python">┌─────────────────────────────┬──────────────────────────┬──────────────────────────────────────────┐
+│ Workload                    │ Primitive                │ Why                                      │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ Multiple HTTP requests       │ asyncio.gather()         │ I/O-bound; event loop multiplexes sockets│
+│ (Wikipedia, HackerNews)      │                          │ No threads or processes needed           │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ SQLite reads/writes          │ ThreadPoolExecutor       │ sqlite3 is sync; I/O-bound so GIL ok;   │
+│ (memory agent)              │ + run_in_executor        │ threads avoid blocking the event loop    │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ Stats over article data      │ subprocess               │ Isolation + hard timeout + future        │
+│ (analysis agent)            │ + wait_for timeout        │ sandboxing of dynamic/LLM code           │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ numpy embedding computation  │ ProcessPoolExecutor      │ CPU-bound; needs real parallelism;       │
+│ (embedding agent)           │ + run_in_executor        │ GIL bypassed via separate process        │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ LLM calls (Ollama)          │ asyncio await            │ ChatOllama.ainvoke() is native async;    │
+│ (both chains)               │                          │ no additional wrapping needed            │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ Token optimization          │ asyncio.create_task()    │ Fire-and-forget; no latency impact;      │
+│ (post-response)             │                          │ background LLM call                      │
+├─────────────────────────────┼──────────────────────────┼──────────────────────────────────────────┤
+│ Memory sync                 │ asyncio.create_task()    │ Fire-and-forget; threading handled       │
+│ (post-response)             │ + ThreadPoolExecutor     │ inside save_state()                      │
+└─────────────────────────────┴──────────────────────────┴──────────────────────────────────────────┘</code></pre>
+
+  <p>
+    The core principle: <strong>match the primitive to the workload</strong>. asyncio for anything that waits on I/O. Threads for synchronous blocking libraries that do I/O. Subprocess when you need crash isolation or hard timeouts. Process pools when you need true CPU parallelism. Mixing all four in the same pipeline — each in the right place — is what makes the research agent fast and resilient.
+  </p>
+
+  <!-- ===================== SECTION 7 ===================== -->
+  <h4 class="mt-5">7. Series Recap</h4>
+
+  <p>
+    This six-part series started from theory and ended with a running multi-agent system. Here's how the pieces connect:
+  </p>
+
+  <ul>
+    <li><a href="./Python_Asyncio.html">Part 1 — asyncio</a>: coroutines, tasks, gather, TaskGroup, Futures, Lock, Semaphore, Event, Condition</li>
+    <li><a href="./Python_Subprocess.html">Part 2 — subprocess</a>: subprocess.run(), Popen(), asyncio.create_subprocess_exec(), JSON pipe protocol, timeouts</li>
+    <li><a href="./Python_Threading.html">Part 3 — threading</a>: GIL, Thread, ThreadPoolExecutor, run_in_executor, Lock, RLock, ThreadLocal</li>
+    <li><a href="./Python_Concurrency_Project_Part1.html">Part 4 — Architecture &amp; Fetch Agent</a>: project structure, config/models/state, asyncio fetch agent</li>
+    <li><a href="./Python_Concurrency_Project_Part2.html">Part 5 — Memory, Token Optimizer &amp; Analysis</a>: threading memory agent, rolling LLM summaries, subprocess analysis</li>
+    <li><strong>Part 6 (this post)</strong> — ProcessPoolExecutor embeddings, LangChain orchestrator, end-to-end walkthrough</li>
+  </ul>
+
+  <p>
+    The full runnable code, including the GitHub push script and README, is in the repository below.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
+
+  <div class="d-flex justify-content-between mt-5">
+    <a href="./Python_Concurrency_Project_Part2.html" class="btn btn-outline-secondary">← Part 5: Memory &amp; Analysis Agents</a>
+    <a href="../index.html" class="btn btn-outline-primary">Back to Home →</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>
