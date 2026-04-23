@@ -224,7 +224,7 @@ Done id=2      # delay=3, finishes last</code></pre>
     <code>asyncio.gather()</code> is the idiomatic way to run multiple coroutines concurrently and collect all their results. It schedules all coroutines as tasks internally and returns a list of results in the same order as the inputs.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Imagine a dashboard that needs user profile data, notifications, and billing info before it can render. If you fetch them one after another, the page feels slow. <code>gather()</code> lets you request all three at once so total wait time is closer to the slowest API, not the sum of all three.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Imagine a dashboard that needs user profile data, notifications, and billing info before it can render. If you fetch them one after another, the page feels slow. <code>gather()</code> lets you request all three at once so total wait time is closer to the slowest API, not the sum of all three.</div>
 
   <pre><code class="language-python">async def main():
     results = await asyncio.gather(
@@ -268,7 +268,7 @@ Done id=2
     <code>asyncio.TaskGroup</code> is the modern, safer alternative to <code>gather()</code>. It uses the <code>async with</code> context manager pattern and provides <strong>structured concurrency</strong>: if any task inside the group raises an exception, all other tasks in the group are automatically cancelled, and the exception is propagated cleanly.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Suppose you are processing one customer checkout that depends on stock check, fraud check, and payment confirmation. If payment fails, you do not want the rest of the workflow continuing in the background. <code>TaskGroup</code> fits that "all parts succeed together or stop together" pattern.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Suppose you are processing one customer checkout that depends on stock check, fraud check, and payment confirmation. If payment fails, you do not want the rest of the workflow continuing in the background. <code>TaskGroup</code> fits that "all parts succeed together or stop together" pattern.</div>
 
   <pre><code class="language-python">async def main():
     async with asyncio.TaskGroup() as tg:
@@ -311,7 +311,7 @@ await main()</code></pre>
     Futures are mostly used when bridging callback-based libraries into the async world. In everyday asyncio code you rarely create them manually — <code>create_task()</code> returns a Future (Task is a subclass), and many asyncio internals use them under the hood.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Think about waiting for a file upload widget or a third-party SDK callback to say "done" before moving forward. A Future is the placeholder that lets the rest of your async code wait cleanly for that signal without blocking the thread.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Think about waiting for a file upload widget or a third-party SDK callback to say "done" before moving forward. A Future is the placeholder that lets the rest of your async code wait cleanly for that signal without blocking the thread.</div>
 
   <pre><code class="language-python">async def main():
     loop = asyncio.get_running_loop()
@@ -341,7 +341,7 @@ await main()</code></pre>
     A <strong>Lock</strong> ensures only one coroutine can access a protected block at a time. Use it when multiple coroutines read and write the same object and interleaving would corrupt it.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If two coroutines are both updating the same in-memory shopping cart total, one update can overwrite the other. A <code>Lock</code> forces those updates to happen one at a time so the final value stays correct.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If two coroutines are both updating the same in-memory shopping cart total, one update can overwrite the other. A <code>Lock</code> forces those updates to happen one at a time so the final value stays correct.</div>
 
   <pre><code class="language-python">async def main():
     lock = asyncio.Lock()
@@ -373,7 +373,7 @@ C releasing lock</code></pre>
     A <strong>Semaphore</strong> is a generalised lock that allows up to <em>N</em> concurrent holders. It's perfect for rate-limiting — for example, capping the number of simultaneous outbound HTTP connections.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If your script hits 200 product pages at once, the target site may throttle or block you. A <code>Semaphore</code> lets you keep concurrency for speed while still respecting a limit like 5 or 10 requests at a time.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If your script hits 200 product pages at once, the target site may throttle or block you. A <code>Semaphore</code> lets you keep concurrency for speed while still respecting a limit like 5 or 10 requests at a time.</div>
 
   <pre><code class="language-python">async def main():
     semaphore = asyncio.Semaphore(2)   # at most 2 concurrent
@@ -403,7 +403,7 @@ D done</code></pre>
     An <strong>Event</strong> is a simple signal: coroutines can wait on it with <code>await event.wait()</code> and another coroutine can fire it with <code>event.set()</code>. All waiters unblock simultaneously when the event is set.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Say several parts of your app must wait until configuration is loaded from a remote service. Instead of polling repeatedly, they can all wait on one <code>Event</code> and resume together the moment setup completes.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Say several parts of your app must wait until configuration is loaded from a remote service. Instead of polling repeatedly, they can all wait on one <code>Event</code> and resume together the moment setup completes.</div>
 
   <pre><code class="language-python">async def main():
     event = asyncio.Event()
@@ -433,7 +433,7 @@ W2 unblocked!</code></pre>
     A <strong>Condition</strong> combines a Lock with a signalling mechanism. Waiters call <code>await condition.wait()</code> inside <code>async with condition</code>; the setter calls <code>condition.notify_all()</code> after updating shared state. Waiters re-check the condition in a loop to handle spurious wakeups.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Imagine an inventory worker waiting until stock for an item reaches at least 5 units before dispatching a batch order. A <code>Condition</code> is useful when you need to wait for a specific state, not just a generic "something happened" signal.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Imagine an inventory worker waiting until stock for an item reaches at least 5 units before dispatching a batch order. A <code>Condition</code> is useful when you need to wait for a specific state, not just a generic "something happened" signal.</div>
 
   <pre><code class="language-python">async def main():
     condition = asyncio.Condition()
@@ -474,7 +474,7 @@ await main()</code></pre>
     asyncio does <strong>not</strong> help with <strong>CPU-bound</strong> work. If your code is doing heavy computation — matrix multiplication, image processing, ML inference — a single event loop thread will still saturate one CPU core regardless of how many coroutines you run. For CPU-bound work, use <code>ProcessPoolExecutor</code> (covered in Part 3).
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If your API server spends most of its time waiting on databases or other APIs, asyncio can cut latency nicely. If it spends most of its time resizing images or scoring ML models, asyncio will not speed that up because the CPU is still the bottleneck.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If your API server spends most of its time waiting on databases or other APIs, asyncio can cut latency nicely. If it spends most of its time resizing images or scoring ML models, asyncio will not speed that up because the CPU is still the bottleneck.</div>
 
   <table class="table table-bordered table-sm mt-3">
     <thead class="table-dark">

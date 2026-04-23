@@ -95,7 +95,7 @@
     The GIL <em>is</em> released during I/O operations — network calls, disk reads, <code>time.sleep()</code>, and any C extension that does its own work (numpy, sqlite3). This is why threading works well for I/O-bound code even in Python: threads interleave during the wait periods.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If your app downloads files from five vendors, each request spends most of its time waiting on the network. Threads help because one request can wait while another makes progress. If the job is pure number crunching, the GIL becomes the limiting factor instead.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If your app downloads files from five vendors, each request spends most of its time waiting on the network. Threads help because one request can wait while another makes progress. If the job is pure number crunching, the GIL becomes the limiting factor instead.</div>
 
   <table class="table table-bordered table-sm mt-3">
     <thead class="table-dark">
@@ -148,7 +148,7 @@ All downloads complete</code></pre>
     Total wall time ≈ 3 seconds (the longest), not 6 seconds (sum). The GIL releases during <code>time.sleep()</code>, so all three threads run concurrently.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This pattern is useful for simple background jobs like downloading multiple reports, checking several servers, or reading files from different locations without redesigning the whole program around async.</div>
+  <div class="alert alert-secondary py-2 px-3 small">This pattern is useful for simple background jobs like downloading multiple reports, checking several servers, or reading files from different locations without redesigning the whole program around async.</div>
 
   <!-- ===================== SECTION 3 ===================== -->
   <h4 class="mt-5">3. ThreadPoolExecutor — The Modern API</h4>
@@ -183,7 +183,7 @@ Result from https://api.source-c.com</code></pre>
     For finer control — individual tasks, callbacks, or exception handling — use <code>submit()</code> which returns a <code>Future</code>:
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If you need to fetch prices from ten supplier APIs and continue as each one finishes, <code>ThreadPoolExecutor</code> gives you a cleaner way to parallelise that blocking I/O than manually starting and tracking raw threads.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If you need to fetch prices from ten supplier APIs and continue as each one finishes, <code>ThreadPoolExecutor</code> gives you a cleaner way to parallelise that blocking I/O than manually starting and tracking raw threads.</div>
 
   <pre><code class="language-python">with ThreadPoolExecutor(max_workers=3) as executor:
     futures = {executor.submit(fetch_sync, url): url for url in urls}
@@ -239,7 +239,7 @@ async def save_message(session_id: str, message: str) -> None:
     From the caller's perspective, <code>await save_message(...)</code> looks identical to any other async call. But under the hood the blocking DB write happens in a worker thread, leaving the event loop free to run other coroutines.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If an async API endpoint saves audit logs with a blocking library, calling that library directly can freeze unrelated requests. <code>run_in_executor()</code> moves the slow sync call off the event loop so the rest of the app stays responsive.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If an async API endpoint saves audit logs with a blocking library, calling that library directly can freeze unrelated requests. <code>run_in_executor()</code> moves the slow sync call off the event loop so the rest of the app stays responsive.</div>
 
   <h5 class="mt-4">Fire-and-Forget Pattern</h5>
 
@@ -283,14 +283,14 @@ print(counter)    # Always 500000 — never a race-corrupted value</code></pre>
     Without the lock, <code>counter += 1</code> (which is actually three operations: read, add, write) can be interrupted between steps, causing lost updates.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Think of two threads updating the same inventory count after orders arrive at nearly the same time. Without a <code>Lock</code>, one write can overwrite the other and leave stock numbers wrong.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Think of two threads updating the same inventory count after orders arrive at nearly the same time. Without a <code>Lock</code>, one write can overwrite the other and leave stock numbers wrong.</div>
 
   <h5 class="mt-4">RLock — Reentrant Lock</h5>
   <p>
     A regular <code>Lock</code> will deadlock if the same thread tries to acquire it twice. Use <code>threading.RLock</code> (reentrant lock) when a function that holds a lock needs to call another function that also acquires the same lock.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This happens in real code when a high-level "update account" function grabs a lock and then calls a lower-level helper that also protects the same account object. <code>RLock</code> prevents that nested call from deadlocking the thread against itself.</div>
+  <div class="alert alert-secondary py-2 px-3 small">This happens in real code when a high-level "update account" function grabs a lock and then calls a lower-level helper that also protects the same account object. <code>RLock</code> prevents that nested call from deadlocking the thread against itself.</div>
 
   <pre><code class="language-python">rlock = threading.RLock()
 
@@ -307,7 +307,7 @@ def inner():
     <code>threading.local()</code> creates a storage object where each thread gets its own independent copy. Useful for database connections — you want one connection per thread, not shared across threads.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If each worker thread handles a different customer request, thread-local storage lets each one keep its own DB connection or request context without accidentally leaking that state into another request.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If each worker thread handles a different customer request, thread-local storage lets each one keep its own DB connection or request context without accidentally leaking that state into another request.</div>
 
   <pre><code class="language-python">import threading
 import sqlite3
@@ -362,7 +362,7 @@ async def save_state(state) -> None:
     The two-layer design is intentional: <code>_save_state_sync</code> is a pure synchronous function with no asyncio imports — it's safe to call from a thread. The <code>save_state</code> async wrapper handles scheduling and is the only interface the rest of the codebase sees.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> In a chat app, saving memory to SQLite after each reply should not delay the answer reaching the user. Offloading that write to a thread keeps the conversation feeling instant while persistence happens in the background.</div>
+  <div class="alert alert-secondary py-2 px-3 small">In a chat app, saving memory to SQLite after each reply should not delay the answer reaching the user. Offloading that write to a thread keeps the conversation feeling instant while persistence happens in the background.</div>
 
   <!-- ===================== SECTION 7 ===================== -->
   <h4 class="mt-5">7. Threading vs asyncio vs ProcessPoolExecutor</h4>
@@ -381,7 +381,7 @@ async def save_state(state) -> None:
     </tbody>
   </table>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If your problem is "this library blocks but I do not want to rewrite everything," threading is often the practical upgrade. If the problem is CPU-heavy work or hard isolation, a process-based solution is usually the better optimization.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If your problem is "this library blocks but I do not want to rewrite everything," threading is often the practical upgrade. If the problem is CPU-heavy work or hard isolation, a process-based solution is usually the better optimization.</div>
 
   <!-- ===================== SECTION 8 ===================== -->
   <h4 class="mt-5">8. Conclusion</h4>

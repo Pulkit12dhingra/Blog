@@ -92,7 +92,7 @@
     <li><strong>Security sandbox</strong> — in agentic systems where an LLM generates code to execute, running that code in a subprocess (with restricted permissions, resource limits, or a jail) keeps the host process safe.</li>
   </ul>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If you let users upload spreadsheets and run heavy parsing logic on them, one malformed file should not take down your whole web app. Running that parser in a subprocess keeps the main service alive even if the child crashes.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If you let users upload spreadsheets and run heavy parsing logic on them, one malformed file should not take down your whole web app. Running that parser in a subprocess keeps the main service alive even if the child crashes.</div>
 
   <!-- ===================== SECTION 2 ===================== -->
   <h4 class="mt-5">2. subprocess.run() — The Simple Way</h4>
@@ -133,7 +133,7 @@ result = subprocess.run(
     <code>subprocess.run()</code> <strong>blocks</strong> the calling thread until the command finishes. For a quick one-shot command where you don't need concurrency, this is fine. For long-running commands or use inside an async program, use the async variant covered in Section 4.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This is a good fit when your deployment script just needs to run <code>git</code>, <code>ffmpeg</code>, or a one-off CLI command and wait for the result before continuing. It keeps the code simple when parallelism is not the goal.</div>
+  <div class="alert alert-secondary py-2 px-3 small">This is a good fit when your deployment script just needs to run <code>git</code>, <code>ffmpeg</code>, or a one-off CLI command and wait for the result before continuing. It keeps the code simple when parallelism is not the goal.</div>
 
   <!-- ===================== SECTION 3 ===================== -->
   <h4 class="mt-5">3. subprocess.Popen() — Full Process Control</h4>
@@ -171,7 +171,7 @@ print(result)    # {'count': 5, 'doubled': [2, 4, 6, 8, 10]}</code></pre>
     Always prefer <code>communicate()</code> over manually writing to <code>proc.stdin</code> and reading from <code>proc.stdout</code>. The manual approach can deadlock if the subprocess's stdout buffer fills up while you're still writing to stdin.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Suppose you launch a reporting script, stream JSON into it, and expect a large JSON result back. <code>Popen</code> gives you full control over that running process so your parent app can exchange data instead of only waiting for a final exit code.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Suppose you launch a reporting script, stream JSON into it, and expect a large JSON result back. <code>Popen</code> gives you full control over that running process so your parent app can exchange data instead of only waiting for a final exit code.</div>
 
   <h5 class="mt-4">Enforcing a Timeout</h5>
 
@@ -193,7 +193,7 @@ except subprocess.TimeoutExpired:
     The solution is <code>asyncio.create_subprocess_exec()</code>. It spawns the subprocess the same way, but <code>proc.communicate()</code> becomes an awaitable coroutine — the event loop can run other tasks while waiting for the subprocess to finish.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> Imagine an async chatbot that needs to call an OCR script on an uploaded image. If that OCR call blocks the event loop, every other user waits too. The async subprocess version lets the bot keep serving other requests while OCR is running.</div>
+  <div class="alert alert-secondary py-2 px-3 small">Imagine an async chatbot that needs to call an OCR script on an uploaded image. If that OCR call blocks the event loop, every other user waits too. The async subprocess version lets the bot keep serving other requests while OCR is running.</div>
 
   <pre><code class="language-python">import asyncio
 import json
@@ -259,7 +259,7 @@ asyncio.run(main())</code></pre>
     This pattern is one of subprocess's biggest advantages over threads: there is no reliable way to kill a hung thread in Python, but you can always kill a process.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If a PDF extraction script occasionally hangs forever on a corrupt file, a hard timeout prevents one bad input from tying up worker capacity for minutes or hours. That directly protects latency and resource usage in production.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If a PDF extraction script occasionally hangs forever on a corrupt file, a hard timeout prevents one bad input from tying up worker capacity for minutes or hours. That directly protects latency and resource usage in production.</div>
 
   <!-- ===================== SECTION 6 ===================== -->
   <h4 class="mt-5">6. The JSON Pipe Protocol</h4>
@@ -268,7 +268,7 @@ asyncio.run(main())</code></pre>
     When parent and child processes need to exchange structured data, a clean pattern is to use <strong>JSON over stdin/stdout</strong>. The parent serialises its input, writes it to stdin, and reads JSON back from stdout. The child reads stdin, does its work, and prints JSON to stdout.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> This is useful when one service prepares a batch of orders, sends them to a pricing script, and receives a structured summary back. JSON pipes keep the interface explicit and easy to debug without tightly coupling both programs.</div>
+  <div class="alert alert-secondary py-2 px-3 small">This is useful when one service prepares a batch of orders, sends them to a pricing script, and receives a structured summary back. JSON pipes keep the interface explicit and easy to debug without tightly coupling both programs.</div>
 
   <p>
     This is the pattern used throughout the Research Agent project. Here's a minimal standalone example of both sides:
@@ -377,7 +377,7 @@ async def run_analysis(articles: list) -> dict:
     </tbody>
   </table>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-life example:</strong> If you are simply making 50 HTTP calls, subprocess is usually unnecessary overhead. If you are executing a separate toolchain, untrusted code, or a job you may need to kill hard, subprocess is usually the safer boundary.</div>
+  <div class="alert alert-secondary py-2 px-3 small">If you are simply making 50 HTTP calls, subprocess is usually unnecessary overhead. If you are executing a separate toolchain, untrusted code, or a job you may need to kill hard, subprocess is usually the safer boundary.</div>
 
   <!-- ===================== SECTION 9 ===================== -->
   <h4 class="mt-5">9. Conclusion</h4>
