@@ -54,7 +54,7 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Python Concurrency Part 5 — Memory Agent, Token Optimizer &amp; Analysis Agent</h2>
+    <h2 class="fw-bold mb-3">Python Concurrency Part 5  Memory Agent, Token Optimizer &amp; Analysis Agent</h2>
     <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
   </div>
 
@@ -67,14 +67,14 @@
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
 
   <!-- ===================== SECTION 1 ===================== -->
-  <h4 class="mt-5">1. The Memory Architecture — Two Tiers</h4>
+  <h4 class="mt-5">1. The Memory Architecture  Two Tiers</h4>
 
   <p>
-    The research agent stores conversation history in two places simultaneously. Short-term memory is a <code>ConversationState</code> object held in RAM — lookups are instant and no serialisation is needed. Long-term memory is a SQLite database on disk — it survives process restarts and allows users to reconnect to prior sessions.
+    The research agent stores conversation history in two places simultaneously. Short-term memory is a <code>ConversationState</code> object held in RAM  lookups are instant and no serialisation is needed. Long-term memory is a SQLite database on disk  it survives process restarts and allows users to reconnect to prior sessions.
   </p>
 
   <p>
-    The challenge is synchronisation. Every assistant response must be persisted to SQLite, but SQLite has no async API. Calling <code>conn.execute()</code> directly inside an <code>async def</code> blocks the entire event loop — all other agents freeze while the disk write completes. The solution is to push every SQLite operation into a <code>ThreadPoolExecutor</code> so the event loop can continue while the write happens on a background thread.
+    The challenge is synchronisation. Every assistant response must be persisted to SQLite, but SQLite has no async API. Calling <code>conn.execute()</code> directly inside an <code>async def</code> blocks the entire event loop  all other agents freeze while the disk write completes. The solution is to push every SQLite operation into a <code>ThreadPoolExecutor</code> so the event loop can continue while the write happens on a background thread.
   </p>
 
   <pre><code class="language-python">Short-term (RAM):
@@ -92,10 +92,10 @@ Sync mechanism:
     ↓
     run_in_executor(ThreadPoolExecutor) → _save_state_sync() on a thread
     ↓
-    Returns immediately — event loop is never blocked</code></pre>
+    Returns immediately  event loop is never blocked</code></pre>
 
   <!-- ===================== SECTION 2 ===================== -->
-  <h4 class="mt-5">2. Memory Agent — Full Walkthrough</h4>
+  <h4 class="mt-5">2. Memory Agent  Full Walkthrough</h4>
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/threaded_memory/memory_agent.py" target="_blank" rel="noopener noreferrer">agents/threaded_memory/memory_agent.py</a></p>
 
@@ -115,7 +115,7 @@ _db_executor = ThreadPoolExecutor(
 
   <h5 class="mt-4">Database initialisation</h5>
   <p>
-    <code>_init_db()</code> is a plain synchronous function — it creates the three tables if they don't already exist. The public async wrapper <code>init_db()</code> pushes it into the executor using <code>loop.run_in_executor()</code>, which returns an awaitable Future without blocking anything.
+    <code>_init_db()</code> is a plain synchronous function  it creates the three tables if they don't already exist. The public async wrapper <code>init_db()</code> pushes it into the executor using <code>loop.run_in_executor()</code>, which returns an awaitable Future without blocking anything.
   </p>
 
   <pre><code class="language-python">def _init_db(db_path: str) -> None:
@@ -158,9 +158,9 @@ async def init_db() -> None:
     await loop.run_in_executor(_db_executor, _init_db, config.db_path)
     print(f"  [THREAD] memory_agent → DB initialised at '{config.db_path}'")</code></pre>
 
-  <h5 class="mt-4">Saving state — the sync worker</h5>
+  <h5 class="mt-4">Saving state  the sync worker</h5>
   <p>
-    <code>_save_state_sync()</code> does the actual SQLite work. It upserts the session summary, appends only new messages (avoiding re-inserting rows already persisted), and replaces the articles for the session. This function always runs inside a worker thread — never on the event loop.
+    <code>_save_state_sync()</code> does the actual SQLite work. It upserts the session summary, appends only new messages (avoiding re-inserting rows already persisted), and replaces the articles for the session. This function always runs inside a worker thread  never on the event loop.
   </p>
 
   <pre><code class="language-python">def _save_state_sync(state: ConversationState, db_path: str) -> None:
@@ -204,7 +204,7 @@ async def init_db() -> None:
     finally:
         conn.close()</code></pre>
 
-  <h5 class="mt-4">Saving state — the fire-and-forget async wrapper</h5>
+  <h5 class="mt-4">Saving state  the fire-and-forget async wrapper</h5>
   <p>
     This is where the threading and asyncio patterns combine. <code>save_state()</code> is an <code>async def</code> that the orchestrator calls, but it returns immediately. It wraps the sync work in a coroutine and schedules it as a background task. The caller doesn't wait for the disk write.
   </p>
@@ -214,7 +214,7 @@ async def init_db() -> None:
     Fire-and-forget state sync to SQLite.
 
     Uses asyncio.create_task() so the caller doesn't wait for the write.
-    The write runs in a thread — the event loop stays unblocked.
+    The write runs in a thread  the event loop stays unblocked.
     """
     loop = asyncio.get_event_loop()
 
@@ -227,7 +227,7 @@ async def init_db() -> None:
     asyncio.create_task(_do_save())</code></pre>
 
   <p>
-    The key insight: <code>asyncio.create_task()</code> schedules the coroutine to run on the event loop but does not wait for it. The orchestrator continues immediately to the next step. When the event loop has a spare moment between I/O waits, it picks up <code>_do_save()</code> and runs it — which itself offloads to a thread via <code>run_in_executor()</code>. The entire pipeline is non-blocking end to end.
+    The key insight: <code>asyncio.create_task()</code> schedules the coroutine to run on the event loop but does not wait for it. The orchestrator continues immediately to the next step. When the event loop has a spare moment between I/O waits, it picks up <code>_do_save()</code> and runs it  which itself offloads to a thread via <code>run_in_executor()</code>. The entire pipeline is non-blocking end to end.
   </p>
 
   <h5 class="mt-4">Loading state</h5>
@@ -252,7 +252,7 @@ async def init_db() -> None:
     state.articles = [Article.from_dict(a) for a in data["articles"]]</code></pre>
 
   <!-- ===================== SECTION 3 ===================== -->
-  <h4 class="mt-5">3. Token Optimizer — Rolling LLM Summaries</h4>
+  <h4 class="mt-5">3. Token Optimizer  Rolling LLM Summaries</h4>
 
   <p>
     Every LLM has a context window limit. Without a memory management strategy, a long conversation eventually overflows it. The token optimizer solves this by compressing older messages into a rolling summary using the LLM itself, keeping only the most recent turns verbatim.
@@ -274,7 +274,7 @@ async def init_db() -> None:
     to_compress = state.messages[:-keep]
     to_keep = state.messages[-keep:]
 
-    # Build the LLM prompt — include prior summary if one exists
+    # Build the LLM prompt  include prior summary if one exists
     history_text = "\n".join(
         f"{m.role.upper()}: {m.content}" for m in to_compress
     )
@@ -299,7 +299,7 @@ async def init_db() -> None:
     response = await llm.ainvoke(prompt)
     new_summary = response.content.strip()
 
-    # Update in-memory state — replace old messages with summary
+    # Update in-memory state  replace old messages with summary
     state.summary = new_summary
     state.messages = list(to_keep)
 
@@ -308,7 +308,7 @@ async def init_db() -> None:
     return True</code></pre>
 
   <p>
-    Notice the flow: <code>maybe_summarize()</code> is itself called as a fire-and-forget task from the orchestrator (<code>asyncio.create_task(maybe_summarize(state, self.llm))</code>). This means the LLM summarisation doesn't add latency to the user's response time — it runs while the answer is being displayed or while the user is reading it. The user only experiences compression on their next turn, where the context is already smaller.
+    Notice the flow: <code>maybe_summarize()</code> is itself called as a fire-and-forget task from the orchestrator (<code>asyncio.create_task(maybe_summarize(state, self.llm))</code>). This means the LLM summarisation doesn't add latency to the user's response time  it runs while the answer is being displayed or while the user is reading it. The user only experiences compression on their next turn, where the context is already smaller.
   </p>
 
   <p>
@@ -327,10 +327,10 @@ async def init_db() -> None:
     return "\n\n".join(parts) if parts else "No prior conversation."</code></pre>
 
   <!-- ===================== SECTION 4 ===================== -->
-  <h4 class="mt-5">4. Analysis Agent — Subprocess for Isolation</h4>
+  <h4 class="mt-5">4. Analysis Agent  Subprocess for Isolation</h4>
 
   <p>
-    The analysis agent computes statistics over the fetched articles: source breakdown, average relevance scores, top keywords by frequency, and top articles ranked by relevance. None of this requires a network call or the LLM — it's a self-contained computation. The choice to run it in a subprocess rather than as a regular async function comes down to three guarantees: <strong>isolation</strong>, <strong>timeout</strong>, and <strong>safety</strong>.
+    The analysis agent computes statistics over the fetched articles: source breakdown, average relevance scores, top keywords by frequency, and top articles ranked by relevance. None of this requires a network call or the LLM  it's a self-contained computation. The choice to run it in a subprocess rather than as a regular async function comes down to three guarantees: <strong>isolation</strong>, <strong>timeout</strong>, and <strong>safety</strong>.
   </p>
 
   <p>
@@ -342,7 +342,7 @@ async def init_db() -> None:
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/subprocess_analysis/analysis_script.py" target="_blank" rel="noopener noreferrer">agents/subprocess_analysis/analysis_script.py</a></p>
 
   <p>
-    The script reads a JSON array from <code>stdin</code>, does all computation in pure Python (no dependencies), and prints a JSON object to <code>stdout</code>. That's the entire protocol — simple, robust, and testable in isolation.
+    The script reads a JSON array from <code>stdin</code>, does all computation in pure Python (no dependencies), and prints a JSON object to <code>stdout</code>. That's the entire protocol  simple, robust, and testable in isolation.
   </p>
 
   <pre><code class="language-python">"""
@@ -414,13 +414,13 @@ if __name__ == "__main__":
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/agents/subprocess_analysis/analysis_agent.py" target="_blank" rel="noopener noreferrer">agents/subprocess_analysis/analysis_agent.py</a></p>
 
   <p>
-    The parent uses <code>asyncio.create_subprocess_exec()</code> — the async-friendly way to spawn processes. Unlike <code>subprocess.Popen()</code>, <code>proc.communicate()</code> is a coroutine that can be awaited without blocking the event loop. The <code>asyncio.wait_for()</code> wrapper enforces a hard deadline — if the script takes longer than <code>config.subprocess_timeout_seconds</code>, the process is killed and a fallback <code>AnalysisReport</code> is returned.
+    The parent uses <code>asyncio.create_subprocess_exec()</code>  the async-friendly way to spawn processes. Unlike <code>subprocess.Popen()</code>, <code>proc.communicate()</code> is a coroutine that can be awaited without blocking the event loop. The <code>asyncio.wait_for()</code> wrapper enforces a hard deadline  if the script takes longer than <code>config.subprocess_timeout_seconds</code>, the process is killed and a fallback <code>AnalysisReport</code> is returned.
   </p>
 
   <pre><code class="language-python">async def run_analysis(articles: list[Article]) -> AnalysisReport:
     payload = json.dumps([a.to_dict() for a in articles]).encode()
 
-    # Spawn the subprocess — non-blocking
+    # Spawn the subprocess  non-blocking
     proc = await asyncio.create_subprocess_exec(
         sys.executable,           # same Python interpreter as the parent
         str(_SCRIPT_PATH),
@@ -430,7 +430,7 @@ if __name__ == "__main__":
     )
 
     try:
-        # Send JSON via stdin, receive JSON via stdout — awaitable
+        # Send JSON via stdin, receive JSON via stdout  awaitable
         stdout, stderr = await asyncio.wait_for(
             proc.communicate(input=payload),
             timeout=config.subprocess_timeout_seconds,   # hard deadline (e.g. 15s)
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     except asyncio.TimeoutError:
         proc.kill()
         await proc.wait()
-        print(f"  [SUBPROC] TIMEOUT — process killed")
+        print(f"  [SUBPROC] TIMEOUT  process killed")
         return AnalysisReport(article_count=len(articles), ...)
 
     if proc.returncode != 0:
@@ -471,7 +471,7 @@ if __name__ == "__main__":
 │                     │                   │ threads are sufficient    │
 ├─────────────────────┼────────────────────┼──────────────────────────┤
 │ token_optimizer     │ asyncio task       │ LLM call is already async;│
-│ (LLM summarization) │ (fire-and-forget)  │ no blocking — pure await │
+│ (LLM summarization) │ (fire-and-forget)  │ no blocking  pure await │
 ├─────────────────────┼────────────────────┼──────────────────────────┤
 │ analysis_agent      │ subprocess         │ Crash isolation needed;  │
 │ (stats computation) │                   │ hard timeout enforced;    │
@@ -512,7 +512,7 @@ if __name__ == "__main__":
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

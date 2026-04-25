@@ -54,41 +54,41 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Python Concurrency Part 6 — Embeddings, Orchestrator &amp; End-to-End Walkthrough</h2>
+    <h2 class="fw-bold mb-3">Python Concurrency Part 6  Embeddings, Orchestrator &amp; End-to-End Walkthrough</h2>
     <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
   </div>
 
   <hr />
 
   <p>
-    We've built the fetch agent (asyncio), the memory agent (threading), and the analysis agent (subprocess). In this final part we add the fourth concurrency primitive — <strong>ProcessPoolExecutor</strong> for CPU-bound embedding generation — and then wire everything together in the <strong>LangChain + Ollama orchestrator</strong>. We close with a complete end-to-end walkthrough of a single user turn.
+    We've built the fetch agent (asyncio), the memory agent (threading), and the analysis agent (subprocess). In this final part we add the fourth concurrency primitive  <strong>ProcessPoolExecutor</strong> for CPU-bound embedding generation  and then wire everything together in the <strong>LangChain + Ollama orchestrator</strong>. We close with a complete end-to-end walkthrough of a single user turn.
   </p>
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Full project code: <a href="https://github.com/Pulkit12dhingra/research-agent" target="_blank" rel="noopener noreferrer">research-agent</a></p>
 
   <!-- ===================== SECTION 1 ===================== -->
-  <h4 class="mt-5">1. Embedding Agent — ProcessPoolExecutor for CPU-Bound Work</h4>
+  <h4 class="mt-5">1. Embedding Agent  ProcessPoolExecutor for CPU-Bound Work</h4>
 
   <p>
-    Embedding generation — converting text into dense numeric vectors — is CPU-bound. It involves matrix multiplications that peg the CPU at 100%. Python's GIL (Global Interpreter Lock) means that even if you put this work in a thread, only one thread executes Python bytecode at a time. For CPU-bound work, threads give you concurrency but not true parallelism — they still take turns on a single core.
+    Embedding generation  converting text into dense numeric vectors  is CPU-bound. It involves matrix multiplications that peg the CPU at 100%. Python's GIL (Global Interpreter Lock) means that even if you put this work in a thread, only one thread executes Python bytecode at a time. For CPU-bound work, threads give you concurrency but not true parallelism  they still take turns on a single core.
   </p>
 
   <p>
-    <code>ProcessPoolExecutor</code> spawns separate Python interpreter processes, each with their own GIL. Numpy operations in a worker process run truly in parallel with the event loop in the main process — the main process can continue awaiting network responses while the worker is crunching numbers on a different core.
+    <code>ProcessPoolExecutor</code> spawns separate Python interpreter processes, each with their own GIL. Numpy operations in a worker process run truly in parallel with the event loop in the main process  the main process can continue awaiting network responses while the worker is crunching numbers on a different core.
   </p>
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/utils/embeddings.py" target="_blank" rel="noopener noreferrer">utils/embeddings.py</a></p>
 
-  <h5 class="mt-4">The worker function — runs in a separate process</h5>
+  <h5 class="mt-4">The worker function  runs in a separate process</h5>
 
   <p>
-    The worker function must be at module level (not a lambda or closure). This is a hard requirement of the "spawn" start method used on macOS — the function must be picklable so it can be sent to the worker process. Lambdas and nested functions are not picklable.
+    The worker function must be at module level (not a lambda or closure). This is a hard requirement of the "spawn" start method used on macOS  the function must be picklable so it can be sent to the worker process. Lambdas and nested functions are not picklable.
   </p>
 
   <pre><code class="language-python">import numpy as np
 from core.config import config
 
-# Must be a top-level function — required for pickle serialisation
+# Must be a top-level function  required for pickle serialisation
 def _compute_embeddings(texts: list[str]) -> list[list[float]]:
     """
     CPU-bound embedding computation. Runs inside a worker process.
@@ -115,7 +115,7 @@ def _compute_embeddings(texts: list[str]) -> list[list[float]]:
 
     return embeddings</code></pre>
 
-  <h5 class="mt-4">The async interface — bridging process pool into the event loop</h5>
+  <h5 class="mt-4">The async interface  bridging process pool into the event loop</h5>
 
   <pre><code class="language-python">from concurrent.futures import ProcessPoolExecutor
 
@@ -134,7 +134,7 @@ async def generate_embeddings(texts: list[str]) -> list[list[float]]:
     return embeddings</code></pre>
 
   <p>
-    <code>loop.run_in_executor(pool, fn, args)</code> submits the function to the process pool and returns a Future. The event loop can await this Future without blocking — other coroutines continue to run. When the worker process completes the computation, the Future resolves and execution returns to <code>generate_embeddings()</code>.
+    <code>loop.run_in_executor(pool, fn, args)</code> submits the function to the process pool and returns a Future. The event loop can await this Future without blocking  other coroutines continue to run. When the worker process completes the computation, the Future resolves and execution returns to <code>generate_embeddings()</code>.
   </p>
 
   <h5 class="mt-4">Similarity search</h5>
@@ -164,10 +164,10 @@ def find_most_relevant(
     return [i for i, _ in scores[:top_k]]</code></pre>
 
   <!-- ===================== SECTION 2 ===================== -->
-  <h4 class="mt-5">2. Orchestrator — Coordinating Everything with LangChain</h4>
+  <h4 class="mt-5">2. Orchestrator  Coordinating Everything with LangChain</h4>
 
   <p>
-    The orchestrator is the brain of the system. It owns two LangChain chains built with <a href="./Langchains_with_Ollama.html">ChatOllama</a> and uses <code>asyncio.gather()</code> to run all agents in parallel. It is <em>stateless</em> — all session data lives in <code>ConversationState</code> objects passed in by the caller, so one <code>ResearchPipeline</code> instance can serve multiple concurrent sessions.
+    The orchestrator is the brain of the system. It owns two LangChain chains built with <a href="./Langchains_with_Ollama.html">ChatOllama</a> and uses <code>asyncio.gather()</code> to run all agents in parallel. It is <em>stateless</em>  all session data lives in <code>ConversationState</code> objects passed in by the caller, so one <code>ResearchPipeline</code> instance can serve multiple concurrent sessions.
   </p>
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/orchestrator/pipeline.py" target="_blank" rel="noopener noreferrer">orchestrator/pipeline.py</a></p>
@@ -190,7 +190,7 @@ class ResearchPipeline:
         self._topic_prompt = ChatPromptTemplate.from_messages([
             ("system",
              "Extract 1-3 concise search keywords from the user's question. "
-             "Return ONLY a comma-separated list — no explanation, no numbering. "
+             "Return ONLY a comma-separated list  no explanation, no numbering. "
              "Example: 'transformer architecture, attention mechanism'"),
             ("human", "{question}"),
         ])
@@ -213,7 +213,7 @@ class ResearchPipeline:
             self._synthesis_prompt | self.llm | StrOutputParser()
         )</code></pre>
 
-  <h5 class="mt-4">The pipeline run() method — step by step</h5>
+  <h5 class="mt-4">The pipeline run() method  step by step</h5>
 
   <pre><code class="language-python">async def run(self, question: str, state: ConversationState) -> str:
     # 1. Record user message
@@ -226,16 +226,16 @@ class ResearchPipeline:
 
     # 3. Parallel: fetch + memory restore (fetch and analysis/embed need articles first)
     (articles, _, _, _) = await asyncio.gather(
-        run_fetch_agents(primary_topic),   # asyncio — Wikipedia + HackerNews
+        run_fetch_agents(primary_topic),   # asyncio  Wikipedia + HackerNews
         _noop_analysis(),                  # placeholder
         _noop_embeddings(),                # placeholder
-        load_state(state.session_id, state),  # threading — SQLite read
+        load_state(state.session_id, state),  # threading  SQLite read
     )
 
     # 4. Parallel: analysis + embedding on the freshly fetched articles
     analysis, embeddings = await asyncio.gather(
-        run_analysis(articles),            # subprocess — isolated stats
-        generate_embeddings(              # ProcessPoolExecutor — CPU-bound
+        run_analysis(articles),            # subprocess  isolated stats
+        generate_embeddings(              # ProcessPoolExecutor  CPU-bound
             [f"{a.title} {a.content}" for a in articles]
         ),
     )
@@ -265,12 +265,12 @@ class ResearchPipeline:
   </p>
 
   <!-- ===================== SECTION 3 ===================== -->
-  <h4 class="mt-5">3. main.py — CLI Entry Point</h4>
+  <h4 class="mt-5">3. main.py  CLI Entry Point</h4>
 
   <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i><a href="https://github.com/Pulkit12dhingra/research-agent/blob/main/main.py" target="_blank" rel="noopener noreferrer">main.py</a></p>
 
   <p>
-    The entry point has two modes: interactive (multi-turn chat) and demo (three preset questions that also trigger token optimization). One important setup line comes first: <code>multiprocessing.set_start_method("fork")</code>. On macOS, the default start method is "spawn" which requires all worker functions to be picklable — using "fork" is faster and avoids the need to re-import modules in each worker.
+    The entry point has two modes: interactive (multi-turn chat) and demo (three preset questions that also trigger token optimization). One important setup line comes first: <code>multiprocessing.set_start_method("fork")</code>. On macOS, the default start method is "spawn" which requires all worker functions to be picklable  using "fork" is faster and avoids the need to re-import modules in each worker.
   </p>
 
   <pre><code class="language-python">import asyncio, argparse, multiprocessing, sys
@@ -347,7 +347,7 @@ if __name__ == "__main__":
 [Step 1] LLM extracts topics (sequential)
   → "transformer architecture, attention mechanism"
 
-[Step 2] First gather — fetch + memory restore in parallel
+[Step 2] First gather  fetch + memory restore in parallel
   ├── [ASYNC]  fetch_agent → Wikipedia: "Transformer (deep learning)"
   ├── [ASYNC]  fetch_agent → Wikipedia search: 3 related articles
   ├── [ASYNC]  fetch_agent → HackerNews: top posts matching topic
@@ -355,7 +355,7 @@ if __name__ == "__main__":
 
   All four finish in ~1.5s (vs ~4.5s sequential)
 
-[Step 2b] Second gather — analysis + embedding in parallel
+[Step 2b] Second gather  analysis + embedding in parallel
   ├── [SUBPROC] analysis_script.py → receives 8 articles via stdin JSON
   │             → computes avg relevance, keyword freq, top articles
   │             → returns JSON via stdout
@@ -374,14 +374,14 @@ if __name__ == "__main__":
 [Step 5] Background tasks (fire-and-forget)
   asyncio.create_task(maybe_summarize(state, llm))   ← async
   asyncio.create_task(save_state(state))             ← threading
-  ↑ Both scheduled but NOT awaited — user sees answer immediately
+  ↑ Both scheduled but NOT awaited  user sees answer immediately
 
 ═══════════════════════════════════════════════
   Total wall time: ~3-5s  (sequential ≈ 10-15s)
 ═══════════════════════════════════════════════</code></pre>
 
   <p>
-    The speedup comes entirely from the parallel phases. Network I/O (Wikipedia + HackerNews) normally dominates latency. By running all three fetch coroutines simultaneously plus memory restore, what would take 3-4 seconds sequentially takes about 1.5 seconds — the wall time of the slowest single fetch, not the sum.
+    The speedup comes entirely from the parallel phases. Network I/O (Wikipedia + HackerNews) normally dominates latency. By running all three fetch coroutines simultaneously plus memory restore, what would take 3-4 seconds sequentially takes about 1.5 seconds  the wall time of the slowest single fetch, not the sum.
   </p>
 
   <!-- ===================== SECTION 5 ===================== -->
@@ -438,7 +438,7 @@ python main.py --demo</code></pre>
 └─────────────────────────────┴──────────────────────────┴──────────────────────────────────────────┘</code></pre>
 
   <p>
-    The core principle: <strong>match the primitive to the workload</strong>. asyncio for anything that waits on I/O. Threads for synchronous blocking libraries that do I/O. Subprocess when you need crash isolation or hard timeouts. Process pools when you need true CPU parallelism. Mixing all four in the same pipeline — each in the right place — is what makes the research agent fast and resilient.
+    The core principle: <strong>match the primitive to the workload</strong>. asyncio for anything that waits on I/O. Threads for synchronous blocking libraries that do I/O. Subprocess when you need crash isolation or hard timeouts. Process pools when you need true CPU parallelism. Mixing all four in the same pipeline  each in the right place  is what makes the research agent fast and resilient.
   </p>
 
   <!-- ===================== SECTION 7 ===================== -->
@@ -449,12 +449,12 @@ python main.py --demo</code></pre>
   </p>
 
   <ul>
-    <li><a href="./Python_Asyncio.html">Part 1 — asyncio</a>: coroutines, tasks, gather, TaskGroup, Futures, Lock, Semaphore, Event, Condition</li>
-    <li><a href="./Python_Subprocess.html">Part 2 — subprocess</a>: subprocess.run(), Popen(), asyncio.create_subprocess_exec(), JSON pipe protocol, timeouts</li>
-    <li><a href="./Python_Threading.html">Part 3 — threading</a>: GIL, Thread, ThreadPoolExecutor, run_in_executor, Lock, RLock, ThreadLocal</li>
-    <li><a href="./Python_Concurrency_Project_Part1.html">Part 4 — Architecture &amp; Fetch Agent</a>: project structure, config/models/state, asyncio fetch agent</li>
-    <li><a href="./Python_Concurrency_Project_Part2.html">Part 5 — Memory, Token Optimizer &amp; Analysis</a>: threading memory agent, rolling LLM summaries, subprocess analysis</li>
-    <li><strong>Part 6 (this post)</strong> — ProcessPoolExecutor embeddings, LangChain orchestrator, end-to-end walkthrough</li>
+    <li><a href="./Python_Asyncio.html">Part 1  asyncio</a>: coroutines, tasks, gather, TaskGroup, Futures, Lock, Semaphore, Event, Condition</li>
+    <li><a href="./Python_Subprocess.html">Part 2  subprocess</a>: subprocess.run(), Popen(), asyncio.create_subprocess_exec(), JSON pipe protocol, timeouts</li>
+    <li><a href="./Python_Threading.html">Part 3  threading</a>: GIL, Thread, ThreadPoolExecutor, run_in_executor, Lock, RLock, ThreadLocal</li>
+    <li><a href="./Python_Concurrency_Project_Part1.html">Part 4  Architecture &amp; Fetch Agent</a>: project structure, config/models/state, asyncio fetch agent</li>
+    <li><a href="./Python_Concurrency_Project_Part2.html">Part 5  Memory, Token Optimizer &amp; Analysis</a>: threading memory agent, rolling LLM summaries, subprocess analysis</li>
+    <li><strong>Part 6 (this post)</strong>  ProcessPoolExecutor embeddings, LangChain orchestrator, end-to-end walkthrough</li>
   </ul>
 
   <p>
@@ -478,7 +478,7 @@ python main.py --demo</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

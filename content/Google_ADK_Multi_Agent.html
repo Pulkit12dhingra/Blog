@@ -84,14 +84,14 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Google ADK Part 2 — Multi-Agent Systems with Sub-Agents</h2>
+    <h2 class="fw-bold mb-3">Google ADK Part 2  Multi-Agent Systems with Sub-Agents</h2>
     <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
   </div>
 
   <hr />
 
   <p>
-    In <a href="./Google_ADK.html">Part 1</a> we built a single agent with a custom tool and ran it via <code>adk run</code> and <code>adk web</code>. That works great for focused tasks — but real-world assistants need to handle many kinds of requests. Instead of cramming every capability into one agent, ADK lets you split responsibilities across <strong>specialised sub-agents</strong> and wire them together under a single <strong>orchestrator agent</strong>.
+    In <a href="./Google_ADK.html">Part 1</a> we built a single agent with a custom tool and ran it via <code>adk run</code> and <code>adk web</code>. That works great for focused tasks  but real-world assistants need to handle many kinds of requests. Instead of cramming every capability into one agent, ADK lets you split responsibilities across <strong>specialised sub-agents</strong> and wire them together under a single <strong>orchestrator agent</strong>.
   </p>
 
   <p>
@@ -102,7 +102,7 @@
     <li>What sub-agents are and why they matter</li>
     <li>Building two specialised sub-agents, each with their own tool</li>
     <li>Building an orchestrator that has its own tool <em>and</em> delegates to sub-agents</li>
-    <li>How ADK routes requests automatically — no manual if/else logic</li>
+    <li>How ADK routes requests automatically  no manual if/else logic</li>
     <li>Running and inspecting the system with <code>adk web</code></li>
   </ul>
 
@@ -110,7 +110,7 @@
   <h4 class="mt-5">1. The Multi-Agent Idea</h4>
 
   <p>
-    In ADK the same <code>Agent</code> class you used in Part 1 can act as an orchestrator. You simply pass a list of other <code>Agent</code> instances to its <code>sub_agents</code> parameter. When a message arrives the orchestrator — powered by Gemini — reads each sub-agent's <strong>description</strong> and decides whether to answer itself or hand the request off to a specialist.
+    In ADK the same <code>Agent</code> class you used in Part 1 can act as an orchestrator. You simply pass a list of other <code>Agent</code> instances to its <code>sub_agents</code> parameter. When a message arrives the orchestrator  powered by Gemini  reads each sub-agent's <strong>description</strong> and decides whether to answer itself or hand the request off to a specialist.
   </p>
 
   <p>
@@ -153,7 +153,7 @@
   <h5 class="mt-4">Sub-Agent 1: Weather Agent</h5>
 
   <p>
-    This agent is responsible for one thing only — answering weather questions. It has a <code>get_weather</code> tool and an instruction that keeps it focused on that domain.
+    This agent is responsible for one thing only  answering weather questions. It has a <code>get_weather</code> tool and an instruction that keeps it focused on that domain.
   </p>
 
   <pre><code class="language-python">from google.adk.agents import Agent
@@ -197,7 +197,7 @@ weather_agent = Agent(
 )</code></pre>
 
   <p>
-    The <code>description</code> is what the orchestrator reads to decide whether to delegate here. Keep it precise — it directly affects routing accuracy.
+    The <code>description</code> is what the orchestrator reads to decide whether to delegate here. Keep it precise  it directly affects routing accuracy.
   </p>
 
   <h5 class="mt-4">Sub-Agent 2: Calculator Agent</h5>
@@ -256,7 +256,7 @@ calculator_agent = Agent(
   </ul>
 
   <p>
-    The orchestrator also has its own direct tool — <code>get_current_time</code> — that it handles personally without delegating anywhere.
+    The orchestrator also has its own direct tool  <code>get_current_time</code>  that it handles personally without delegating anywhere.
   </p>
 
   <pre><code class="language-python">from datetime import datetime, timezone
@@ -413,7 +413,7 @@ root_agent = Agent(
   <h4 class="mt-5">5. How Delegation Works</h4>
 
   <p>
-    There is no routing code — ADK handles it through the model. Here is what happens under the hood when a message arrives at <code>root_agent</code>:
+    There is no routing code  ADK handles it through the model. Here is what happens under the hood when a message arrives at <code>root_agent</code>:
   </p>
 
   <ol>
@@ -425,15 +425,15 @@ root_agent = Agent(
   </ol>
 
   <p>
-    This means the <strong>description field is critical</strong>. If two sub-agents have vague or overlapping descriptions, Gemini may route incorrectly. Be specific about what each agent handles — treat the description like a job posting.
+    This means the <strong>description field is critical</strong>. If two sub-agents have vague or overlapping descriptions, Gemini may route incorrectly. Be specific about what each agent handles  treat the description like a job posting.
   </p>
 
   <p>A practical tip: start the description with the trigger condition:</p>
 
-  <pre><code class="language-python"># Too vague — Gemini may not delegate reliably
+  <pre><code class="language-python"># Too vague  Gemini may not delegate reliably
 description="A helpful agent."
 
-# Good — clear trigger condition
+# Good  clear trigger condition
 description=(
     "Handles all weather-related questions. "
     "Use this agent when the user asks about temperature, forecast, or conditions in any city."
@@ -442,7 +442,7 @@ description=(
   <!-- ===================== SECTION 6 ===================== -->
   <h4 class="mt-5">6. Running the Multi-Agent System</h4>
 
-  <p>The commands are identical to Part 1 — ADK doesn't care how many agents are in the folder:</p>
+  <p>The commands are identical to Part 1  ADK doesn't care how many agents are in the folder:</p>
 
   <pre><code class="language-python"># Terminal chat
 adk run travel_assistant
@@ -466,7 +466,7 @@ User: What is (450 / 9) * 7?
 Agent: (450 / 9) * 7 = 350.0</code></pre>
 
   <p>
-    Each of those three messages was handled differently: the time question was answered by the orchestrator's own tool, the weather question was delegated to <code>weather_agent</code>, and the maths question went to <code>calculator_agent</code> — all transparently from the user's perspective.
+    Each of those three messages was handled differently: the time question was answered by the orchestrator's own tool, the weather question was delegated to <code>weather_agent</code>, and the maths question went to <code>calculator_agent</code>  all transparently from the user's perspective.
   </p>
 
   <h5 class="mt-4">Inspecting delegation in adk web</h5>
@@ -478,7 +478,7 @@ Agent: (450 / 9) * 7 = 350.0</code></pre>
   <ul>
     <li>Which agent handled each turn (orchestrator or a sub-agent)</li>
     <li>The tool call made, the arguments passed, and the value returned</li>
-    <li>The full delegation chain — useful when debugging unexpected routing</li>
+    <li>The full delegation chain  useful when debugging unexpected routing</li>
   </ul>
 
   <p>
@@ -495,12 +495,12 @@ Agent: (450 / 9) * 7 = 350.0</code></pre>
 
   <h5 class="mt-4">Sub-agents inherit session context</h5>
   <p>
-    When the orchestrator delegates to a sub-agent, the full conversation history travels with it. The sub-agent sees what the user said and what the orchestrator replied — it's not starting from scratch. This means sub-agents can refer to earlier context without needing to re-ask the user.
+    When the orchestrator delegates to a sub-agent, the full conversation history travels with it. The sub-agent sees what the user said and what the orchestrator replied  it's not starting from scratch. This means sub-agents can refer to earlier context without needing to re-ask the user.
   </p>
 
   <h5 class="mt-4">Orchestrator instruction vs sub-agent instruction</h5>
   <p>
-    These serve different purposes. The orchestrator's <code>instruction</code> tells it how to <em>route and coordinate</em>. Each sub-agent's <code>instruction</code> tells it how to <em>handle and respond</em>. Keep them focused on their respective roles — avoid repeating the same guidance in both.
+    These serve different purposes. The orchestrator's <code>instruction</code> tells it how to <em>route and coordinate</em>. Each sub-agent's <code>instruction</code> tells it how to <em>handle and respond</em>. Keep them focused on their respective roles  avoid repeating the same guidance in both.
   </p>
 
   <h5 class="mt-4">Number of sub-agents</h5>
@@ -512,22 +512,22 @@ Agent: (450 / 9) * 7 = 350.0</code></pre>
   <h4 class="mt-5">8. Conclusion</h4>
 
   <p>
-    The multi-agent pattern in ADK is deliberately simple: every agent is the same <code>Agent</code> class, sub-agents are just entries in a list, and the routing logic lives entirely in natural-language descriptions rather than code. That makes the system easy to extend — adding a new capability is as simple as writing a new sub-agent and appending it to <code>sub_agents</code>.
+    The multi-agent pattern in ADK is deliberately simple: every agent is the same <code>Agent</code> class, sub-agents are just entries in a list, and the routing logic lives entirely in natural-language descriptions rather than code. That makes the system easy to extend  adding a new capability is as simple as writing a new sub-agent and appending it to <code>sub_agents</code>.
   </p>
 
   <ul>
-    <li><strong>Sub-agents are regular agents</strong> — same class, just nested inside an orchestrator.</li>
-    <li><strong>Routing is description-driven</strong> — Gemini reads <code>description</code> to decide where to delegate.</li>
-    <li><strong>Orchestrators can have their own tools</strong> — they don't have to delegate everything.</li>
-    <li><strong><code>adk web</code> shows the full delegation chain</strong> — your best debugging tool.</li>
+    <li><strong>Sub-agents are regular agents</strong>  same class, just nested inside an orchestrator.</li>
+    <li><strong>Routing is description-driven</strong>  Gemini reads <code>description</code> to decide where to delegate.</li>
+    <li><strong>Orchestrators can have their own tools</strong>  they don't have to delegate everything.</li>
+    <li><strong><code>adk web</code> shows the full delegation chain</strong>  your best debugging tool.</li>
   </ul>
 
   <p>
-    The next step beyond this is <strong>workflow agents</strong> — <code>SequentialAgent</code> and <code>ParallelAgent</code> — which give you explicit control over execution order when tasks need to run in sequence or in parallel. That's a topic for the next post.
+    The next step beyond this is <strong>workflow agents</strong>  <code>SequentialAgent</code> and <code>ParallelAgent</code>  which give you explicit control over execution order when tasks need to run in sequence or in parallel. That's a topic for the next post.
   </p>
 
   <p class="fw-bold">
-    One agent per responsibility, one clear description per agent — that's the key to a multi-agent system that actually works.
+    One agent per responsibility, one clear description per agent  that's the key to a multi-agent system that actually works.
   </p>
 
 </div>
@@ -540,7 +540,7 @@ Agent: (450 / 9) * 7 = 350.0</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

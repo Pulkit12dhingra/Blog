@@ -134,18 +134,18 @@
 soup = BeautifulSoup(html_content, 'html.parser')
 title = soup.find('title').get_text()</code></pre>
 
-    <h4 class="mt-4"><code>__init__()</code> — Initializing the Scraper</h4>
+    <h4 class="mt-4"><code>__init__()</code>  Initializing the Scraper</h4>
     <p>
       The constructor sets up the scraper with the target URL. It runs once when you create your scraper object.
     </p>
     <pre><code class="language-python">def __init__(self, url):
     self.url = url</code></pre>
     <ul>
-      <li><strong>Parameter:</strong> <code>url</code> (string) — the full web address of the Wikipedia page you want to scrape.</li>
+      <li><strong>Parameter:</strong> <code>url</code> (string)  the full web address of the Wikipedia page you want to scrape.</li>
       <li><strong>Action:</strong> stores it in <code>self.url</code> for later use by other methods.</li>
     </ul>
 
-    <h4 class="mt-4"><code>scrape()</code> — Fetching & Parsing Content</h4>
+    <h4 class="mt-4"><code>scrape()</code>  Fetching & Parsing Content</h4>
     <p>
       This method does the heavy lifting: it downloads the page, parses the HTML, extracts and cleans text.
     </p>
@@ -178,7 +178,7 @@ title = soup.find('title').get_text()</code></pre>
       <li><strong>Output:</strong> joins cleaned paragraphs with double newlines for readability.</li>
     </ul>
 
-    <h4 class="mt-4"><code>save()</code> — Writing to File</h4>
+    <h4 class="mt-4"><code>save()</code>  Writing to File</h4>
     <p>
       After scraping, <code>save()</code> persists the text to disk so you can process or analyze it offline.
     </p>
@@ -189,8 +189,8 @@ title = soup.find('title').get_text()</code></pre>
     <ul>
       <li><strong>Parameters:</strong></li>
       <ul>
-        <li><code>text</code> — the string returned by <code>scrape()</code>.</li>
-        <li><code>filename</code> — optional, default <code>"hindi_text.txt"</code>.</li>
+        <li><code>text</code>  the string returned by <code>scrape()</code>.</li>
+        <li><code>filename</code>  optional, default <code>"hindi_text.txt"</code>.</li>
       </ul>
       <li><strong>Action:</strong> opens (or creates) the file in write mode with UTF-8 encoding, writes the content, and closes it.</li>
       <li><strong>Feedback:</strong> prints a green checkmark and file path for confirmation.</li>
@@ -308,7 +308,7 @@ scraper.save(text)</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

@@ -132,7 +132,7 @@ def test_add():
     Instead of writing multiple similar tests, parametrize allows you to run the same test with different inputs. This decorator is one of pytest's most powerful features, enabling you to test multiple scenarios without code duplication. Each parameter set creates a separate test case, providing clear visibility into which inputs pass or fail.
   </p>
   <p>
-    The parametrize decorator significantly reduces code maintenance burden—when you need to update test logic, you only modify one function instead of many. It also makes it trivial to add new test cases by simply appending values to the parameter list. This approach follows the DRY (Don't Repeat Yourself) principle and makes your test suite more scalable and maintainable.
+    The parametrize decorator significantly reduces code maintenance burdenwhen you need to update test logic, you only modify one function instead of many. It also makes it trivial to add new test cases by simply appending values to the parameter list. This approach follows the DRY (Don't Repeat Yourself) principle and makes your test suite more scalable and maintainable.
   </p>
 
   <pre><code class="language-python">import pytest
@@ -176,7 +176,7 @@ def test_new_syntax():
 
   <h5 class="mt-4">3. @pytest.mark.xfail - Expected Failures</h5>
   <p>
-    Mark tests that are expected to fail—this is incredibly useful for documenting known bugs or platform-specific issues. Unlike skipped tests, xfail tests still run but don't cause the test suite to fail. This decorator helps you maintain comprehensive test coverage even when you know certain functionality is broken or not yet implemented.
+    Mark tests that are expected to failthis is incredibly useful for documenting known bugs or platform-specific issues. Unlike skipped tests, xfail tests still run but don't cause the test suite to fail. This decorator helps you maintain comprehensive test coverage even when you know certain functionality is broken or not yet implemented.
   </p>
   <p>
     The xfail decorator is particularly valuable in team environments where you want to document known issues without blocking CI/CD pipelines. If an xfail test unexpectedly passes, pytest will flag it as "XPASS" (unexpectedly passing), alerting you that the underlying issue may have been resolved. This creates a feedback loop that helps track bug fixes and ensures tests are updated when issues are resolved. You can also use the <code>strict</code> parameter to make unexpected passes fail the test suite.
@@ -195,7 +195,7 @@ def test_unix_specific():
     Fixtures provide a way to set up test dependencies and are more powerful and flexible than traditional setup/teardown methods. They represent one of pytest's most distinctive features, offering a modular and composable approach to test preparation. Fixtures can handle complex initialization logic, manage resources, and provide clean separation between test setup and test logic.
   </p>
   <p>
-    Unlike traditional setUp and tearDown methods in unittest, pytest fixtures are explicit dependencies—you declare exactly what each test needs by listing fixtures as function parameters. This makes tests more readable and self-documenting. The yield statement elegantly separates setup from teardown code, ensuring cleanup happens even if the test fails. Fixtures can also depend on other fixtures, creating a dependency injection system that promotes code reuse and keeps your test code DRY.
+    Unlike traditional setUp and tearDown methods in unittest, pytest fixtures are explicit dependenciesyou declare exactly what each test needs by listing fixtures as function parameters. This makes tests more readable and self-documenting. The yield statement elegantly separates setup from teardown code, ensuring cleanup happens even if the test fails. Fixtures can also depend on other fixtures, creating a dependency injection system that promotes code reuse and keeps your test code DRY.
   </p>
 
   <pre><code class="language-python">import pytest
@@ -224,7 +224,7 @@ def test_file_reading(temp_file):
     Control how often fixtures are created and destroyed with scope parameters. This is crucial for optimizing test performance when dealing with expensive setup operations like database connections, API clients, or file system operations. The scope determines the lifecycle and sharing behavior of fixture instances.
   </p>
   <p>
-    Function scope (default) creates a fresh fixture for every test function, ensuring complete isolation but potentially increasing execution time. Class scope shares the fixture across all methods in a test class, which is useful for grouping related tests. Module scope creates one instance per Python file, while session scope creates a single instance for the entire test run—ideal for extremely expensive resources like database schemas or Docker containers. Choose the appropriate scope by balancing test isolation against performance considerations.
+    Function scope (default) creates a fresh fixture for every test function, ensuring complete isolation but potentially increasing execution time. Class scope shares the fixture across all methods in a test class, which is useful for grouping related tests. Module scope creates one instance per Python file, while session scope creates a single instance for the entire test runideal for extremely expensive resources like database schemas or Docker containers. Choose the appropriate scope by balancing test isolation against performance considerations.
   </p>
 
   <pre><code class="language-python">@pytest.fixture(scope="function")  # Default: new for each test
@@ -248,7 +248,7 @@ def session_fixture():
     Automatically apply fixtures to tests without explicitly requesting them in function signatures. This powerful feature is useful for setup that should happen for all tests, such as configuring logging, setting environment variables, or initializing global state. The autouse parameter makes the fixture invisible to test function signatures while still executing automatically.
   </p>
   <p>
-    Use autouse fixtures sparingly—they can make tests harder to understand since the dependency isn't explicit in the test function signature. However, they're excellent for cross-cutting concerns like timing all tests, capturing logs, or ensuring cleanup of global state. Combine autouse with appropriate scopes to control exactly when and how often the automatic setup occurs. This is particularly useful in conftest.py files where you want to apply consistent behavior across many test files.
+    Use autouse fixtures sparinglythey can make tests harder to understand since the dependency isn't explicit in the test function signature. However, they're excellent for cross-cutting concerns like timing all tests, capturing logs, or ensuring cleanup of global state. Combine autouse with appropriate scopes to control exactly when and how often the automatic setup occurs. This is particularly useful in conftest.py files where you want to apply consistent behavior across many test files.
   </p>
 
   <pre><code class="language-python">@pytest.fixture(autouse=True)
@@ -289,7 +289,7 @@ class TestDatabase:
     Prevent tests from hanging indefinitely by setting maximum execution times. This decorator requires the pytest-timeout plugin and is essential for maintaining a healthy CI/CD pipeline. Hanging tests can block deployments and waste compute resources, making timeout protection a critical safeguard for production test suites.
   </p>
   <p>
-    Timeout decorators are particularly valuable when testing network operations, external API calls, or any code that might deadlock. By setting reasonable timeout values, you ensure that problematic tests fail fast rather than hanging forever. You can apply timeouts globally via pytest configuration or selectively on individual tests. Consider setting slightly generous timeouts to account for CI environment variability—a test that runs in 1 second locally might take 3-4 seconds on a busy CI server.
+    Timeout decorators are particularly valuable when testing network operations, external API calls, or any code that might deadlock. By setting reasonable timeout values, you ensure that problematic tests fail fast rather than hanging forever. You can apply timeouts globally via pytest configuration or selectively on individual tests. Consider setting slightly generous timeouts to account for CI environment variabilitya test that runs in 1 second locally might take 3-4 seconds on a busy CI server.
   </p>
 
   <pre><code class="language-python">pip install pytest-timeout
@@ -343,7 +343,7 @@ pytest -m "integration or smoke"</code></pre>
     Control test execution order and create dependencies between tests. This decorator requires the pytest-dependency plugin and should be used sparingly, as it goes against pytest's principle of test isolation. However, it's useful for integration tests where setup operations are expensive and tests naturally build upon each other.
   </p>
   <p>
-    Test dependencies are most appropriate for end-to-end testing scenarios where creating test data is costly or time-consuming. For example, testing a user workflow might require account creation, login, profile updates, and deletion—operations that logically depend on each other. If an early dependency fails, dependent tests are automatically skipped, saving time and providing clear failure context. Use this feature judiciously; in most cases, proper fixtures and test isolation are preferable to creating test dependencies.
+    Test dependencies are most appropriate for end-to-end testing scenarios where creating test data is costly or time-consuming. For example, testing a user workflow might require account creation, login, profile updates, and deletionoperations that logically depend on each other. If an early dependency fails, dependent tests are automatically skipped, saving time and providing clear failure context. Use this feature judiciously; in most cases, proper fixtures and test isolation are preferable to creating test dependencies.
   </p>
 
   <pre><code class="language-python">pip install pytest-dependency
@@ -358,12 +358,12 @@ def test_database_query():
 
   <h4 class="mt-4">Advanced Decorator Patterns</h4>
   <p>
-    Mastering individual decorators is just the beginning—the real power comes from combining them strategically. These advanced patterns demonstrate how to layer multiple decorators and fixtures to create sophisticated testing strategies that handle complex real-world scenarios. Understanding these combinations helps you build more expressive and maintainable test suites.
+    Mastering individual decorators is just the beginningthe real power comes from combining them strategically. These advanced patterns demonstrate how to layer multiple decorators and fixtures to create sophisticated testing strategies that handle complex real-world scenarios. Understanding these combinations helps you build more expressive and maintainable test suites.
   </p>
 
   <h5 class="mt-3">Combining Multiple Decorators</h5>
   <p>
-    Stack multiple decorators to create tests with precise behavior and categorization. Decorators are applied from bottom to top, so the order matters when they interact. This technique allows you to create highly specific test cases that are properly categorized, conditionally executed, and thoroughly parameterized—all while keeping your code clean and readable.
+    Stack multiple decorators to create tests with precise behavior and categorization. Decorators are applied from bottom to top, so the order matters when they interact. This technique allows you to create highly specific test cases that are properly categorized, conditionally executed, and thoroughly parameterizedall while keeping your code clean and readable.
   </p>
   <pre><code class="language-python">@pytest.mark.slow
 @pytest.mark.parametrize("x", [1, 2, 3])
@@ -373,7 +373,7 @@ def test_complex(x):
 
   <h5 class="mt-3">Fixture with Parametrization</h5>
   <p>
-    Parametrize fixtures themselves to test against multiple configurations or backends. This powerful pattern allows you to run your entire test suite against different setups—different databases, API versions, or configuration states—without duplicating test code. Each parameter creates a separate fixture instance, and all tests using that fixture run once per parameter.
+    Parametrize fixtures themselves to test against multiple configurations or backends. This powerful pattern allows you to run your entire test suite against different setupsdifferent databases, API versions, or configuration stateswithout duplicating test code. Each parameter creates a separate fixture instance, and all tests using that fixture run once per parameter.
   </p>
   <p>
     This approach is invaluable for ensuring your code works across different environments or implementations. For example, you might test database operations against SQLite, PostgreSQL, and MySQL, or test your API client against different versions of an API. The fixture parametrization happens at collection time, so pytest shows each combination as a separate test in the output, making it clear which specific configuration caused any failures.
@@ -395,7 +395,7 @@ def test_database_operations(database_connection):
     Create fixtures that adapt to their environment or skip tests when prerequisites aren't met. This pattern is essential for tests that require external resources like API keys, database connections, or specific system configurations. Instead of failing cryptically, conditional fixtures provide clear feedback about missing requirements.
   </p>
   <p>
-    Conditional fixtures make your test suite more robust and environment-aware. They allow developers to run partial test suites even when they don't have access to all resources (like production API keys), while ensuring the full suite runs in CI/CD where all credentials are available. This approach is much better than littering your tests with if statements or using environment checks in every test function—the fixture handles the logic once, and all dependent tests benefit.
+    Conditional fixtures make your test suite more robust and environment-aware. They allow developers to run partial test suites even when they don't have access to all resources (like production API keys), while ensuring the full suite runs in CI/CD where all credentials are available. This approach is much better than littering your tests with if statements or using environment checks in every test functionthe fixture handles the logic once, and all dependent tests benefit.
   </p>
   <pre><code class="language-python">@pytest.fixture
 def api_key():
@@ -415,7 +415,7 @@ def test_api_call(api_key):
 
   <h5 class="mt-3">Example 1: Testing a Calculator Class</h5>
   <p>
-    This example demonstrates how to test a simple class using fixtures for setup and parametrization for comprehensive input coverage. It also shows proper exception testing with pytest.raises, ensuring your code handles error cases correctly. Notice how the fixture eliminates duplication—the Calculator instance is created once and reused across tests.
+    This example demonstrates how to test a simple class using fixtures for setup and parametrization for comprehensive input coverage. It also shows proper exception testing with pytest.raises, ensuring your code handles error cases correctly. Notice how the fixture eliminates duplicationthe Calculator instance is created once and reused across tests.
   </p>
   <pre><code class="language-python">import pytest
 
@@ -512,7 +512,7 @@ def test_api_call(mock_get):
     Pytest configuration centralizes test behavior and project-specific settings. Proper configuration eliminates the need for command-line flags and ensures consistent test execution across different environments and team members. You can configure pytest using either pytest.ini (dedicated config file) or pyproject.toml (unified Python project configuration).
   </p>
   <p>
-    Modern Python projects increasingly favor pyproject.toml as it consolidates all project configuration in one place, including dependencies, build settings, and tool configurations. However, pytest.ini remains fully supported and may be clearer for teams exclusively focused on pytest configuration. The key settings to configure include test discovery patterns, marker definitions, and default command-line options. Registering custom markers is particularly important—it enables strict marker checking that catches typos before they cause confusion.
+    Modern Python projects increasingly favor pyproject.toml as it consolidates all project configuration in one place, including dependencies, build settings, and tool configurations. However, pytest.ini remains fully supported and may be clearer for teams exclusively focused on pytest configuration. The key settings to configure include test discovery patterns, marker definitions, and default command-line options. Registering custom markers is particularly importantit enables strict marker checking that catches typos before they cause confusion.
   </p>
 
   <h5 class="mt-3">Using pytest.ini</h5>
@@ -553,7 +553,7 @@ addopts = "-v --strict-markers --tb=short"</code></pre>
     Pytest's plugin architecture is one of its greatest strengths, providing extensibility for virtually any testing need. The core pytest package is intentionally minimal, with an ecosystem of plugins adding specialized functionality. These plugins integrate seamlessly with pytest's decorator and fixture systems, extending your testing capabilities without adding complexity.
   </p>
   <p>
-    The plugins listed below are widely used and well-maintained, solving common testing challenges. Most are installable via pip and require minimal or no configuration to start using. When choosing plugins, consider your project's specific needs—not every project needs every plugin. Start with the essentials like pytest-cov for coverage and pytest-xdist for parallel execution, then add others as your requirements grow.
+    The plugins listed below are widely used and well-maintained, solving common testing challenges. Most are installable via pip and require minimal or no configuration to start using. When choosing plugins, consider your project's specific needsnot every project needs every plugin. Start with the essentials like pytest-cov for coverage and pytest-xdist for parallel execution, then add others as your requirements grow.
   </p>
 
   <table class="table table-bordered mt-3">
@@ -608,7 +608,7 @@ addopts = "-v --strict-markers --tb=short"</code></pre>
     Mastering pytest's command-line interface is essential for efficient test execution and debugging. These commands control which tests run, how output is displayed, and what information pytest collects. Combining these flags lets you quickly narrow down failures, run only relevant tests, and get the exact output you need.
   </p>
   <p>
-    The pytest CLI is designed for developer productivity—options like --lf (run last failed) and --ff (run failures first) are invaluable during debugging sessions. The -k flag provides flexible test selection using Python expressions, while markers (-m) offer more structured categorization. Learning to use these commands effectively can dramatically speed up your development workflow, especially in large codebases where running the full test suite takes significant time.
+    The pytest CLI is designed for developer productivityoptions like --lf (run last failed) and --ff (run failures first) are invaluable during debugging sessions. The -k flag provides flexible test selection using Python expressions, while markers (-m) offer more structured categorization. Learning to use these commands effectively can dramatically speed up your development workflow, especially in large codebases where running the full test suite takes significant time.
   </p>
 
   <table class="table table-bordered mt-3">
@@ -692,7 +692,7 @@ addopts = "-v --strict-markers --tb=short"</code></pre>
     This comprehensive example brings together multiple concepts: fixtures for test setup, mocking for isolation, parametrization for coverage, and proper class organization. It demonstrates how to test an API client without making real HTTP requests, ensuring tests are fast, reliable, and independent of external services.
   </p>
   <p>
-    Notice how the example uses multiple fixtures to build up test dependencies—api_key and base_url provide configuration, client assembles these into the object under test, and mock_response provides test doubles. The tests use @patch to intercept HTTP calls, assertions verify both return values and behavior (using assert_called_once), and pytest.raises ensures error handling works correctly. This pattern scales to more complex scenarios and represents industry-standard practices for testing HTTP clients.
+    Notice how the example uses multiple fixtures to build up test dependenciesapi_key and base_url provide configuration, client assembles these into the object under test, and mock_response provides test doubles. The tests use @patch to intercept HTTP calls, assertions verify both return values and behavior (using assert_called_once), and pytest.raises ensures error handling works correctly. This pattern scales to more complex scenarios and represents industry-standard practices for testing HTTP clients.
   </p>
   <pre><code class="language-python">import pytest
 from unittest.mock import Mock, patch
@@ -798,7 +798,7 @@ class TestAPIClient:
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

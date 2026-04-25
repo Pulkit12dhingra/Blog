@@ -85,7 +85,7 @@
 <div class="container mt-4">
     
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-      <h2 class="fw-bold mb-3">Unraveling Linear Regression with OLS — A Deep Dive Using California Housing Data 🏡</h2>
+      <h2 class="fw-bold mb-3">Unraveling Linear Regression with OLS  A Deep Dive Using California Housing Data </h2>
     <a href="../index.html" class="btn btn-primary">
         ← Back to Home
       </a>
@@ -95,7 +95,7 @@
 
     <p>When you think about prediction in data science, linear regression is often the first technique that pops up. It’s simple, powerful, and forms the backbone of more complex machine learning models.</p>
 
-    <p>In this blog, we’ll explore <strong>Ordinary Least Squares (OLS)</strong> linear regression — not just by theory but by walking through a real-world dataset step-by-step. And what better way to do that than using the <strong>California Housing Dataset</strong> from <code>scikit-learn</code>?</p>
+    <p>In this blog, we’ll explore <strong>Ordinary Least Squares (OLS)</strong> linear regression  not just by theory but by walking through a real-world dataset step-by-step. And what better way to do that than using the <strong>California Housing Dataset</strong> from <code>scikit-learn</code>?</p>
 
     <h4 class="mt-4"> What is OLS?</h4>
     <p>OLS is a mathematical method to determine the "best-fitting" line through a dataset. It works by minimizing the <strong>sum of squared errors</strong> between actual values and the values predicted by the model.</p>
@@ -105,7 +105,7 @@
 
 
 
-    <p>This is known as the <strong>Normal Equation</strong>. It avoids iteration (like in gradient descent) and directly gives us the best solution — if (XᵀX) is invertible.</p>
+    <p>This is known as the <strong>Normal Equation</strong>. It avoids iteration (like in gradient descent) and directly gives us the best solution  if (XᵀX) is invertible.</p>
 
     
 <h4 class="mt-4"> Dataset Overview: California Housing</h4>
@@ -188,12 +188,12 @@ To include this, we prepend a column of 1s to the feature matrix using <code>np.
 
 <ul>
   <li><code>X_train_bias.T.dot(X_train_bias)</code> computes the Gram matrix \( X^TX \)</li>
-  <li><code>np.linalg.inv(...)</code> calculates its inverse — this step "undoes" the multiplication to isolate theta</li>
+  <li><code>np.linalg.inv(...)</code> calculates its inverse  this step "undoes" the multiplication to isolate theta</li>
   <li><code>.dot(X_train_bias.T).dot(y_train)</code> completes the equation \( \theta = (X^TX)^{-1}X^Ty \)</li>
 </ul>
 
-<p>This yields the exact weight vector <code>theta_best</code> that minimizes the squared error between predictions and true values — a closed-form solution!</p>
-<p><strong>Note:</strong> If the matrix is non-invertible (singular), this will throw an error — that’s when SVD or regularized methods come in handy.</p>
+<p>This yields the exact weight vector <code>theta_best</code> that minimizes the squared error between predictions and true values  a closed-form solution!</p>
+<p><strong>Note:</strong> If the matrix is non-invertible (singular), this will throw an error  that’s when SVD or regularized methods come in handy.</p>
 
 
 <h5> Make Predictions</h5>
@@ -272,8 +272,8 @@ r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
 </div>
 
 
-<p>This allows you to confirm that both approaches yield nearly identical results — verifying that our OLS formula is working correctly!</p>
-<p>🔬 The comparison below shows the output from both models:</p>
+<p>This allows you to confirm that both approaches yield nearly identical results  verifying that our OLS formula is working correctly!</p>
+<p> The comparison below shows the output from both models:</p>
 <p><strong>Original (scikit-learn):</strong> MSE ≈ 0.55589, R² ≈ 0.57578</p>
 <p><strong>Manual OLS:</strong> MSE ≈ 0.55589, R² ≈ 0.57578</p>
 
@@ -288,7 +288,7 @@ r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
 
 
 <h4 class="mt-4"> Wrapping Up</h4>
-    <p>OLS linear regression might look like just a formula — but when you apply it to a real dataset, each step teaches something new:</p>
+    <p>OLS linear regression might look like just a formula  but when you apply it to a real dataset, each step teaches something new:</p>
     <ul>
         <li>Data preprocessing</li>
         <li>Matrix math</li>
@@ -314,7 +314,7 @@ r2_sklearn = r2_score(y_test, y_sklearn_pred)</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

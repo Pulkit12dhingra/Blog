@@ -97,12 +97,12 @@
 
   
 
-  <h4 class="mt-5"> Part 2: RAG with LangGraph — Making Pipelines Smarter</h4>
+  <h4 class="mt-5"> Part 2: RAG with LangGraph  Making Pipelines Smarter</h4>
   <p>
     In this continuation, we move beyond the linear RAG setup by introducing <strong>LangGraph</strong>: a powerful orchestration library built for LLM apps. Think of it as the glue that connects steps like <code>retrieve</code> and <code>generate</code> into a dynamic, state-driven flow.
   </p>
 
-  <h5 class="mt-4">🧩 Why LangGraph?</h5>
+  <h5 class="mt-4"> Why LangGraph?</h5>
   <ul>
     <li>Define each pipeline step as a node (function)</li>
     <li>Maintain shared <code>state</code> across steps</li>
@@ -111,7 +111,7 @@
 
   <hr class="my-4"/>
 
-  <h5 class="mt-4">📥 Load the PDFs</h5>
+  <h5 class="mt-4"> Load the PDFs</h5>
   <p> Let's start by loading in the pdf dataset using langchains. <code>document_loaders</code> extract text 
     from every PDF file abstracting away the complexity of parsing individual files.</p>
   <pre><code class="language-python">
@@ -149,7 +149,7 @@ chunks = text_splitter.split_documents(all_docs)</code></pre>
   <h5 class="mt-4"> Define the Embeddings</h5>
   <p>
   This step converts each chunk of text into a numerical vector using a pretrained embedding model. 
-  We use the <code>HuggingFaceEmbeddings</code> wrapper with the <code>all-MiniLM-L6-v2</code> model — a lightweight and efficient transformer from the 
+  We use the <code>HuggingFaceEmbeddings</code> wrapper with the <code>all-MiniLM-L6-v2</code> model  a lightweight and efficient transformer from the 
   <a href="https://www.sbert.net/" target="_blank">SentenceTransformers</a> library.
 </p>
 <p>
@@ -165,9 +165,9 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")</code></pre>
 
-  <h5 class="mt-4">💾 Store Chunks in Chroma DB</h5>
+  <h5 class="mt-4"> Store Chunks in Chroma DB</h5>
   <p>
-  Now that each text chunk has been converted into a vector, we store them in a vector database — in this case, <strong>Chroma DB</strong>. 
+  Now that each text chunk has been converted into a vector, we store them in a vector database  in this case, <strong>Chroma DB</strong>. 
   A vector database allows us to perform fast and efficient <strong>similarity searches</strong> based on the embeddings.
 </p>
 <p>
@@ -214,11 +214,11 @@ The shared memory between graph nodes. Each node receives and returns this dicti
     answer: str</code></pre>
 
 
-<h5 class="mt-4">🧾 Prompt Template</h5>
+<h5 class="mt-4"> Prompt Template</h5>
 <pre><code class="language-python">
 prompt = PromptTemplate.from_template("""
 You are an expert assistant. Use the following context to answer the question.
-If the answer cannot be found in the context, just say you don't know — don't make anything up.
+If the answer cannot be found in the context, just say you don't know  don't make anything up.
 
 Context:
 {context}
@@ -240,7 +240,7 @@ This node performs semantic search using the input question. The top-matching do
     return {"context": retrieved_docs}</code></pre>
 
 
-<h5 class="mt-4">💬 Node 2: <code>generate</code></h5>
+<h5 class="mt-4"> Node 2: <code>generate</code></h5>
 <p>
 This node merges the retrieved docs, formats them using the prompt, and sends it to the LLM to get a final answer.
 </p>
@@ -262,11 +262,11 @@ graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()</code></pre>
 
 
-<h5 class="mt-4">❓ Running a Query</h5>
+<h5 class="mt-4"> Running a Query</h5>
 <pre><code class="language-python">response = graph.invoke({"question": "What is my name?"})
 print(response["answer"])</code></pre>
 <p>
-This triggers the entire graph: retrieval ➝ prompt formatting ➝ answer generation — and prints the final result.
+This triggers the entire graph: retrieval  prompt formatting  answer generation  and prints the final result.
 </p>
 
 <h5 class="mt-4"> Visualizing the Graph</h5>
@@ -279,7 +279,7 @@ This generates a Mermaid-style flowchart image, showing the structure of your ap
     <img src="../img/Blog_11_1.png" alt="embeddings" class="img-fluid rounded shadow" style="max-width: 400px; width: 10%; height: 25%;" />
 </div>
 
-<h5 class="mt-4">🧩 Node Summary</h5>
+<h5 class="mt-4"> Node Summary</h5>
 <div class="table-responsive">
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
@@ -316,9 +316,9 @@ This generates a Mermaid-style flowchart image, showing the structure of your ap
 <p class="fw-bold">
 Each node is modular and self-contained, making your RAG app highly testable, maintainable, and extensible. 
 </p>
-<h4 class="mt-5">📜 Here’s the Complete Code</h4>
+<h4 class="mt-5"> Here’s the Complete Code</h4>
 <p>
-  Now that we’ve explored each component step-by-step — from loading PDFs and chunking text, to embedding and retrieval —
+  Now that we’ve explored each component step-by-step  from loading PDFs and chunking text, to embedding and retrieval 
   let’s put it all together using <strong>LangGraph</strong> to orchestrate the flow.
 </p>
 <p>
@@ -380,7 +380,7 @@ from langchain_core.prompts import PromptTemplate
 prompt = PromptTemplate.from_template(
     """
     You are an expert assistant. Use the following context to answer the question.
-    If the answer cannot be found in the context, just say you don't know — don't make anything up.
+    If the answer cannot be found in the context, just say you don't know  don't make anything up.
 
     Context:
     {context}
@@ -433,7 +433,7 @@ for step in graph.stream(
 
 </code></pre>
   <p class="fw-bold">
-    LangGraph gives your RAG pipeline memory, logic, and structure — making it far easier to scale and experiment. More features like streaming and condition-based flows are just a few lines away.
+    LangGraph gives your RAG pipeline memory, logic, and structure  making it far easier to scale and experiment. More features like streaming and condition-based flows are just a few lines away.
 </p>
   </p>
 </div>
@@ -446,7 +446,7 @@ for step in graph.stream(
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

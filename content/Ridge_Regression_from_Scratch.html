@@ -93,11 +93,11 @@
         
           <h4 class="mt-4">What is Regularization?</h4>
         <p>
-            When building predictive models, it’s tempting to chase perfection on the training data. But this can lead to <strong>overfitting</strong> — where your model memorizes noise instead of learning patterns.
+            When building predictive models, it’s tempting to chase perfection on the training data. But this can lead to <strong>overfitting</strong>  where your model memorizes noise instead of learning patterns.
             That’s where <strong>regularization</strong> comes in.
         </p>
         <p>
-            Regularization adds a penalty to the loss function to discourage large, unstable weights — nudging the model toward simpler, more generalizable solutions.
+            Regularization adds a penalty to the loss function to discourage large, unstable weights  nudging the model toward simpler, more generalizable solutions.
         </p>
         <p><strong>Benefits of Regularization:</strong></p>
         <ul>
@@ -107,23 +107,23 @@
         </ul>
 
         
-          <h4 class="mt-4">📐 Ridge Regression (L2)</h4>
+          <h4 class="mt-4"> Ridge Regression (L2)</h4>
           <p>
             Ridge regression adds a penalty to the squared magnitude of weights. This prevents the model from relying too heavily on any single feature:
           </p>
           <pre><code class="language-python">Loss = MSE + α × Σ(wᵢ²)</code></pre>
           <ul>
-            <li><strong>MSE</strong>: Mean Squared Error — the average squared difference between predicted and actual target values. This is your primary loss that the model tries to minimize.</li>
-            <li><strong>α (alpha)</strong>: Regularization strength — a hyperparameter that controls how much penalty you apply to the weights. A higher α means more regularization (more shrinkage).</li>
+            <li><strong>MSE</strong>: Mean Squared Error  the average squared difference between predicted and actual target values. This is your primary loss that the model tries to minimize.</li>
+            <li><strong>α (alpha)</strong>: Regularization strength  a hyperparameter that controls how much penalty you apply to the weights. A higher α means more regularization (more shrinkage).</li>
             <li><strong>wᵢ</strong>: Each individual weight/parameter (excluding the bias term). These are the model's coefficients.</li>
-            <li><strong>Σ(wᵢ²)</strong>: The sum of the squares of all weights. This is the L2 penalty — it encourages the model to keep weights small and prevents overfitting.</li>
+            <li><strong>Σ(wᵢ²)</strong>: The sum of the squares of all weights. This is the L2 penalty  it encourages the model to keep weights small and prevents overfitting.</li>
           </ul>
           
           <p>
-            So, Ridge regression doesn’t just minimize prediction error — it also penalizes large weights. The goal is a balance between fitting the data well (<code>MSE</code>) and keeping the model simple (<code>α × Σ(wᵢ²)</code>).
+            So, Ridge regression doesn’t just minimize prediction error  it also penalizes large weights. The goal is a balance between fitting the data well (<code>MSE</code>) and keeping the model simple (<code>α × Σ(wᵢ²)</code>).
           </p>
         
-          <h4 class="mt-4">🏠 Load & Prepare the Data</h4>
+          <h4 class="mt-4"> Load & Prepare the Data</h4>
           <pre><code class="language-python">
         from sklearn.datasets import fetch_california_housing
         from sklearn.model_selection import train_test_split
@@ -231,7 +231,7 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

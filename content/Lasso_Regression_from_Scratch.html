@@ -85,7 +85,7 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Lasso Regression from Scratch — Feature Selection Meets Regularization </h2>
+    <h2 class="fw-bold mb-3">Lasso Regression from Scratch  Feature Selection Meets Regularization </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
@@ -99,7 +99,7 @@
     This makes Lasso particularly powerful for high-dimensional data where not all features are useful.
   </p>
 
-  <h4 class="mt-4">🧮 Formula</h4>
+  <h4 class="mt-4"> Formula</h4>
   <pre><code class="language-python">Loss = (1/n) * Σ(yᵢ - ŷᵢ)² + α * Σ|θⱼ|</code></pre>
   <ul>
     <li><strong>n</strong>: number of data points</li>
@@ -109,12 +109,12 @@
     <li><strong>α</strong>: regularization strength (higher = more shrinkage)</li>
   </ul>
 
-  <h4 class="mt-4">🏠 Load & Prepare the Data</h4>
+  <h4 class="mt-4"> Load & Prepare the Data</h4>
   <p>
-    For this project, we’re using the <strong>California Housing Dataset</strong> — a classic dataset often used for regression tasks. It contains various features such as median income, house age, population, and more, collected from different districts in California. The goal is to predict the <code>median_house_value</code> based on these features.
+    For this project, we’re using the <strong>California Housing Dataset</strong>  a classic dataset often used for regression tasks. It contains various features such as median income, house age, population, and more, collected from different districts in California. The goal is to predict the <code>median_house_value</code> based on these features.
   </p>
   <p>
-    Before training our model, it's crucial to <strong>standardize the features</strong>. Lasso (like many gradient-based models) is sensitive to the scale of inputs — if features are on very different scales, the model may unfairly penalize some more than others. Standard scaling transforms all features to have a mean of 0 and standard deviation of 1, ensuring fair optimization.
+    Before training our model, it's crucial to <strong>standardize the features</strong>. Lasso (like many gradient-based models) is sensitive to the scale of inputs  if features are on very different scales, the model may unfairly penalize some more than others. Standard scaling transforms all features to have a mean of 0 and standard deviation of 1, ensuring fair optimization.
   </p>
   <p>
     We also <strong>add a bias (intercept) term</strong> by inserting a column of 1s to the feature matrix. This allows the model to learn a constant offset in the predictions, which is essential for accurate fitting when the target doesn’t naturally pass through the origin.
@@ -141,7 +141,7 @@ X_test_bias = np.c_[np.ones((X_test_scaled.shape[0], 1)), X_test_scaled]
 
 <h4 class="mt-4"> Lasso Regression (Coordinate Descent)</h4>
 <p>
-  To truly understand Lasso, we’re implementing it from scratch using the <strong>Coordinate Descent</strong> algorithm — a simple yet powerful technique well-suited for models with L1 regularization. Unlike gradient descent, which updates all weights simultaneously, coordinate descent updates one parameter at a time while keeping the others fixed. This approach is especially effective for optimizing Lasso’s non-differentiable L1 penalty.
+  To truly understand Lasso, we’re implementing it from scratch using the <strong>Coordinate Descent</strong> algorithm  a simple yet powerful technique well-suited for models with L1 regularization. Unlike gradient descent, which updates all weights simultaneously, coordinate descent updates one parameter at a time while keeping the others fixed. This approach is especially effective for optimizing Lasso’s non-differentiable L1 penalty.
 </p>
 
 <p>Let’s break down the code:</p>
@@ -167,7 +167,7 @@ class LassoRegression:
             return 0.0
 </code></pre>
 <p>
-  The <code>soft_threshold</code> function is the heart of Lasso. It applies the L1 penalty, shrinking coefficients toward zero. If the absolute value of a parameter's gradient is less than alpha, it gets zeroed out — this is how Lasso performs feature selection.
+  The <code>soft_threshold</code> function is the heart of Lasso. It applies the L1 penalty, shrinking coefficients toward zero. If the absolute value of a parameter's gradient is less than alpha, it gets zeroed out  this is how Lasso performs feature selection.
 </p>
 
 <pre><code class="language-python">
@@ -200,7 +200,7 @@ class LassoRegression:
   <li>Updates the coefficient using either a basic update (for the intercept) or the soft-thresholding function (for other features)</li>
 </ul>
 <p>
-  If the change in coefficients is below the defined tolerance across all features, the loop exits early — signaling convergence.
+  If the change in coefficients is below the defined tolerance across all features, the loop exits early  signaling convergence.
 </p>
 
 <pre><code class="language-python">
@@ -212,7 +212,7 @@ class LassoRegression:
 </p>
 
 <p>
-  With this implementation, we’ve built a fully functional Lasso regression model — from initialization to training and inference — without relying on libraries like scikit-learn.
+  With this implementation, we’ve built a fully functional Lasso regression model  from initialization to training and inference  without relying on libraries like scikit-learn.
 </p>
 
 
@@ -275,7 +275,7 @@ print(" R² Score:", round(r2, 4))
 </div>
 
 
-<h4 class="mt-4">🧭 When to Use Each?</h4>
+<h4 class="mt-4"> When to Use Each?</h4>
 <p>
   Choosing between Lasso and Ridge depends on the nature of your dataset and your modeling goals. 
   <strong>Use Lasso</strong> when you're working with a high-dimensional dataset and suspect that only a small subset of features truly drives the target variable. 
@@ -283,7 +283,7 @@ print(" R² Score:", round(r2, 4))
   It's especially useful when interpretability matters or when you want to reduce overfitting by eliminating irrelevant variables.
 </p>
 <p>
-  <strong>Use Ridge</strong> when your data contains multicollinearity — that is, when features are highly correlated with each other. 
+  <strong>Use Ridge</strong> when your data contains multicollinearity  that is, when features are highly correlated with each other. 
   Ridge regression is more stable in such cases, as it shrinks all coefficients uniformly without eliminating any. 
   This makes it ideal when you believe most features contribute some predictive power and you want to retain them all while still controlling model complexity.
 </p>
@@ -307,7 +307,7 @@ print(" R² Score:", round(r2, 4))
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

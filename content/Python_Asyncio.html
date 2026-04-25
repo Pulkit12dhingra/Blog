@@ -6,7 +6,7 @@
   <meta name="author" content="Pulkit Dhingra" />
   <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Python_Asyncio.html" />
   <meta name="description" content="Master Python asyncio from the ground up: understand the event loop, write coroutines with async/await, manage tasks, run things concurrently with gather and TaskGroup, and coordinate with Lock, Semaphore, Event, and Condition." />
-  <title>Python Concurrency Part 1: asyncio — Event Loops, Coroutines & Synchronization | Byte-Sized-Brilliance-AI</title>
+  <title>Python Concurrency Part 1: asyncio  Event Loops, Coroutines & Synchronization | Byte-Sized-Brilliance-AI</title>
   <link rel="icon" type="image/png" href="../img/icon.png" />
 
   <!-- Preconnect to external domains -->
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Python Concurrency Part 1: asyncio — Event Loops, Coroutines & Synchronization" />
+  <meta property="og:title" content="Python Concurrency Part 1: asyncio  Event Loops, Coroutines & Synchronization" />
   <meta property="og:description" content="Master Python asyncio from the ground up: understand the event loop, write coroutines with async/await, manage tasks, run things concurrently with gather and TaskGroup, and coordinate with Lock, Semaphore, Event, and Condition." />
   <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
   <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Python_Asyncio.html" />
@@ -23,7 +23,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Python Concurrency Part 1: asyncio — Event Loops, Coroutines & Synchronization" />
+  <meta name="twitter:title" content="Python Concurrency Part 1: asyncio  Event Loops, Coroutines & Synchronization" />
   <meta name="twitter:description" content="Master Python asyncio from the ground up: understand the event loop, write coroutines with async/await, manage tasks, run things concurrently with gather and TaskGroup, and coordinate with Lock, Semaphore, Event, and Condition." />
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
@@ -84,14 +84,14 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Python Concurrency Part 1 — asyncio: Event Loops, Coroutines &amp; Synchronization</h2>
+    <h2 class="fw-bold mb-3">Python Concurrency Part 1  asyncio: Event Loops, Coroutines &amp; Synchronization</h2>
     <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
   </div>
 
   <hr />
 
   <p>
-    Python's <strong>asyncio</strong> library lets you write concurrent code using a single thread and a single event loop. Instead of blocking while waiting for slow I/O — a network response, a database query, a file read — your program suspends the waiting task and immediately runs something else. When the I/O completes, execution resumes right where it left off.
+    Python's <strong>asyncio</strong> library lets you write concurrent code using a single thread and a single event loop. Instead of blocking while waiting for slow I/O  a network response, a database query, a file read  your program suspends the waiting task and immediately runs something else. When the I/O completes, execution resumes right where it left off.
   </p>
 
   <p>
@@ -99,11 +99,11 @@
   </p>
 
   <ul>
-    <li>The event loop — how asyncio actually works under the hood</li>
+    <li>The event loop  how asyncio actually works under the hood</li>
     <li>Coroutines with <code>async def</code> and <code>await</code></li>
     <li>Tasks with <code>asyncio.create_task()</code></li>
     <li>Running things concurrently: <code>asyncio.gather()</code> and <code>asyncio.TaskGroup</code></li>
-    <li>Futures — bridging the callback world to async/await</li>
+    <li>Futures  bridging the callback world to async/await</li>
     <li>Synchronization primitives: <code>Lock</code>, <code>Semaphore</code>, <code>Event</code>, <code>Condition</code></li>
   </ul>
 
@@ -113,19 +113,19 @@
   <h4 class="mt-5">1. The Event Loop</h4>
 
   <p>
-    The <strong>event loop</strong> is the scheduler at the heart of asyncio. It maintains a queue of runnable coroutines and switches between them whenever one suspends at an <code>await</code> point. Crucially, there is only one thread — no OS-level context switches, no race conditions on shared memory, just cooperative multitasking.
+    The <strong>event loop</strong> is the scheduler at the heart of asyncio. It maintains a queue of runnable coroutines and switches between them whenever one suspends at an <code>await</code> point. Crucially, there is only one thread  no OS-level context switches, no race conditions on shared memory, just cooperative multitasking.
   </p>
 
   <p>
     When you call <code>asyncio.run(main())</code>, Python creates an event loop, schedules <code>main()</code> on it, and runs until <code>main()</code> completes. Every <code>await</code> inside is a checkpoint where the loop can switch to another coroutine.
   </p>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> Think of a restaurant waiter. When you place your order, the waiter doesn't stand at your table waiting for the chef — they write down your order, walk to other tables, take more orders, and return only when your food is ready. The event loop is that waiter: a single thread that never stands idle, switching between tasks at every natural pause.</div>
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> Think of a restaurant waiter. When you place your order, the waiter doesn't stand at your table waiting for the chef  they write down your order, walk to other tables, take more orders, and return only when your food is ready. The event loop is that waiter: a single thread that never stands idle, switching between tasks at every natural pause.</div>
 
   <pre><code class="language-python">import asyncio
 
 # An async function is called a coroutine function.
-# Calling it returns a coroutine object — it does NOT execute yet.
+# Calling it returns a coroutine object  it does NOT execute yet.
 async def main():
     print("Hello World")
 
@@ -141,7 +141,7 @@ await main()</code></pre>
   </p>
 
   <!-- ===================== SECTION 2 ===================== -->
-  <h4 class="mt-5">2. Coroutines — async def and await</h4>
+  <h4 class="mt-5">2. Coroutines  async def and await</h4>
 
   <p>
     The <code>await</code> keyword suspends the <em>current</em> coroutine and hands control back to the event loop until the awaited coroutine finishes. Other coroutines that are ready can run during this suspension window.
@@ -149,7 +149,7 @@ await main()</code></pre>
 
   <pre><code class="language-python">async def fetch_data(delay):
     print("Fetching data...")
-    await asyncio.sleep(delay)   # suspends here — event loop runs other tasks
+    await asyncio.sleep(delay)   # suspends here  event loop runs other tasks
     print("Data fetched!")
     return {"data": "dummy data"}
 
@@ -166,10 +166,10 @@ Fetching data...
 Data fetched!
 Received: {'data': 'dummy data'}</code></pre>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> You've submitted a support ticket and are waiting for a reply. Instead of staring at your inbox doing nothing, you close the tab and work on something else. When the email arrives, a notification brings you back. <code>await</code> tells the event loop to do exactly this — hand control back and return only when the result is ready.</div>
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> You've submitted a support ticket and are waiting for a reply. Instead of staring at your inbox doing nothing, you close the tab and work on something else. When the email arrives, a notification brings you back. <code>await</code> tells the event loop to do exactly this  hand control back and return only when the result is ready.</div>
 
   <p>
-    Note that <code>await asyncio.sleep(2)</code> is <strong>non-blocking</strong>. The thread is not sleeping — the event loop can run other coroutines during those 2 seconds. This is completely unlike <code>time.sleep(2)</code>, which actually blocks the thread.
+    Note that <code>await asyncio.sleep(2)</code> is <strong>non-blocking</strong>. The thread is not sleeping  the event loop can run other coroutines during those 2 seconds. This is completely unlike <code>time.sleep(2)</code>, which actually blocks the thread.
   </p>
 
   <p>
@@ -177,7 +177,7 @@ Received: {'data': 'dummy data'}</code></pre>
   </p>
 
   <!-- ===================== SECTION 3 ===================== -->
-  <h4 class="mt-5">3. Tasks — asyncio.create_task()</h4>
+  <h4 class="mt-5">3. Tasks  asyncio.create_task()</h4>
 
   <p>
     Plain <code>await</code> is sequential: one coroutine runs, finishes, then the next starts. To run coroutines <em>concurrently</em>, wrap them in <strong>Tasks</strong>. A Task schedules the coroutine on the event loop immediately, allowing the loop to interleave it with others.
@@ -190,7 +190,7 @@ Received: {'data': 'dummy data'}</code></pre>
     return {"id": id, "data": "result"}
 
 async def main():
-    # create_task() schedules the coroutine immediately — all three start now
+    # create_task() schedules the coroutine immediately  all three start now
     task1 = asyncio.create_task(fetch_data(1, 2))
     task2 = asyncio.create_task(fetch_data(2, 3))
     task3 = asyncio.create_task(fetch_data(3, 1))
@@ -203,7 +203,7 @@ async def main():
 
 await main()</code></pre>
 
-  <pre><code class="language-python"># Output — notice all three start before any finishes:
+  <pre><code class="language-python"># Output  notice all three start before any finishes:
 Fetching id=1...
 Fetching id=2...
 Fetching id=3...
@@ -211,14 +211,14 @@ Done id=3      # delay=1, finishes first
 Done id=1      # delay=2
 Done id=2      # delay=3, finishes last</code></pre>
 
-  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> A news editor assigns breaking stories to three reporters simultaneously — sports, finance, and politics. All three start reporting at the same time. The editor doesn't wait for the first reporter to finish before assigning the second. <code>create_task()</code> does the same: all coroutines start immediately and run concurrently.</div>
+  <div class="alert alert-secondary py-2 px-3 small"><strong>Real-world analogy:</strong> A news editor assigns breaking stories to three reporters simultaneously  sports, finance, and politics. All three start reporting at the same time. The editor doesn't wait for the first reporter to finish before assigning the second. <code>create_task()</code> does the same: all coroutines start immediately and run concurrently.</div>
 
   <p>
     Even though we <code>await task1</code> first, tasks 2 and 3 are already running in the background. Total elapsed time is ~3 seconds (the longest delay), not 6 seconds (sum of all delays).
   </p>
 
   <!-- ===================== SECTION 4 ===================== -->
-  <h4 class="mt-5">4. asyncio.gather() — Concurrent Fan-Out</h4>
+  <h4 class="mt-5">4. asyncio.gather()  Concurrent Fan-Out</h4>
 
   <p>
     <code>asyncio.gather()</code> is the idiomatic way to run multiple coroutines concurrently and collect all their results. It schedules all coroutines as tasks internally and returns a list of results in the same order as the inputs.
@@ -250,7 +250,7 @@ Done id=2
 {'id': 3, 'data': 'result'}</code></pre>
 
   <p>
-    <strong>Important caveat:</strong> by default, if <em>any</em> coroutine raises an exception, <code>gather()</code> propagates it immediately and the other coroutines are <em>not</em> automatically cancelled (though their results are lost). Pass <code>return_exceptions=True</code> to capture exceptions as values instead of raising them — this prevents one failed source from killing the whole fan-out.
+    <strong>Important caveat:</strong> by default, if <em>any</em> coroutine raises an exception, <code>gather()</code> propagates it immediately and the other coroutines are <em>not</em> automatically cancelled (though their results are lost). Pass <code>return_exceptions=True</code> to capture exceptions as values instead of raising them  this prevents one failed source from killing the whole fan-out.
   </p>
 
   <pre><code class="language-python">results = await asyncio.gather(
@@ -262,7 +262,7 @@ Done id=2
 # results[2] will be an Exception instance rather than raising</code></pre>
 
   <!-- ===================== SECTION 5 ===================== -->
-  <h4 class="mt-5">5. asyncio.TaskGroup — Structured Concurrency (Python 3.11+)</h4>
+  <h4 class="mt-5">5. asyncio.TaskGroup  Structured Concurrency (Python 3.11+)</h4>
 
   <p>
     <code>asyncio.TaskGroup</code> is the modern, safer alternative to <code>gather()</code>. It uses the <code>async with</code> context manager pattern and provides <strong>structured concurrency</strong>: if any task inside the group raises an exception, all other tasks in the group are automatically cancelled, and the exception is propagated cleanly.
@@ -284,7 +284,7 @@ Done id=2
 await main()</code></pre>
 
   <p>
-    Use <code>TaskGroup</code> when you want automatic cleanup on failure. Use <code>gather(return_exceptions=True)</code> when you want resilience — one source failing shouldn't abort the rest.
+    Use <code>TaskGroup</code> when you want automatic cleanup on failure. Use <code>gather(return_exceptions=True)</code> when you want resilience  one source failing shouldn't abort the rest.
   </p>
 
   <table class="table table-bordered table-sm mt-3">
@@ -292,11 +292,11 @@ await main()</code></pre>
       <tr><th>Feature</th><th>gather()</th><th>TaskGroup</th></tr>
     </thead>
     <tbody>
-      <tr><td>Concurrent execution</td><td>✓</td><td>✓</td></tr>
-      <tr><td>Results in input order</td><td>✓</td><td>via task.result()</td></tr>
-      <tr><td>Auto-cancel on failure</td><td>✗ (unless return_exceptions=False)</td><td>✓</td></tr>
+      <tr><td>Concurrent execution</td><td></td><td></td></tr>
+      <tr><td>Results in input order</td><td></td><td>via task.result()</td></tr>
+      <tr><td>Auto-cancel on failure</td><td> (unless return_exceptions=False)</td><td></td></tr>
       <tr><td>Python version</td><td>3.4+</td><td>3.11+</td></tr>
-      <tr><td>Partial failure resilience</td><td>✓ (return_exceptions=True)</td><td>✗</td></tr>
+      <tr><td>Partial failure resilience</td><td> (return_exceptions=True)</td><td></td></tr>
     </tbody>
   </table>
 
@@ -304,11 +304,11 @@ await main()</code></pre>
   <h4 class="mt-5">6. Futures</h4>
 
   <p>
-    A <strong>Future</strong> is a low-level object representing a value that will be available at some point. Unlike a coroutine, a Future has no body — its result is set externally via <code>future.set_result()</code>. You can <code>await</code> a Future just like a coroutine.
+    A <strong>Future</strong> is a low-level object representing a value that will be available at some point. Unlike a coroutine, a Future has no body  its result is set externally via <code>future.set_result()</code>. You can <code>await</code> a Future just like a coroutine.
   </p>
 
   <p>
-    Futures are mostly used when bridging callback-based libraries into the async world. In everyday asyncio code you rarely create them manually — <code>create_task()</code> returns a Future (Task is a subclass), and many asyncio internals use them under the hood.
+    Futures are mostly used when bridging callback-based libraries into the async world. In everyday asyncio code you rarely create them manually  <code>create_task()</code> returns a Future (Task is a subclass), and many asyncio internals use them under the hood.
   </p>
 
   <div class="alert alert-secondary py-2 px-3 small">Think about waiting for a file upload widget or a third-party SDK callback to say "done" before moving forward. A Future is the placeholder that lets the rest of your async code wait cleanly for that signal without blocking the thread.</div>
@@ -347,7 +347,7 @@ await main()</code></pre>
     lock = asyncio.Lock()
 
     async def task(name):
-        async with lock:                    # acquire — other tasks wait here
+        async with lock:                    # acquire  other tasks wait here
             print(f"{name} acquired lock")
             await asyncio.sleep(1)          # simulate work
             print(f"{name} releasing lock")
@@ -356,7 +356,7 @@ await main()</code></pre>
 
 await main()</code></pre>
 
-  <pre><code class="language-python"># Output — tasks execute strictly one at a time:
+  <pre><code class="language-python"># Output  tasks execute strictly one at a time:
 A acquired lock
 A releasing lock
 B acquired lock
@@ -370,7 +370,7 @@ C releasing lock</code></pre>
 
   <h5 class="mt-4">Semaphore</h5>
   <p>
-    A <strong>Semaphore</strong> is a generalised lock that allows up to <em>N</em> concurrent holders. It's perfect for rate-limiting — for example, capping the number of simultaneous outbound HTTP connections.
+    A <strong>Semaphore</strong> is a generalised lock that allows up to <em>N</em> concurrent holders. It's perfect for rate-limiting  for example, capping the number of simultaneous outbound HTTP connections.
   </p>
 
   <div class="alert alert-secondary py-2 px-3 small">If your script hits 200 product pages at once, the target site may throttle or block you. A <code>Semaphore</code> lets you keep concurrency for speed while still respecting a limit like 5 or 10 requests at a time.</div>
@@ -460,7 +460,7 @@ await main()</code></pre>
   <h4 class="mt-5">8. When to Use asyncio</h4>
 
   <p>
-    asyncio excels at <strong>I/O-bound concurrency</strong> — situations where your program is spending most of its time waiting for external resources rather than computing. Good fits include:
+    asyncio excels at <strong>I/O-bound concurrency</strong>  situations where your program is spending most of its time waiting for external resources rather than computing. Good fits include:
   </p>
 
   <ul>
@@ -471,7 +471,7 @@ await main()</code></pre>
   </ul>
 
   <p>
-    asyncio does <strong>not</strong> help with <strong>CPU-bound</strong> work. If your code is doing heavy computation — matrix multiplication, image processing, ML inference — a single event loop thread will still saturate one CPU core regardless of how many coroutines you run. For CPU-bound work, use <code>ProcessPoolExecutor</code> (covered in Part 3).
+    asyncio does <strong>not</strong> help with <strong>CPU-bound</strong> work. If your code is doing heavy computation  matrix multiplication, image processing, ML inference  a single event loop thread will still saturate one CPU core regardless of how many coroutines you run. For CPU-bound work, use <code>ProcessPoolExecutor</code> (covered in Part 3).
   </p>
 
   <div class="alert alert-secondary py-2 px-3 small">If your API server spends most of its time waiting on databases or other APIs, asyncio can cut latency nicely. If it spends most of its time resizing images or scoring ML models, asyncio will not speed that up because the CPU is still the bottleneck.</div>
@@ -481,11 +481,11 @@ await main()</code></pre>
       <tr><th>Bottleneck</th><th>asyncio helps?</th><th>Use instead</th></tr>
     </thead>
     <tbody>
-      <tr><td>Network I/O (async library)</td><td>✓ Yes</td><td>—</td></tr>
+      <tr><td>Network I/O (async library)</td><td> Yes</td><td></td></tr>
       <tr><td>Network I/O (sync library, e.g. requests)</td><td>Partially</td><td>threading via run_in_executor</td></tr>
-      <tr><td>File I/O</td><td>✓ with aiofiles</td><td>threading for sync APIs</td></tr>
-      <tr><td>CPU computation (numpy, ML)</td><td>✗ No</td><td>ProcessPoolExecutor</td></tr>
-      <tr><td>Spawning isolated scripts</td><td>✓ asyncio.create_subprocess_exec</td><td>subprocess for blocking use</td></tr>
+      <tr><td>File I/O</td><td> with aiofiles</td><td>threading for sync APIs</td></tr>
+      <tr><td>CPU computation (numpy, ML)</td><td> No</td><td>ProcessPoolExecutor</td></tr>
+      <tr><td>Spawning isolated scripts</td><td> asyncio.create_subprocess_exec</td><td>subprocess for blocking use</td></tr>
     </tbody>
   </table>
 
@@ -493,7 +493,7 @@ await main()</code></pre>
   <h4 class="mt-5">9. asyncio in the Research Agent</h4>
 
   <p>
-    Throughout this series we'll build a <strong>Research Agent</strong> — an agentic chatbot that answers questions by fetching live data from Wikipedia and HackerNews, analysing it, generating embeddings, and synthesizing an answer via a local Ollama LLM.
+    Throughout this series we'll build a <strong>Research Agent</strong>  an agentic chatbot that answers questions by fetching live data from Wikipedia and HackerNews, analysing it, generating embeddings, and synthesizing an answer via a local Ollama LLM.
   </p>
 
   <p>
@@ -516,7 +516,7 @@ async def run_fetch_agents(query: str) -> list:
     return [a for batch in results if isinstance(batch, list) for a in batch]</code></pre>
 
   <p>
-    The <code>return_exceptions=True</code> is critical here — if Wikipedia is down, HackerNews results still come through. The orchestrator then runs the fetch agent alongside memory, analysis, and embedding agents — all inside a single <code>asyncio.gather()</code> call.
+    The <code>return_exceptions=True</code> is critical here  if Wikipedia is down, HackerNews results still come through. The orchestrator then runs the fetch agent alongside memory, analysis, and embedding agents  all inside a single <code>asyncio.gather()</code> call.
   </p>
 
   <!-- ===================== SECTION 10 ===================== -->
@@ -527,20 +527,20 @@ async def run_fetch_agents(query: str) -> list:
   </p>
 
   <ul>
-    <li><strong>Coroutines</strong> — <code>async def</code> + <code>await</code>: the building blocks</li>
-    <li><strong>Tasks</strong> — <code>create_task()</code>: schedule a coroutine to run concurrently</li>
-    <li><strong>gather()</strong> — fan-out to multiple coroutines, collect results</li>
-    <li><strong>TaskGroup</strong> — structured concurrency with automatic cleanup</li>
-    <li><strong>Futures</strong> — awaitable placeholder for a value set externally</li>
-    <li><strong>Lock / Semaphore / Event / Condition</strong> — coordinate shared state safely</li>
+    <li><strong>Coroutines</strong>  <code>async def</code> + <code>await</code>: the building blocks</li>
+    <li><strong>Tasks</strong>  <code>create_task()</code>: schedule a coroutine to run concurrently</li>
+    <li><strong>gather()</strong>  fan-out to multiple coroutines, collect results</li>
+    <li><strong>TaskGroup</strong>  structured concurrency with automatic cleanup</li>
+    <li><strong>Futures</strong>  awaitable placeholder for a value set externally</li>
+    <li><strong>Lock / Semaphore / Event / Condition</strong>  coordinate shared state safely</li>
   </ul>
 
   <p>
-    In the next post we cover <strong>subprocess</strong> — how to run code in a completely isolated OS process, communicate via stdin/stdout, and enforce hard timeouts. It's the right tool when you need true isolation rather than concurrency.
+    In the next post we cover <strong>subprocess</strong>  how to run code in a completely isolated OS process, communicate via stdin/stdout, and enforce hard timeouts. It's the right tool when you need true isolation rather than concurrency.
   </p>
 
   <p class="fw-bold">
-    Concurrent doesn't mean parallel — and with asyncio, one well-structured thread can outperform many poorly coordinated ones.
+    Concurrent doesn't mean parallel  and with asyncio, one well-structured thread can outperform many poorly coordinated ones.
   </p>
 
   <div class="d-flex justify-content-between mt-5">
@@ -558,7 +558,7 @@ async def run_fetch_agents(query: str) -> list:
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

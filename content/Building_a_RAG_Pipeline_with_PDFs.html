@@ -89,16 +89,16 @@
   </div>
 
   <hr />
-  <h4 class="mt-4">🧩 Why LangChain?</h4>
+  <h4 class="mt-4"> Why LangChain?</h4>
     <p>
     LangChain is a powerful framework designed to connect large language models (LLMs) to external data sources, tools, and APIs. 
     If you're just getting started, I recently covered the fundamentals in this post: 
     <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_9.html" target="_blank">Intro to LangChain </a>.
-    It simplifies workflows like Retrieval-Augmented Generation (RAG), allowing you to load documents, embed them, and query intelligently — all in just a few lines of code.
+    It simplifies workflows like Retrieval-Augmented Generation (RAG), allowing you to load documents, embed them, and query intelligently  all in just a few lines of code.
     </p>
 
   <p>
-    Retrieval-Augmented Generation (RAG) is revolutionizing how large language models access and use external data. By combining retrieval mechanisms with powerful LLMs, RAG allows systems to answer questions with information beyond their training data — dynamically pulling facts from your own knowledge base.
+    Retrieval-Augmented Generation (RAG) is revolutionizing how large language models access and use external data. By combining retrieval mechanisms with powerful LLMs, RAG allows systems to answer questions with information beyond their training data  dynamically pulling facts from your own knowledge base.
   </p>
   <div class="text-center mb-4">
     <img src="../img/Blog_10_2.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
@@ -119,8 +119,8 @@
 </p>
 
 
-  <h4 class="mt-4">📥 Step 1: Load Your PDFs</h4>
-  <p>The first step in any RAG pipeline is loading the data you want your model to "know." In our case, this data comes in the form of PDFs. LangChain provides convenient tools like PyPDFDirectoryLoader that scan a directory and automatically extract text from every PDF file it contains. This abstracts away the complexity of parsing individual files and gives you a list of clean, structured documents — perfect for downstream processing. Whether you're indexing research papers, manuals, or even your resume, this loader simplifies it all into a few lines of code.</p>
+  <h4 class="mt-4"> Step 1: Load Your PDFs</h4>
+  <p>The first step in any RAG pipeline is loading the data you want your model to "know." In our case, this data comes in the form of PDFs. LangChain provides convenient tools like PyPDFDirectoryLoader that scan a directory and automatically extract text from every PDF file it contains. This abstracts away the complexity of parsing individual files and gives you a list of clean, structured documents  perfect for downstream processing. Whether you're indexing research papers, manuals, or even your resume, this loader simplifies it all into a few lines of code.</p>
   <pre><code class="language-python">
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 
@@ -134,7 +134,7 @@ documents = loader.load()
   <h4 class="mt-4"> Step 2: Split Text into Chunks</h4>
   <p>
     Language models have input size limitations, so feeding them entire documents isn't feasible. That’s where chunking comes in. 
-    Using LangChain’s <code>RecursiveCharacterTextSplitter</code>, we break down long documents into manageable segments — or “chunks” — 
+    Using LangChain’s <code>RecursiveCharacterTextSplitter</code>, we break down long documents into manageable segments  or “chunks”  
     each with a fixed size (500 characters here) and a small overlap (50 characters) to preserve context across boundaries. 
     This step ensures that when the model retrieves text later, it does so with enough context to generate accurate and coherent responses. 
     Chunking is the unsung hero that powers effective document retrieval in any RAG pipeline.
@@ -150,7 +150,7 @@ print(len(chunks))
   <p>
     Instead of using an external hosted model, we leverage a local embedding model from HuggingFace: 
     <code>sentence-transformers/all-MiniLM-L6-v2</code>. This model is lightweight, fast, and delivers surprisingly strong performance 
-    for semantic search and similarity tasks — making it ideal for use in RAG pipelines.
+    for semantic search and similarity tasks  making it ideal for use in RAG pipelines.
   </p>
   <pre><code class="language-python">
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -164,9 +164,9 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 </div>
 
 
-  <h4 class="mt-4">💾 Step 4: Store Chunks in Chroma DB</h4>
+  <h4 class="mt-4"> Step 4: Store Chunks in Chroma DB</h4>
   <p>
-    Once we’ve embedded our text chunks, the next crucial step is storing them in a vector database — and that’s where <strong>Chroma DB</strong> comes in. 
+    Once we’ve embedded our text chunks, the next crucial step is storing them in a vector database  and that’s where <strong>Chroma DB</strong> comes in. 
     A vectorstore allows us to perform efficient similarity searches based on semantic meaning rather than keyword matches. 
     By persisting the embeddings in Chroma, we enable our RAG pipeline to retrieve the most relevant pieces of information dynamically at query time. 
     Without a vectorstore, the model would have no memory of the document structure or content, making retrieval impossible. 
@@ -209,7 +209,7 @@ rag_chain = RetrievalQA.from_chain_type(
   </code></pre>
 
 
-  <h4 class="mt-4">❓ Querying the RAG Pipeline</h4>
+  <h4 class="mt-4"> Querying the RAG Pipeline</h4>
   <pre><code class="language-python">
 # Now we can query it
 query = "Has pulkit worked on AWS?" 
@@ -223,16 +223,16 @@ Pulkit has worked on AWS. Specifically, the Nagarro DevOps Engineer role involve
 “successfully integrated pipelines with Azure Cloud, AWS Cloud, and Google Cloud services.”</code></pre>
 
   <p>
-    Boom! 💥 Now you can ask questions and receive answers grounded in your PDF documents.
+    Boom!  Now you can ask questions and receive answers grounded in your PDF documents.
   </p>
 
   <h4 class="mt-4"> Final Thoughts</h4>
   <p>
-    We’ve just built a full RAG pipeline — from loading PDFs to querying with Gemma 3. This approach gives your LLM access to custom knowledge, perfect for chatbots, document search, internal tools, and more.
+    We’ve just built a full RAG pipeline  from loading PDFs to querying with Gemma 3. This approach gives your LLM access to custom knowledge, perfect for chatbots, document search, internal tools, and more.
   </p>
 
   <p class="fw-bold">
-    Next up: RAG with streaming, multi-turn memory, and UI integration. Stay tuned! 💬
+    Next up: RAG with streaming, multi-turn memory, and UI integration. Stay tuned! 
   </p>
 
 </div>
@@ -245,7 +245,7 @@ Pulkit has worked on AWS. Specifically, the Nagarro DevOps Engineer role involve
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

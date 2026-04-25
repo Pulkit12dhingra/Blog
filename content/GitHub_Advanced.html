@@ -99,7 +99,7 @@
   <h4 class="mt-4">Setting Up .gitignore</h4>
   
   <p>
-    A <code>.gitignore</code> file is one of the most important files in your repository. It tells Git which files and directories to completely ignore — as if they don't exist. This is crucial for keeping your repository clean, secure, and focused on what matters: your source code.
+    A <code>.gitignore</code> file is one of the most important files in your repository. It tells Git which files and directories to completely ignore  as if they don't exist. This is crucial for keeping your repository clean, secure, and focused on what matters: your source code.
   </p>
 
   <p>
@@ -112,9 +112,9 @@
 
   <h5 class="mt-3">Why You Need .gitignore</h5>
   <ul>
-    <li><strong>Security:</strong> Keep API keys, credentials, database passwords, and secrets out of version control — this is your first line of defense against credential leaks</li>
+    <li><strong>Security:</strong> Keep API keys, credentials, database passwords, and secrets out of version control  this is your first line of defense against credential leaks</li>
     <li><strong>Cleanliness:</strong> Exclude build outputs (<code>dist/</code>, <code>build/</code>), dependencies (<code>node_modules/</code>, <code>venv/</code>), and temporary files that clutter your repository</li>
-    <li><strong>Performance:</strong> Smaller repos clone faster, sync quicker, and use less storage — nobody wants to download 500MB of <code>node_modules</code></li>
+    <li><strong>Performance:</strong> Smaller repos clone faster, sync quicker, and use less storage  nobody wants to download 500MB of <code>node_modules</code></li>
     <li><strong>Relevance:</strong> Only track source code and configuration, not generated files that can be rebuilt from source</li>
     <li><strong>Collaboration:</strong> Prevent merge conflicts from IDE settings or OS-specific files that differ between team members</li>
     <li><strong>Professional hygiene:</strong> A well-configured <code>.gitignore</code> signals that you understand best practices</li>
@@ -239,17 +239,17 @@ echo ".idea/" >> ~/.gitignore_global</code></pre>
   <h5 class="mt-3">Pro Tips</h5>
   <ul>
     <li>Use <a href="https://www.toptal.com/developers/gitignore" target="_blank" rel="noopener noreferrer">gitignore.io</a> to generate comprehensive templates for any language/framework combination</li>
-    <li>Always add <code>.env</code> and <code>.env.local</code> files to <code>.gitignore</code> — these commonly contain secrets</li>
+    <li>Always add <code>.env</code> and <code>.env.local</code> files to <code>.gitignore</code>  these commonly contain secrets</li>
     <li>Commit <code>.gitignore</code> to your repository so the entire team benefits from the same rules</li>
     <li>Review <code>git status</code> before committing to catch files that should be ignored but aren't</li>
     <li>Use <code>git check-ignore -v filename</code> to debug why a file is being ignored</li>
-    <li>Remember: <code>.gitignore</code> only affects untracked files — it won't hide files already committed</li>
+    <li>Remember: <code>.gitignore</code> only affects untracked files  it won't hide files already committed</li>
   </ul>
 
   <h4 class="mt-5">Pre-Commit Hooks with .pre-commit-config.yaml</h4>
 
   <p>
-    <strong>Pre-commit hooks</strong> are automated scripts that run before each commit is finalized. Think of them as gatekeepers that inspect your code and say "not so fast!" if something is wrong. They catch issues early — formatting errors, linting violations, security problems, trailing whitespace, large files — before code enters your repository.
+    <strong>Pre-commit hooks</strong> are automated scripts that run before each commit is finalized. Think of them as gatekeepers that inspect your code and say "not so fast!" if something is wrong. They catch issues early  formatting errors, linting violations, security problems, trailing whitespace, large files  before code enters your repository.
   </p>
 
   <p>
@@ -257,15 +257,15 @@ echo ".idea/" >> ~/.gitignore_global</code></pre>
   </p>
 
   <div class="alert alert-success mt-3" role="alert">
-    <strong>The pre-commit framework:</strong> While you can write custom Git hooks manually in <code>.git/hooks/</code>, the <strong>pre-commit</strong> Python framework makes it incredibly easy to use and share hooks. It's language-agnostic despite being written in Python — you can use it for JavaScript, Go, Rust, or any language.
+    <strong>The pre-commit framework:</strong> While you can write custom Git hooks manually in <code>.git/hooks/</code>, the <strong>pre-commit</strong> Python framework makes it incredibly easy to use and share hooks. It's language-agnostic despite being written in Python  you can use it for JavaScript, Go, Rust, or any language.
   </div>
 
   <h5 class="mt-3">Why Use Pre-Commit Hooks?</h5>
   <ul>
-    <li><strong>Consistency:</strong> Enforce code style across the team automatically — no more style debates in code reviews</li>
+    <li><strong>Consistency:</strong> Enforce code style across the team automatically  no more style debates in code reviews</li>
     <li><strong>Quality:</strong> Catch bugs, security issues, and bad practices early before they reach production or even code review</li>
     <li><strong>Efficiency:</strong> Prevent broken code from entering CI/CD pipelines, saving build minutes and reducing feedback time</li>
-    <li><strong>Automation:</strong> No more "oops, forgot to run the linter" excuses — it happens automatically every time</li>
+    <li><strong>Automation:</strong> No more "oops, forgot to run the linter" excuses  it happens automatically every time</li>
     <li><strong>Local feedback:</strong> Get instant feedback on your machine rather than waiting for CI to fail</li>
     <li><strong>Education:</strong> New team members learn coding standards automatically through immediate feedback</li>
     <li><strong>Cost savings:</strong> Catching issues locally is free; running CI pipelines costs money/time</li>
@@ -425,7 +425,7 @@ git commit -m "Add hello function"</code></pre>
     <strong>Why GitHub Actions is revolutionary:</strong>
   </p>
   <ul>
-    <li><strong>Built-in:</strong> No need for external CI services like Jenkins or CircleCI — it's integrated with GitHub</li>
+    <li><strong>Built-in:</strong> No need for external CI services like Jenkins or CircleCI  it's integrated with GitHub</li>
     <li><strong>Free for public repos:</strong> Unlimited minutes for open source projects</li>
     <li><strong>Matrix builds:</strong> Test across multiple OS, language versions, or environments simultaneously</li>
     <li><strong>Marketplace:</strong> Thousands of pre-built actions for common tasks</li>
@@ -615,13 +615,13 @@ env:
 
   <h5 class="mt-3">Step 1: Find a Project</h5>
   <p>
-    Choose a project that interests you and matches your skill level. Don't aim for Facebook or Linux on day one — find smaller projects where maintainers are welcoming to newcomers.
+    Choose a project that interests you and matches your skill level. Don't aim for Facebook or Linux on day one  find smaller projects where maintainers are welcoming to newcomers.
   </p>
   <ul>
     <li>Look for <code>good first issue</code> or <code>help wanted</code> labels on GitHub Issues</li>
     <li>Check <a href="https://goodfirstissue.dev/" target="_blank" rel="noopener noreferrer">Good First Issue</a> for curated beginner-friendly issues</li>
-    <li>Explore projects you already use — you understand them and care about their improvement</li>
-    <li>Read <code>CONTRIBUTING.md</code> guidelines carefully before starting — every project has unique requirements</li>
+    <li>Explore projects you already use  you understand them and care about their improvement</li>
+    <li>Read <code>CONTRIBUTING.md</code> guidelines carefully before starting  every project has unique requirements</li>
     <li>Look for active maintainers who respond to issues/PRs promptly</li>
     <li>Check the project's code of conduct to ensure it's a welcoming environment</li>
   </ul>
@@ -710,7 +710,7 @@ git push origin main</code></pre>
 
   <h5 class="mt-3">Git Tags</h5>
   <p>
-    <strong>Tags</strong> are like bookmarks in your Git history — they mark specific commits as important, usually for releases. Unlike branches (which move forward as you add commits), tags are permanent markers that never change. They're perfect for saying "this is version 1.0.0" and being able to return to that exact state anytime.
+    <strong>Tags</strong> are like bookmarks in your Git history  they mark specific commits as important, usually for releases. Unlike branches (which move forward as you add commits), tags are permanent markers that never change. They're perfect for saying "this is version 1.0.0" and being able to return to that exact state anytime.
   </p>
 
   <p>
@@ -909,18 +909,18 @@ jobs:
   </ul>
 
   <div class="alert alert-info mt-4" role="alert">
-    <strong>Continuous improvement:</strong> These tools and practices evolved from years of software engineering experience. Don't try to implement everything at once — gradually adopt what makes sense for your workflow and team size.
+    <strong>Continuous improvement:</strong> These tools and practices evolved from years of software engineering experience. Don't try to implement everything at once  gradually adopt what makes sense for your workflow and team size.
   </div>
 
   <h4 class="mt-5">Recap</h4>
   <p>You've now learned advanced Git and GitHub techniques:</p>
   <ul>
-    <li>✅ Configuring <code>.gitignore</code> to exclude unwanted files</li>
-    <li>✅ Setting up pre-commit hooks for automated quality checks</li>
-    <li>✅ Creating GitHub Actions workflows for CI/CD</li>
-    <li>✅ Contributing to open source projects</li>
-    <li>✅ Managing releases with tags and GitHub Releases</li>
-    <li>✅ Publishing packages to GitHub Packages</li>
+    <li> Configuring <code>.gitignore</code> to exclude unwanted files</li>
+    <li> Setting up pre-commit hooks for automated quality checks</li>
+    <li> Creating GitHub Actions workflows for CI/CD</li>
+    <li> Contributing to open source projects</li>
+    <li> Managing releases with tags and GitHub Releases</li>
+    <li> Publishing packages to GitHub Packages</li>
   </ul>
 
   <div class="alert alert-success mt-4" role="alert">
@@ -940,7 +940,7 @@ jobs:
 
   <hr class="mt-5" />
   <p class="text-muted">
-    <small>Happy contributing! 🚀 Open source awaits.</small>
+    <small>Happy contributing!  Open source awaits.</small>
   </p>
 </div>
 
@@ -957,7 +957,7 @@ jobs:
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

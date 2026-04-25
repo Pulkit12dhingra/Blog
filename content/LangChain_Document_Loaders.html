@@ -84,16 +84,16 @@
 <body>
   <div class="container mt-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-      <h2 class="fw-bold mb-3">LangChain Document Loaders — A Unified Gateway to Your Data </h2>
+      <h2 class="fw-bold mb-3">LangChain Document Loaders  A Unified Gateway to Your Data </h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
     </div>
     <hr />
 
     <p>
-      Large Language Models are powerful, but without access to your custom data — they’re flying blind. That’s where LangChain’s document loaders come in. Whether you’re dealing with PDFs, CSVs, YouTube transcripts, or Notion pages, LangChain provides a uniform API to ingest, transform, and leverage external documents for LLM-powered applications.
+      Large Language Models are powerful, but without access to your custom data  they’re flying blind. That’s where LangChain’s document loaders come in. Whether you’re dealing with PDFs, CSVs, YouTube transcripts, or Notion pages, LangChain provides a uniform API to ingest, transform, and leverage external documents for LLM-powered applications.
     </p>
 
-    <h4>🧩 What Are Document Loaders?</h4>
+    <h4> What Are Document Loaders?</h4>
     <p>
       Document loaders in LangChain serve one purpose: extract readable, structured content from diverse sources. Each loader returns a list of <code>Document</code> objects, each containing text and optional metadata.
     </p>
@@ -107,7 +107,7 @@
       <li><strong>YoutubeLoader:</strong> Pulls transcripts from YouTube videos via <code>youtube_transcript_api</code></li>
     </ul>
 
-    <h4>📂 Example: Loading Local PDFs</h4>
+    <h4> Example: Loading Local PDFs</h4>
     <pre><code class="language-python">
 from langchain_community.document_loaders import PyPDFLoader
 loader = PyPDFLoader("Pulkit_Resume__.pdf")
@@ -117,13 +117,13 @@ print(docs[0].page_content)</code></pre>
     <img src="../img/Blog_12_1.png" alt="Image" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
 
-    <h4>📁 DirectoryLoader for Bulk Imports</h4>
+    <h4> DirectoryLoader for Bulk Imports</h4>
     <pre><code class="language-python">
 from langchain_community.document_loaders import DirectoryLoader
 loader = DirectoryLoader("docs/", glob="**/*.txt", show_progress=True)
 docs = loader.load()
     </code></pre>
-    <p>Loads all text files recursively from a directory — great for datasets or log archives.</p>
+    <p>Loads all text files recursively from a directory  great for datasets or log archives.</p>
 
     <h4>Loading from the Web</h4>
     <pre><code class="language-python">
@@ -142,7 +142,7 @@ print(docs[0].page_content[:500])
   <div class="mb-4">
     <img src="../img/Blog_12_4.png" alt="Image" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
-    <h4 class="mt-4">🧾 Loading Structured Data from JSON</h4>
+    <h4 class="mt-4"> Loading Structured Data from JSON</h4>
 <p>
   LangChain also supports structured data ingestion using <code>JSONLoader</code>. This is ideal for structured documents like resumes or API outputs, allowing you to flexibly extract and transform nested data.
 </p>
@@ -169,13 +169,13 @@ json_loader = JSONLoader(
 
 json_docs = json_loader.load()</code></pre>
 <p>
-  This configuration uses a <code>jq_schema</code> to selectively extract fields from the resume JSON — handling nested structures like contact info, skills, and work experience with ease. The result is a list of clean, text-rich <code>Document</code> objects ready for chunking or embedding.
+  This configuration uses a <code>jq_schema</code> to selectively extract fields from the resume JSON  handling nested structures like contact info, skills, and work experience with ease. The result is a list of clean, text-rich <code>Document</code> objects ready for chunking or embedding.
 </p>
   <div class="mb-4">
     <img src="../img/Blog_12_3.png" alt="Image" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
 
-    <h4>📺 Loading from YouTube</h4>
+    <h4> Loading from YouTube</h4>
     <p>Transcribe videos into context-aware documents using:</p>
     <pre><code class="language-python">
 from langchain_community.document_loaders import YoutubeLoader
@@ -183,7 +183,7 @@ loader = YoutubeLoader.from_youtube_url("https://youtu.be/QmZIi23cT4w", add_vide
 docs = loader.load()
     </code></pre>
 
-    <h4>🧾 Load CSVs as Documents</h4>
+    <h4> Load CSVs as Documents</h4>
     <pre><code class="language-python">
 from langchain_community.document_loaders.csv_loader import CSVLoader
 loader = CSVLoader(file_path="Pulkit_Dhingra_Resume.csv")
@@ -202,7 +202,7 @@ docs = loader.load()
 
     <h4> Final Thoughts</h4>
     <p>
-      LangChain’s document loaders let you pull in context from virtually any source with just a few lines of Python. They’re your first step in building knowledge-aware applications — from chatbots that reference PDFs, to search engines over Notion pages. If data is power, document loaders are your socket to plug into it. 🔌
+      LangChain’s document loaders let you pull in context from virtually any source with just a few lines of Python. They’re your first step in building knowledge-aware applications  from chatbots that reference PDFs, to search engines over Notion pages. If data is power, document loaders are your socket to plug into it. 
     </p>
   </div>
 
@@ -214,7 +214,7 @@ docs = loader.load()
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

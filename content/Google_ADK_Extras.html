@@ -6,7 +6,7 @@
   <meta name="author" content="Pulkit Dhingra" />
   <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Google_ADK_Extras.html" />
   <meta name="description" content="Go beyond the basics with Google ADK: connect Ollama and third-party LLMs via LiteLLM, manage session memory and state, deploy to GCP with Cloud Run or Vertex AI Agent Engine, evaluate model performance, and explore callbacks, artifacts, and guardrails." />
-  <title>Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals & More | Byte-Sized-Brilliance-AI</title>
+  <title>Google ADK Part 6: Extras  LiteLLM, Memory, GCP Deployment, Evals & More | Byte-Sized-Brilliance-AI</title>
   <link rel="icon" type="image/png" href="../img/icon.png" />
 
   <!-- Preconnect to external domains -->
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals & More" />
+  <meta property="og:title" content="Google ADK Part 6: Extras  LiteLLM, Memory, GCP Deployment, Evals & More" />
   <meta property="og:description" content="Go beyond the basics with Google ADK: connect Ollama and third-party LLMs via LiteLLM, manage session memory and state, deploy to GCP with Cloud Run or Vertex AI Agent Engine, evaluate model performance, and explore callbacks, artifacts, and guardrails." />
   <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
   <meta property="og:type" content="article" />
@@ -23,7 +23,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals & More" />
+  <meta name="twitter:title" content="Google ADK Part 6: Extras  LiteLLM, Memory, GCP Deployment, Evals & More" />
   <meta name="twitter:description" content="Go beyond the basics with Google ADK: connect Ollama and third-party LLMs via LiteLLM, manage session memory and state, deploy to GCP with Cloud Run or Vertex AI Agent Engine, evaluate model performance, and explore callbacks, artifacts, and guardrails." />
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
@@ -84,7 +84,7 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Google ADK Part 6: Extras — LiteLLM, Memory, GCP Deployment, Evals &amp; More</h2>
+    <h2 class="fw-bold mb-3">Google ADK Part 6: Extras  LiteLLM, Memory, GCP Deployment, Evals &amp; More</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
@@ -112,7 +112,7 @@
 
   <h4 class="mt-4">Why Use a Different LLM?</h4>
   <p>
-    ADK uses Gemini by default, but sometimes you need a different model — for cost, privacy, latency, or capability reasons. You might want to run <strong>Llama 3</strong> locally with Ollama during development to avoid API costs, use <strong>GPT-4o</strong> for a task where it excels, or plug in a fine-tuned model hosted on your own infrastructure. ADK supports all of this through its <strong>LiteLLM</strong> integration.
+    ADK uses Gemini by default, but sometimes you need a different model  for cost, privacy, latency, or capability reasons. You might want to run <strong>Llama 3</strong> locally with Ollama during development to avoid API costs, use <strong>GPT-4o</strong> for a task where it excels, or plug in a fine-tuned model hosted on your own infrastructure. ADK supports all of this through its <strong>LiteLLM</strong> integration.
   </p>
   <p>
     <strong>LiteLLM</strong> is an open-source Python library that provides a unified interface to over 100 LLM providers. ADK wraps it as a first-class model option via the <code>LiteLlm</code> class.
@@ -131,7 +131,7 @@ ollama pull llama3.2
 
   <h4 class="mt-4">Using Ollama (Local Models)</h4>
   <p>
-    Ollama runs a local server at <code>http://localhost:11434</code>. LiteLLM can talk to it using the <code>ollama/</code> model prefix. This means your agent never makes an outbound API call — everything stays on your machine.
+    Ollama runs a local server at <code>http://localhost:11434</code>. LiteLLM can talk to it using the <code>ollama/</code> model prefix. This means your agent never makes an outbound API call  everything stays on your machine.
   </p>
   <pre><code class="language-python">
 from google.adk.agents import Agent
@@ -233,7 +233,7 @@ analyst_agent = Agent(
 
 pipeline = SequentialAgent(
     name="analysis_pipeline",
-    description="Extract then analyse — using the right model for each task.",
+    description="Extract then analyse  using the right model for each task.",
     sub_agents=[extractor_agent, analyst_agent],
 )
 
@@ -298,7 +298,7 @@ root_agent = pipeline
           <td><strong>Long-term memory</strong></td>
           <td>Across multiple sessions</td>
           <td>Permanent (until deleted)</td>
-          <td><code>MemoryService</code> — explicitly save/query</td>
+          <td><code>MemoryService</code>  explicitly save/query</td>
         </tr>
       </tbody>
     </table>
@@ -353,7 +353,7 @@ runner = Runner(
 
   <h5>VertexAiSessionService (managed cloud storage)</h5>
   <p>
-    Stores sessions in Vertex AI's managed infrastructure. The right choice when deploying to GCP — no database to manage, sessions are automatically persisted, scaled, and secured.
+    Stores sessions in Vertex AI's managed infrastructure. The right choice when deploying to GCP  no database to manage, sessions are automatically persisted, scaled, and secured.
   </p>
   <pre><code class="language-python">
 from google.adk.sessions import VertexAiSessionService
@@ -373,7 +373,7 @@ runner = Runner(
 
   <h4 class="mt-4">Using the Runner Programmatically</h4>
   <p>
-    When you use <code>adk run</code> or <code>adk web</code>, ADK manages the <code>Runner</code> for you. For production deployments — or when you want full control — you construct it yourself.
+    When you use <code>adk run</code> or <code>adk web</code>, ADK manages the <code>Runner</code> for you. For production deployments  or when you want full control  you construct it yourself.
   </p>
   <pre><code class="language-python">
 from google.adk.sessions import InMemorySessionService
@@ -400,7 +400,7 @@ message = genai_types.Content(
     parts=[genai_types.Part(text="What is the weather in Paris?")]
 )
 
-# Run the agent — returns an event stream
+# Run the agent  returns an event stream
 for event in runner.run(
     user_id="user_123",
     session_id=session.id,
@@ -412,7 +412,7 @@ for event in runner.run(
 
   <h4 class="mt-4">Long-Term Memory with MemoryService</h4>
   <p>
-    Session state only lasts for one conversation. For information that should persist across multiple sessions — user preferences, past interactions, accumulated knowledge — use the <code>MemoryService</code>.
+    Session state only lasts for one conversation. For information that should persist across multiple sessions  user preferences, past interactions, accumulated knowledge  use the <code>MemoryService</code>.
   </p>
   <pre><code class="language-python">
 from google.adk.memory import InMemoryMemoryService
@@ -489,7 +489,7 @@ for event in runner.run(user_id="u1", session_id=session.id, new_message=message
 
   <h5>Google Cloud Trace Integration</h5>
   <p>
-    When deployed on GCP, ADK automatically sends traces to <strong>Cloud Trace</strong>. No extra configuration needed — every agent invocation becomes a traceable span. You can view latency breakdowns, tool call timings, and model response times directly in the GCP console under <em>Trace → Trace List</em>.
+    When deployed on GCP, ADK automatically sends traces to <strong>Cloud Trace</strong>. No extra configuration needed  every agent invocation becomes a traceable span. You can view latency breakdowns, tool call timings, and model response times directly in the GCP console under <em>Trace → Trace List</em>.
   </p>
   <p>
     For local development, you can also export traces to any OpenTelemetry-compatible backend (Jaeger, Zipkin, etc.) by configuring the standard OpenTelemetry SDK before initialising ADK.
@@ -504,7 +504,7 @@ provider = TracerProvider()
 provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
 trace.set_tracer_provider(provider)
 
-# Now run your agent — trace spans will print to console
+# Now run your agent  trace spans will print to console
   </code></pre>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -517,8 +517,8 @@ trace.set_tracer_provider(provider)
     ADK provides two <code>adk deploy</code> targets:
   </p>
   <ul>
-    <li><strong>Cloud Run</strong> — deploy your agent as a containerised REST service. You own the container, you control scaling. Good for custom infrastructure, complex dependencies, or cost control.</li>
-    <li><strong>Vertex AI Agent Engine</strong> — fully managed ADK runtime hosted by Google. No containers, no infrastructure management. Google handles scaling, session storage, and availability. The fastest path to production.</li>
+    <li><strong>Cloud Run</strong>  deploy your agent as a containerised REST service. You own the container, you control scaling. Good for custom infrastructure, complex dependencies, or cost control.</li>
+    <li><strong>Vertex AI Agent Engine</strong>  fully managed ADK runtime hosted by Google. No containers, no infrastructure management. Google handles scaling, session storage, and availability. The fastest path to production.</li>
   </ul>
 
   <h4 class="mt-4">Prerequisites</h4>
@@ -618,7 +618,7 @@ adk deploy agent_engine \
   my_agent_folder/
   </code></pre>
   <p>
-    Agent Engine automatically uses <code>VertexAiSessionService</code> for session storage — no database configuration needed. It also integrates with Cloud Trace, Cloud Logging, and Cloud Monitoring out of the box.
+    Agent Engine automatically uses <code>VertexAiSessionService</code> for session storage  no database configuration needed. It also integrates with Cloud Trace, Cloud Logging, and Cloud Monitoring out of the box.
   </p>
 
   <h5>Programmatic deployment (for CI/CD)</h5>
@@ -691,7 +691,7 @@ print(response)
 
   <h4 class="mt-4">Why Evaluate?</h4>
   <p>
-    An agent that works in manual testing does not always work reliably on real traffic. ADK's built-in evaluation framework lets you write a set of test cases — with expected tool calls and expected final answers — and run them automatically. This tells you:
+    An agent that works in manual testing does not always work reliably on real traffic. ADK's built-in evaluation framework lets you write a set of test cases  with expected tool calls and expected final answers  and run them automatically. This tells you:
   </p>
   <ul>
     <li>Is my agent calling the right tools with the right arguments?</li>
@@ -754,9 +754,9 @@ Total cases:          3
 Tool use accuracy:   100%  (3/3 correct tool calls)
 Response similarity:  87%  (average ROUGE-L score vs reference)
 
-Case 1: "What is 15 multiplied by 7?"     PASS  tool=calculate ✓  answer~=105 ✓
-Case 2: "What is the weather in London?"  PASS  tool=get_weather ✓  answer~=14°C ✓
-Case 3: "Tell me a joke."                 PASS  no tool expected ✓  answer similarity=0.72
+Case 1: "What is 15 multiplied by 7?"     PASS  tool=calculate   answer~=105 
+Case 2: "What is the weather in London?"  PASS  tool=get_weather   answer~=14°C 
+Case 3: "Tell me a joke."                 PASS  no tool expected   answer similarity=0.72
 
 All cases passed.
   </code></pre>
@@ -824,7 +824,7 @@ print(f"Tool accuracy: {tool_accuracy:.1%}")
 print(f"Response similarity: {response_sim:.2f}")
 
 if tool_accuracy < 0.90 or response_sim < 0.75:
-    raise SystemExit("Agent quality below threshold — deployment blocked.")
+    raise SystemExit("Agent quality below threshold  deployment blocked.")
   </code></pre>
 
   <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -833,12 +833,12 @@ if tool_accuracy < 0.90 or response_sim < 0.75:
   <!-- ══════════════════════════════════════════════════════════════════ -->
 
   <!-- ── Callbacks ──────────────────────────────────────────────────── -->
-  <h4 class="mt-4">Callbacks — Intercept Every Step</h4>
+  <h4 class="mt-4">Callbacks  Intercept Every Step</h4>
   <p>
     Callbacks are hook functions that fire before or after each major ADK event: before the model is called, after the model responds, before a tool runs, or after it returns. Use them for logging, validation, rate limiting, cost tracking, or modifying inputs and outputs on the fly.
   </p>
 
-  <h5>before_model_callback — inspect or modify the LLM request</h5>
+  <h5>before_model_callback  inspect or modify the LLM request</h5>
   <pre><code class="language-python">
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse
@@ -850,7 +850,7 @@ def log_model_request(
 ) -> LlmResponse | None:
     """Log every model call with timing. Return None to let the call proceed."""
     num_messages = len(llm_request.contents) if llm_request.contents else 0
-    print(f"[{time.strftime('%H:%M:%S')}] Calling model — {num_messages} messages in context")
+    print(f"[{time.strftime('%H:%M:%S')}] Calling model  {num_messages} messages in context")
     return None   # returning None means: proceed normally
 
 
@@ -864,7 +864,7 @@ agent = Agent(
 )
   </code></pre>
 
-  <h5>before_model_callback — short-circuit the model call entirely</h5>
+  <h5>before_model_callback  short-circuit the model call entirely</h5>
   <p>
     If your callback returns an <code>LlmResponse</code> instead of <code>None</code>, ADK skips the actual model call and uses your response instead. This is useful for caching, guardrails, or injecting canned responses during testing.
   </p>
@@ -888,14 +888,14 @@ def safety_guardrail(
 
     for topic in BLOCKED_TOPICS:
         if topic in last_message:
-            # Return a canned refusal — model is never called
+            # Return a canned refusal  model is never called
             return LlmResponse(
                 content=genai_types.Content(
                     role="model",
                     parts=[genai_types.Part(text="I can't help with that topic.")],
                 )
             )
-    return None   # safe — proceed normally
+    return None   # safe  proceed normally
 
 
 agent = Agent(
@@ -908,7 +908,7 @@ agent = Agent(
 )
   </code></pre>
 
-  <h5>before_tool_callback — validate or transform tool arguments</h5>
+  <h5>before_tool_callback  validate or transform tool arguments</h5>
   <pre><code class="language-python">
 from google.adk.tools.base_tool import BaseTool
 from google.adk.tools.tool_context import ToolContext
@@ -925,7 +925,7 @@ def validate_tool_args(
         if any(word in expr for word in ["import", "exec", "eval", "open"]):
             # Return a dict to skip the tool call and use this as the result
             return {"error": "Expression contains disallowed keywords."}
-    return None   # all good — run the tool normally
+    return None   # all good  run the tool normally
 
 
 agent = Agent(
@@ -958,9 +958,9 @@ agent = Agent(
   </div>
 
   <!-- ── Artifacts ──────────────────────────────────────────────────── -->
-  <h4 class="mt-4">Artifacts — Storing Files and Binary Data</h4>
+  <h4 class="mt-4">Artifacts  Storing Files and Binary Data</h4>
   <p>
-    ADK's artifact system lets agents save and retrieve files — generated PDFs, images, CSV exports, audio clips — within a session. Artifacts are stored outside the conversation history so they don't bloat the context window.
+    ADK's artifact system lets agents save and retrieve files  generated PDFs, images, CSV exports, audio clips  within a session. Artifacts are stored outside the conversation history so they don't bloat the context window.
   </p>
   <pre><code class="language-python">
 from google.adk.tools import ToolContext
@@ -998,13 +998,13 @@ def load_report(tool_context: ToolContext) -> dict:
     return {"content": artifact.text}
   </code></pre>
   <p>
-    Artifacts support versioning — every <code>save_artifact</code> call increments the version number. You can load a specific version or always get the latest.
+    Artifacts support versioning  every <code>save_artifact</code> call increments the version number. You can load a specific version or always get the latest.
   </p>
 
   <!-- ── adk api_server ─────────────────────────────────────────────── -->
-  <h4 class="mt-4">adk api_server — Expose Your Agent as a REST API</h4>
+  <h4 class="mt-4">adk api_server  Expose Your Agent as a REST API</h4>
   <p>
-    Beyond <code>adk run</code> (terminal) and <code>adk web</code> (browser UI), ADK provides a third mode: <code>adk api_server</code>. This starts a local FastAPI server that exposes your agent via a standard HTTP REST API — useful for integrating your agent into a frontend, Postman testing, or building your own UI on top.
+    Beyond <code>adk run</code> (terminal) and <code>adk web</code> (browser UI), ADK provides a third mode: <code>adk api_server</code>. This starts a local FastAPI server that exposes your agent via a standard HTTP REST API  useful for integrating your agent into a frontend, Postman testing, or building your own UI on top.
   </p>
   <pre><code class="language-python">
 # Start the local REST API server
@@ -1031,7 +1031,7 @@ curl -X POST http://localhost:8000/run \
   <!-- ── Auth for external tools ────────────────────────────────────── -->
   <h4 class="mt-4">Authentication for External Tools</h4>
   <p>
-    When your tools need to call external APIs that require authentication — OAuth 2.0, API keys, service accounts — ADK provides a structured way to handle credentials via <code>ToolAuthContext</code>. This keeps credentials out of your tool code and out of the conversation history.
+    When your tools need to call external APIs that require authentication  OAuth 2.0, API keys, service accounts  ADK provides a structured way to handle credentials via <code>ToolAuthContext</code>. This keeps credentials out of your tool code and out of the conversation history.
   </p>
   <pre><code class="language-python">
 import os
@@ -1059,13 +1059,13 @@ def call_external_api(endpoint: str, tool_context: ToolContext) -> dict:
     return response.json()
   </code></pre>
   <div class="alert alert-success">
-    <strong>Best practice:</strong> Load API keys from environment variables (or Secret Manager on GCP). Never hardcode keys in your agent code or return them in tool responses — ADK logs tool responses and they can appear in traces.
+    <strong>Best practice:</strong> Load API keys from environment variables (or Secret Manager on GCP). Never hardcode keys in your agent code or return them in tool responses  ADK logs tool responses and they can appear in traces.
   </div>
 
   <!-- ── Input/Output schema ─────────────────────────────────────────── -->
   <h4 class="mt-4">Structured Output with output_schema</h4>
   <p>
-    By default, agents return free-form text. If your downstream system needs structured JSON — for example, to feed into a database or another API — set <code>output_schema</code> on the agent. ADK instructs Gemini to return a response conforming to the schema.
+    By default, agents return free-form text. If your downstream system needs structured JSON  for example, to feed into a database or another API  set <code>output_schema</code> on the agent. ADK instructs Gemini to return a response conforming to the schema.
   </p>
   <pre><code class="language-python">
 from pydantic import BaseModel
@@ -1095,7 +1095,7 @@ structured_agent = Agent(
 root_agent = structured_agent
   </code></pre>
   <p>
-    The agent's response will be a <code>WeatherReport</code> instance you can use directly in your code. Note: when <code>output_schema</code> is set, the agent cannot call tools — it is a generation-only mode.
+    The agent's response will be a <code>WeatherReport</code> instance you can use directly in your code. Note: when <code>output_schema</code> is set, the agent cannot call tools  it is a generation-only mode.
   </p>
 
   <!-- ── Quick reference ────────────────────────────────────────────── -->
@@ -1133,7 +1133,7 @@ root_agent = structured_agent
       <tbody>
         <tr><td><code>name</code></td><td>str</td><td>Unique identifier for the agent</td></tr>
         <tr><td><code>model</code></td><td>str or LiteLlm</td><td>The LLM to use (Gemini string or LiteLlm wrapper)</td></tr>
-        <tr><td><code>description</code></td><td>str</td><td>What this agent does — used for routing in multi-agent systems</td></tr>
+        <tr><td><code>description</code></td><td>str</td><td>What this agent does  used for routing in multi-agent systems</td></tr>
         <tr><td><code>instruction</code></td><td>str</td><td>System prompt defining the agent's behaviour</td></tr>
         <tr><td><code>tools</code></td><td>list</td><td>Python functions the agent can call</td></tr>
         <tr><td><code>sub_agents</code></td><td>list</td><td>Child agents this agent can delegate to</td></tr>
@@ -1172,7 +1172,7 @@ root_agent = structured_agent
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

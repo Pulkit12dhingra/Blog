@@ -88,7 +88,7 @@
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
     </div>
     <hr />
-    <p><strong>👉 New to Ollama?</strong> Before diving in, make sure you’ve got it set up locally. Follow this guide first:  
+    <p><strong> New to Ollama?</strong> Before diving in, make sure you’ve got it set up locally. Follow this guide first:  
         <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_8.html" target="_blank">
           How to Setup Ollama on Your Machine 
         </a>
@@ -109,7 +109,7 @@
       
 
     <h4> Two Ways to Use the Ollama Model</h4>
-    <p>LangChain supports Ollama models — and there are two primary interfaces depending on your use case.</p>
+    <p>LangChain supports Ollama models  and there are two primary interfaces depending on your use case.</p>
 
     <h5>Option 1: Plain Completion</h5>
     <pre><code class="language-python">from langchain_community.llms import Ollama
@@ -122,7 +122,7 @@ print(response)</code></pre>
   </div>
   
 
-    <h5>💬 Option 2: Chat Interface</h5>
+    <h5> Option 2: Chat Interface</h5>
     <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
 
 model = ChatOllama(model="gemma3")
@@ -130,7 +130,7 @@ model.invoke("Hello, world!")</code></pre>
 <div class="mb-4">
     <img src="../img/Blog_9_3.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
   </div>
-    <h4>🤔 Ollama vs. ChatOllama — What's the Difference?</h4>
+    <h4> Ollama vs. ChatOllama  What's the Difference?</h4>
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead class="table-dark">
@@ -150,7 +150,7 @@ model.invoke("Hello, world!")</code></pre>
       </table>
     </div>
 
-    <h4>💬 Using Chat Messages</h4>
+    <h4> Using Chat Messages</h4>
     <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -169,7 +169,7 @@ model.invoke(messages)</code></pre>
     <pre><code class="language-python">for token in model.stream(messages):
     print(token.content, end="|")</code></pre>
 
-    <h4>🧱 Prompt Templates: The Real Superpower</h4>
+    <h4> Prompt Templates: The Real Superpower</h4>
     <p>Prompt templates modularize input to LLMs and come in two main forms:</p>
 
     <h5> String PromptTemplate</h5>
@@ -179,7 +179,7 @@ prompt_template = PromptTemplate.from_template("Tell me a joke about {topic}")
 prompt = prompt_template.invoke({"topic": "Newton"})
 model.invoke(prompt)</code></pre>
 
-    <h5>💬 ChatPromptTemplate</h5>
+    <h5> ChatPromptTemplate</h5>
     <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate
 
 prompt_template = ChatPromptTemplate([
@@ -193,7 +193,7 @@ print(response.content)</code></pre>
     <div class="mb-4">
         <img src="../img/Blog_9_5.png" alt="Chat" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
     </div>
-    <h5>🔁 MessagesPlaceholder (Dynamic Insertion)</h5>
+    <h5> MessagesPlaceholder (Dynamic Insertion)</h5>
     <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage
 
@@ -216,7 +216,7 @@ print(response.content)</code></pre>
     <img src="../img/Blog_9_6.png" alt="Chat" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
 </div>
     <h4> Final Thoughts</h4>
-    <p>LangChain isn’t just another Python wrapper — it's a modular, scalable toolkit for building full-fledged LLM-powered applications. With Ollama support, you can even run models locally. Whether you’re exploring prompt templates or building conversational agents, LangChain makes the process simple and production-ready.</p>
+    <p>LangChain isn’t just another Python wrapper  it's a modular, scalable toolkit for building full-fledged LLM-powered applications. With Ollama support, you can even run models locally. Whether you’re exploring prompt templates or building conversational agents, LangChain makes the process simple and production-ready.</p>
   </div>
 
 <!-- Footer -->
@@ -227,7 +227,7 @@ print(response.content)</code></pre>
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

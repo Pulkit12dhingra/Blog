@@ -6,7 +6,7 @@
   <meta name="author" content="Pulkit Dhingra" />
   <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Google_ADK_Parallel_Agent.html" />
   <meta name="description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
-  <title>Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution | Byte-Sized-Brilliance-AI</title>
+  <title>Google ADK Part 5: Parallel Agents  Concurrent Multi-Agent Execution | Byte-Sized-Brilliance-AI</title>
   <link rel="icon" type="image/png" href="../img/icon.png" />
 
   <!-- Preconnect to external domains -->
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution" />
+  <meta property="og:title" content="Google ADK Part 5: Parallel Agents  Concurrent Multi-Agent Execution" />
   <meta property="og:description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
   <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
   <meta property="og:type" content="article" />
@@ -23,7 +23,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution" />
+  <meta name="twitter:title" content="Google ADK Part 5: Parallel Agents  Concurrent Multi-Agent Execution" />
   <meta name="twitter:description" content="Learn how to run multiple AI agents concurrently with Google ADK's ParallelAgent. Speed up workflows by executing independent sub-agents at the same time and aggregating their results." />
   <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
 
@@ -84,7 +84,7 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Google ADK Part 5: Parallel Agents — Concurrent Multi-Agent Execution</h2>
+    <h2 class="fw-bold mb-3">Google ADK Part 5: Parallel Agents  Concurrent Multi-Agent Execution</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
 
@@ -102,10 +102,10 @@
 
   <h4 class="mt-4">The Problem With Sequential Thinking</h4>
   <p>
-    In Part 3 we built a pipeline where agents run one after the other. That's fine when Step B genuinely needs Step A's output. But what if three agents are completely independent of each other? Running them sequentially means waiting for Agent 1 to finish before Agent 2 even starts — and Agent 3 waits for both. That's wasted time.
+    In Part 3 we built a pipeline where agents run one after the other. That's fine when Step B genuinely needs Step A's output. But what if three agents are completely independent of each other? Running them sequentially means waiting for Agent 1 to finish before Agent 2 even starts  and Agent 3 waits for both. That's wasted time.
   </p>
   <p>
-    Imagine asking your AI system for a market report. It needs to research the news, check stock data, and scan social media sentiment — three tasks that have nothing to do with each other. Running them sequentially takes 3× as long as running them in parallel.
+    Imagine asking your AI system for a market report. It needs to research the news, check stock data, and scan social media sentiment  three tasks that have nothing to do with each other. Running them sequentially takes 3× as long as running them in parallel.
   </p>
   <p>
     The <code>ParallelAgent</code> solves this. It launches all its sub-agents <strong>at the same time</strong> and waits for all of them to finish, then collects their outputs.
@@ -124,7 +124,7 @@
 
   <h4 class="mt-4">How ParallelAgent Works</h4>
   <p>
-    When a <code>ParallelAgent</code> receives a user message, it fires off all its sub-agents simultaneously. Each agent runs in its own execution branch with a copy of the conversation history at the point the parallel section started. When all agents have completed, their outputs are merged back into the main conversation history — in the order the agents were listed in <code>sub_agents</code>.
+    When a <code>ParallelAgent</code> receives a user message, it fires off all its sub-agents simultaneously. Each agent runs in its own execution branch with a copy of the conversation history at the point the parallel section started. When all agents have completed, their outputs are merged back into the main conversation history  in the order the agents were listed in <code>sub_agents</code>.
   </p>
   <p>
     Because each sub-agent gets its own execution branch, they cannot directly read each other's real-time output mid-run. However, they all write to the shared <code>tool_context.state</code> dictionary, so after all agents complete, any downstream agent (e.g., an aggregator in a subsequent <code>SequentialAgent</code> step) can read all their results from state.
@@ -146,13 +146,13 @@ t=2s  all three done
 
   <h4 class="mt-4">Project: Market Research Dashboard</h4>
   <p>
-    We will build a system that gathers three types of market intelligence simultaneously, then feeds all the gathered data to a final <strong>aggregator agent</strong> that synthesises a unified report. The full pipeline uses both <code>ParallelAgent</code> and <code>SequentialAgent</code> together — a common real-world pattern.
+    We will build a system that gathers three types of market intelligence simultaneously, then feeds all the gathered data to a final <strong>aggregator agent</strong> that synthesises a unified report. The full pipeline uses both <code>ParallelAgent</code> and <code>SequentialAgent</code> together  a common real-world pattern.
   </p>
   <ul>
-    <li><strong>news_agent</strong> — fetches recent news headlines about a company</li>
-    <li><strong>financials_agent</strong> — retrieves key financial metrics</li>
-    <li><strong>sentiment_agent</strong> — analyses social media sentiment</li>
-    <li><strong>aggregator_agent</strong> — reads all three results from state and writes the final report</li>
+    <li><strong>news_agent</strong>  fetches recent news headlines about a company</li>
+    <li><strong>financials_agent</strong>  retrieves key financial metrics</li>
+    <li><strong>sentiment_agent</strong>  analyses social media sentiment</li>
+    <li><strong>aggregator_agent</strong>  reads all three results from state and writes the final report</li>
   </ul>
 
   <pre><code class="language-python">
@@ -307,7 +307,7 @@ def load_all_research(tool_context: ToolContext) -> dict:
 
   <h4 class="mt-4">Step 2: Build the Three Parallel Research Agents</h4>
   <p>
-    Each agent is given exactly one job. Their instructions tell them to call their fetch tool, distil the result, and save it to state. They do <em>not</em> produce a long final answer — their job is data collection, not synthesis.
+    Each agent is given exactly one job. Their instructions tell them to call their fetch tool, distil the result, and save it to state. They do <em>not</em> produce a long final answer  their job is data collection, not synthesis.
   </p>
   <pre><code class="language-python">
 # ── Parallel research agents ──────────────────────────────────────────
@@ -376,7 +376,7 @@ aggregator_agent = Agent(
     Here's the key architectural pattern: we wrap the three research agents in a <code>ParallelAgent</code>, then wrap that parallel block <em>together with</em> the aggregator in a <code>SequentialAgent</code>. This gives us: parallel research first, then sequential synthesis.
   </p>
   <pre><code class="language-python">
-# ── ParallelAgent — all three researchers run at the same time ────────
+# ── ParallelAgent  all three researchers run at the same time ────────
 
 research_team = ParallelAgent(
     name="research_team",
@@ -388,7 +388,7 @@ research_team = ParallelAgent(
 )
 
 
-# ── SequentialAgent — research first, then aggregate ─────────────────
+# ── SequentialAgent  research first, then aggregate ─────────────────
 
 market_report_pipeline = SequentialAgent(
     name="market_report_pipeline",
@@ -637,7 +637,7 @@ Final market report to user
         </tr>
         <tr>
           <td><strong>Context isolation</strong></td>
-          <td>Each sub-agent gets its own execution branch — they cannot read each other's real-time outputs mid-run.</td>
+          <td>Each sub-agent gets its own execution branch  they cannot read each other's real-time outputs mid-run.</td>
         </tr>
         <tr>
           <td><strong>State sharing</strong></td>
@@ -649,7 +649,7 @@ Final market report to user
         </tr>
         <tr>
           <td><strong>No LLM routing</strong></td>
-          <td><code>ParallelAgent</code> is a workflow agent — it does not use Gemini to decide what to run. All sub-agents always run.</td>
+          <td><code>ParallelAgent</code> is a workflow agent  it does not use Gemini to decide what to run. All sub-agents always run.</td>
         </tr>
         <tr>
           <td><strong>Combining with SequentialAgent</strong></td>
@@ -696,9 +696,9 @@ pipeline = SequentialAgent(
   <h4 class="mt-4">When NOT to Use ParallelAgent</h4>
   <div class="alert alert-warning">
     <ul class="mb-0">
-      <li><strong>When agents depend on each other.</strong> If Agent B needs Agent A's output, use <code>SequentialAgent</code> — not <code>ParallelAgent</code>.</li>
+      <li><strong>When agents depend on each other.</strong> If Agent B needs Agent A's output, use <code>SequentialAgent</code>  not <code>ParallelAgent</code>.</li>
       <li><strong>When you have a single-step task.</strong> No benefit to parallelism if there's only one thing to do.</li>
-      <li><strong>When state writes conflict.</strong> If two parallel agents write to the same state key, the last write wins — an unpredictable race condition. Use unique state keys per agent.</li>
+      <li><strong>When state writes conflict.</strong> If two parallel agents write to the same state key, the last write wins  an unpredictable race condition. Use unique state keys per agent.</li>
       <li><strong>When you need strict ordering of results.</strong> While output ordering in history is deterministic, execution timing is not. Don't rely on one parallel agent finishing before another.</li>
     </ul>
   </div>
@@ -724,7 +724,7 @@ pipeline = SequentialAgent(
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>

@@ -85,7 +85,7 @@
 <div class="container mt-4">
     
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-      <h2 class="fw-bold mb-3">Linear Regression from Scratch — With Gradient Descent </h2>
+      <h2 class="fw-bold mb-3">Linear Regression from Scratch  With Gradient Descent </h2>
     <a href="../index.html" class="btn btn-primary">
         ← Back to Home
       </a>
@@ -93,7 +93,7 @@
     <hr />
   
     <p>
-      If you've ever worked with data and wondered how models learn from it — linear regression is the perfect place to start.
+      If you've ever worked with data and wondered how models learn from it  linear regression is the perfect place to start.
       In this post, we'll build a linear regression model step-by-step. First with <code>scikit-learn</code>, and then from scratch using gradient descent.
     </p>
 
@@ -133,18 +133,18 @@
     <p>
       For linear regression, the most common choice is:
       <pre><code class="language-python">Mean Squared Error (MSE) = (1/n) * Σ(y_pred - y_true)²</code></pre>
-      This gives us a single number — a score. The closer it is to zero, the better our model’s predictions. Our ultimate goal during training is to <strong>minimize this loss</strong>.
+      This gives us a single number  a score. The closer it is to zero, the better our model’s predictions. Our ultimate goal during training is to <strong>minimize this loss</strong>.
     </p>
   
     <h4 class="mt-4">3. How Gradient Descent Optimizes the Loss</h4>
     <p>
-      Now that we know what we’re minimizing (the loss), the next question is — <em>how</em> do we minimize it? That’s where <strong>gradient descent</strong> comes in.
+      Now that we know what we’re minimizing (the loss), the next question is  <em>how</em> do we minimize it? That’s where <strong>gradient descent</strong> comes in.
     </p>
     <p>
       Gradient descent is an optimization algorithm. Imagine you're standing on a mountain (high loss) and want to reach the valley (low loss). Gradient descent helps you figure out which direction to take a step (and how big a step) so that your loss decreases.
     </p>
     <p>
-      It does this by computing the <strong>gradient</strong> of the loss function — i.e., the rate of change of loss with respect to each model parameter (weights and bias):
+      It does this by computing the <strong>gradient</strong> of the loss function  i.e., the rate of change of loss with respect to each model parameter (weights and bias):
     </p>
   
     <pre><code class="language-python">w = w - α * ∂MSE/∂w
@@ -257,8 +257,8 @@
   
     <h4 class="mt-4">8. Compare Results</h4>
     <ul>
-      <li><strong>scikit-learn</strong> — MSE: 0.5558, R²: 0.5757</li>
-      <li><strong>Custom Model</strong> — MSE: ~similar, R²: ~similar</li>
+      <li><strong>scikit-learn</strong>  MSE: 0.5558, R²: 0.5757</li>
+      <li><strong>Custom Model</strong>  MSE: ~similar, R²: ~similar</li>
     </ul>
     <p>
       Both implementations produce nearly identical results, confirming that our from-scratch implementation correctly implements the linear regression algorithm. The slight differences (if any) are due to initialization and floating-point precision.
@@ -293,10 +293,10 @@
     <h4 class="mt-4">Final Thoughts</h4>
     <p>
       By implementing linear regression both with and without libraries, we got a deep understanding of how models learn.
-      Gradient descent is foundational in machine learning — and this hands-on build makes it far less mysterious.
+      Gradient descent is foundational in machine learning  and this hands-on build makes it far less mysterious.
     </p>
     <p>
-      Understanding these fundamentals is crucial before moving to more complex algorithms. Linear regression might seem simple, but the concepts you've learned here—loss functions, gradient descent, and optimization—form the backbone of deep learning and advanced machine learning techniques.
+      Understanding these fundamentals is crucial before moving to more complex algorithms. Linear regression might seem simple, but the concepts you've learned hereloss functions, gradient descent, and optimizationform the backbone of deep learning and advanced machine learning techniques.
     </p>
 
     <h4 class="mt-4">Reference</h4>
@@ -315,7 +315,7 @@
       <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
     </p>
     <p class="text-muted small mb-0">
-      © 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
     </p>
   </div>
 </footer>
