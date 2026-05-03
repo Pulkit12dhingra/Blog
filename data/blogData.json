@@ -1,5 +1,13 @@
 [
   {
+    "file": "Hallucination_Detection.html",
+    "title": "Detecting LLM Hallucinations: From Cheap to Accurate Methods",
+    "summary": "A practical guide to six hallucination detection methods ranked from fastest and cheapest to most accurate, covering Internal State, Semantic Entropy, SelfCheckGPT, SAFE, FActScore, and LLM-as-Judge, with Python code for each and a final comparison table.",
+    "tags": ["LLM", "Hallucination", "AI Safety", "NLP", "Python", "Evaluation", "Tutorial"],
+    "topic": "AI",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
     "file": "Python_Concurrency_Project_Part3.html",
     "title": "Python Concurrency Part 6: Embeddings, Orchestrator & End-to-End Walkthrough",
     "summary": "Complete the concurrent research agent with a ProcessPoolExecutor embedding agent for CPU-bound numpy work, a LangChain + Ollama orchestrator that coordinates all agents, and a step-by-step end-to-end walkthrough of every pipeline stage.",

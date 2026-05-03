@@ -1,0 +1,586 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Hallucination_Detection.html" />
+  <meta name="description" content="A practical guide to detecting LLM hallucinations using six methods ranked from fastest and cheapest to most accurate, with Python code for each and a final comparison table." />
+  <title>Detecting LLM Hallucinations: From Cheap to Accurate Methods | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="Detecting LLM Hallucinations: From Cheap to Accurate Methods" />
+  <meta property="og:description" content="A practical guide to detecting LLM hallucinations using six methods ranked from fastest and cheapest to most accurate, with Python code for each and a final comparison table." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Hallucination_Detection.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Detecting LLM Hallucinations: From Cheap to Accurate Methods" />
+  <meta name="twitter:description" content="A practical guide to detecting LLM hallucinations using six methods ranked from fastest and cheapest to most accurate, with Python code for each and a final comparison table." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Detecting LLM Hallucinations: From Cheap to Accurate Methods</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">Back to Home</a>
+  </div>
+
+  <hr />
+
+  <!-- ===================== INTRODUCTION ===================== -->
+  <h4 class="mt-5">1. Why Hallucinations Are a Big Problem</h4>
+
+  <p>
+    Language models do not retrieve facts from a database. They generate text token by token based on statistical patterns learned during training. This means they can produce sentences that sound completely correct but are factually wrong. This is called a hallucination, and it is one of the most serious practical problems with deploying LLMs in the real world.
+  </p>
+
+  <p>
+    The reason hallucinations are dangerous is not just that models can be wrong. It is that they are wrong with confidence. When you search Google and get a wrong result, the page looks wrong, the source looks suspicious, and you check another link. When an LLM gives you a wrong answer, it presents it in fluent, authoritative prose with no uncertainty signal. Most users have no idea they are being misled.
+  </p>
+
+  <p>
+    To make this concrete, consider a few examples from a benchmark test run on a small model. When asked "How many chapters does The Great Gatsby have?", the model answered five chapters. The correct answer is nine. When asked which is larger, Australia or Greenland, the model said Greenland. Australia is about three and a half times larger. Asked who coined the term "Mandela Effect," the model invented a person named "Linda Emery" in 2002. The actual coiner was Fiona Broome around 2009. In all three cases, the model did not hesitate. It delivered the wrong answer with the same tone it would use for a correct one.
+  </p>
+
+  <p>
+    This matters enormously in high-stakes settings. A medical chatbot that hallucinates a drug interaction can cause real harm. A legal tool that cites a case that does not exist will embarrass a lawyer in court. A financial assistant that confuses two companies could drive a bad trade. Even in lower-stakes settings, repeated hallucinations erode user trust and make a product feel unreliable. The question is not whether your model will hallucinate. It is what you are going to do about it when it does.
+  </p>
+
+  <!-- ===================== VALIDATION ===================== -->
+  <h4 class="mt-5">2. How Do You Validate LLM Outputs?</h4>
+
+  <p>
+    Validating an LLM output means checking whether the answer is actually correct. This sounds simple but it is genuinely hard, because the model itself cannot reliably tell you when it is wrong. If you ask "are you sure about that?", the model will often say yes and then either repeat the same wrong answer or confidently flip to a different wrong one.
+  </p>
+
+  <p>
+    There are three broad sources of ground truth you can use for validation. The first is an external reference such as Wikipedia, a documentation page, or an internal database. You fetch the relevant passage and check whether the model's answer is consistent with it. The advantage is that this is objective and scalable. The limitation is that not everything is documented, and sources can be incomplete or out of date.
+  </p>
+
+  <p>
+    The second source is expert review, where a human with domain knowledge reads the output and decides whether it is correct. This is the most reliable method but also the most expensive and slowest. It does not scale to thousands of queries per day.
+  </p>
+
+  <p>
+    The third approach is consistency checking, where you ask the model the same question multiple times with different random seeds and see whether the answers agree. If the model gives five different answers, it is clearly uncertain. If it gives the same answer every time, it is at least consistent, though consistency does not guarantee correctness. A model can be consistently wrong.
+  </p>
+
+  <p>
+    The six methods in this post combine these sources in different ways. Each one makes different trade-offs between cost, speed, and accuracy. We will walk through them from the fastest and cheapest to the most accurate and expensive, with a code snippet for each.
+  </p>
+
+  <!-- ===================== METHOD 1 ===================== -->
+  <h4 class="mt-5">3. Method 1: Internal State Analysis</h4>
+
+  <p>
+    The cheapest and fastest approach does not require calling any external service or running multiple model samples. It works by looking at the model's own token-generation probabilities. When a model generates text, at each step it produces a probability distribution over all possible next tokens. If that distribution is spread out, the model was uncertain. If it is concentrated on one token, it was confident. Shannon entropy measures this spread.
+  </p>
+
+  <p>
+    You generate one response, collect the per-token entropy values, average them, and normalize by the maximum possible entropy (which is the log of the vocabulary size). A high average entropy suggests the model was unsure about what to say, which is a weak signal that the answer may be unreliable.
+  </p>
+
+  <p>
+    The limitation is exactly what makes it fast: it never checks whether the answer is actually correct. A model can be completely confident and completely wrong. This method detects uncertainty, not error. In our benchmark tests, a small model consistently gave wrong answers about The Great Gatsby, hand bones, and Australia versus Greenland with low entropy, meaning it was confident but wrong, and this method rated all of them as low risk.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You need a real-time signal with no added latency. It works well as a first-pass filter to flag obviously confused responses before they reach the user. It should never be your only check.
+    <br /><br />
+    <strong>Avoid it when:</strong> You need to actually catch factual errors. A model that confidently hallucinates will score low risk here every time.
+  </div>
+
+  <pre><code class="language-python">import torch
+import numpy as np
+import math
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_name = "distilgpt2"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+model.eval()
+
+question = "How many chapters does The Great Gatsby have?"
+inputs = tokenizer(f"Q: {question}\nA:", return_tensors="pt")
+
+with torch.no_grad():
+    outputs = model.generate(
+        inputs["input_ids"],
+        max_new_tokens=20,
+        return_dict_in_generate=True,
+        output_scores=True,
+        do_sample=False,
+        pad_token_id=tokenizer.eos_token_id,
+    )
+
+entropies = []
+for score in outputs.scores:
+    probs = torch.softmax(score[0], dim=-1)
+    entropy = -(probs * torch.log(probs + 1e-9)).sum().item()
+    entropies.append(entropy)
+
+max_entropy = math.log(tokenizer.vocab_size)
+risk = float(np.mean(entropies)) / max_entropy
+print(f"Hallucination risk (internal state): {risk:.2%}")
+# Low score here does NOT mean the answer is correct, only that the model was confident</code></pre>
+
+  <!-- ===================== METHOD 2 ===================== -->
+  <h4 class="mt-5">4. Method 2: Semantic Entropy</h4>
+
+  <p>
+    Semantic entropy extends the consistency-checking idea. Instead of comparing exact word matches, it samples the model several times with high temperature (to encourage variation), embeds each response using a small sentence encoder, and clusters semantically similar responses together. If all responses land in one cluster, the model is saying the same thing every time: low entropy, low risk. If responses scatter into many distinct clusters, the model is uncertain: high entropy, high risk.
+  </p>
+
+  <p>
+    This approach does not need any external reference. It is fast because the only real cost is running the sentence encoder a handful of times, which is cheap compared to another LLM call. It works well when the model is genuinely uncertain about a topic. The problem, which shows up clearly in benchmarks, is that it cannot catch confident hallucinations. When a model always says "Greenland is larger" or "the Mandela Effect was coined in 2002," all responses land in one cluster, entropy is zero, and the method reports no risk, even though the answer is wrong every single time.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You want to detect whether the model is unsure about a question, which is useful for routing uncertain queries to a human or a fallback. It is also a good signal for questions that have genuinely ambiguous answers.
+    <br /><br />
+    <strong>Avoid it when:</strong> Your model tends to hallucinate the same wrong fact repeatedly. Semantic entropy will miss these completely.
+  </div>
+
+  <pre><code class="language-python">import torch
+import math
+from sentence_transformers import SentenceTransformer
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def sample_responses(question, n=6):
+    return [
+        client.chat.completions.create(
+            model="ministral-3:3b-cloud",
+            messages=[{"role": "user", "content": question}],
+            temperature=0.8, max_tokens=80,
+        ).choices[0].message.content.strip()
+        for _ in range(n)
+    ]
+
+question = "Which is larger, Australia or Greenland?"
+responses = sample_responses(question)
+embeddings = embed_model.encode(responses, convert_to_tensor=True)
+
+# Cluster by cosine similarity
+clusters = []
+for i, emb in enumerate(embeddings):
+    placed = False
+    for cluster in clusters:
+        sim = torch.nn.functional.cosine_similarity(emb.unsqueeze(0), embeddings[cluster[0]].unsqueeze(0)).item()
+        if sim > 0.85:
+            cluster.append(i)
+            placed = True
+            break
+    if not placed:
+        clusters.append([i])
+
+entropy = sum(-(len(c)/len(responses)) * math.log(len(c)/len(responses)) for c in clusters)
+max_entropy = math.log(len(responses))
+risk = entropy / max_entropy if max_entropy > 0 else 0.0
+print(f"Clusters: {len(clusters)}, Semantic entropy risk: {risk:.2%}")
+# If model always says 'Greenland is larger', clusters=1, risk=0% even though it's wrong</code></pre>
+
+  <!-- ===================== METHOD 3 ===================== -->
+  <h4 class="mt-5">5. Method 3: SelfCheckGPT</h4>
+
+  <p>
+    SelfCheckGPT takes a different angle on consistency. Rather than clustering whole responses, it checks individual sentences from one main response against a set of additional samples. The intuition is that sentences describing facts the model knows well will appear in multiple sampled responses, while sentences describing things the model is uncertain about will be inconsistent or absent across samples. Each sentence gets a consistency score, and the overall hallucination risk is one minus the average consistency.
+  </p>
+
+  <p>
+    You generate one primary response and four or five samples at higher temperature. You then embed each sentence of the primary response and each sentence of the samples, and find the highest cosine similarity between the primary sentence and any sentence across all samples. High similarity means the sentence was repeated consistently. Low similarity means it appeared only once, which suggests the model was not sure about it.
+  </p>
+
+  <p>
+    Like semantic entropy, this method measures inconsistency, not error. If the model always writes the same sentence about The Great Gatsby having five chapters, that sentence will score high consistency and low risk. The method is slightly more expensive than semantic entropy because you need more samples and more embedding comparisons, but it adds sentence-level granularity, which can help you identify which part of a response is uncertain rather than flagging the whole thing.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You want to highlight which specific sentences in a long response are uncertain. It is useful for summarization tasks where some facts are well-known and others are not.
+    <br /><br />
+    <strong>Avoid it when:</strong> The model is systematically wrong in a consistent way. It also runs slowly on long responses because of the pairwise sentence comparisons.
+  </div>
+
+  <pre><code class="language-python">import torch, re
+from statistics import mean
+from sentence_transformers import SentenceTransformer
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def get_response(question, temp=0.2):
+    return client.chat.completions.create(
+        model="ministral-3:3b-cloud",
+        messages=[{"role": "user", "content": question}],
+        temperature=temp, max_tokens=80,
+    ).choices[0].message.content.strip()
+
+question = "Who coined the term Mandela Effect?"
+main_response = get_response(question, temp=0.2)
+samples = [get_response(question, temp=0.7) for _ in range(4)]
+
+sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", main_response) if s.strip()]
+all_sample_sentences = [s for sample in samples for s in re.split(r"(?<=[.!?])\s+", sample) if s.strip()]
+
+consistency_scores = []
+for sentence in sentences:
+    emb_s = embed_model.encode(sentence, convert_to_tensor=True)
+    sims = [
+        torch.nn.functional.cosine_similarity(emb_s.unsqueeze(0), embed_model.encode(t, convert_to_tensor=True).unsqueeze(0)).item()
+        for t in all_sample_sentences
+    ]
+    consistency_scores.append(max(sims) if sims else 0.0)
+
+risk = 1.0 - mean(consistency_scores)
+print(f"Main answer: {main_response}")
+print(f"SelfCheckGPT risk: {risk:.2%}")</code></pre>
+
+  <!-- ===================== METHOD 4 ===================== -->
+  <h4 class="mt-5">6. Method 4: SAFE - Search-Augmented Verification</h4>
+
+  <p>
+    SAFE (Search-Augmented Factuality Estimation) is the first method in this list that actually checks whether an answer is correct rather than just consistent. It works in three steps. First, the model's answer is broken into atomic factual claims, each a short standalone statement. Second, each claim is used as a search query to retrieve a relevant Wikipedia passage. Third, a judge model reads each (claim, passage) pair and decides whether the claim is supported by the evidence. The fraction of unsupported claims becomes the risk score.
+  </p>
+
+  <p>
+    This is a meaningful improvement over consistency-based methods because it no longer relies on the generator's own knowledge. It goes outside to a real reference. When asked "The Great Gatsby has five chapters," SAFE searches Wikipedia for The Great Gatsby, finds a passage that describes the novel, and asks a judge model to verify whether the claim is supported. If Wikipedia says the novel has nine chapters, the claim is marked as refuted and risk goes up.
+  </p>
+
+  <p>
+    The cost is real though. For each query, you need to decompose the answer, run one search per claim, and call a judge model per claim. For a response with three claims, that can mean five or six API calls. Latency is typically two to five seconds, which rules out real-time use. It also depends on Wikipedia coverage, so niche topics or very recent events may not have reliable passages.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You can afford two to five seconds of latency and need to catch real factual errors. It is a strong choice for content pipelines, document summarization, and question-answering systems where accuracy matters more than speed.
+    <br /><br />
+    <strong>Avoid it when:</strong> Your topic is too niche for Wikipedia or you need a response in under a second.
+  </div>
+
+  <pre><code class="language-python">import urllib.parse, urllib.request, json, re
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+
+def search_wikipedia(query):
+    url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(query)}&format=json&srlimit=1"
+    with urllib.request.urlopen(urllib.request.Request(url), timeout=10) as r:
+        results = json.loads(r.read())["query"]["search"]
+    if not results:
+        return ""
+    title = results[0]["title"]
+    with urllib.request.urlopen(f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(title)}", timeout=10) as r:
+        return json.loads(r.read()).get("extract", "")[:2000]
+
+def judge(prompt):
+    return client.chat.completions.create(
+        model="nemotron-3-super:cloud",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0, max_tokens=20,
+    ).choices[0].message.content.strip().upper()
+
+answer = "The Great Gatsby has five chapters."
+claims = [c.strip() for c in answer.split(".") if c.strip()]
+
+supported = 0
+for claim in claims:
+    evidence = search_wikipedia(claim)
+    if not evidence:
+        continue
+    verdict = judge(f"Passage: {evidence}\n\nClaim: {claim}\n\nIs this claim SUPPORTED or REFUTED by the passage?")
+    if "SUPPORTED" in verdict:
+        supported += 1
+
+risk = 1.0 - (supported / len(claims)) if claims else 0.5
+print(f"SAFE risk: {risk:.2%}  ({supported}/{len(claims)} claims supported)")</code></pre>
+
+  <!-- ===================== METHOD 5 ===================== -->
+  <h4 class="mt-5">7. Method 5: FActScore</h4>
+
+  <p>
+    FActScore is conceptually similar to SAFE but fetches one reference document up front for the whole response instead of searching per claim. You pick a Wikipedia topic that is relevant to the question, fetch its summary, and use a judge model to verify each extracted claim against that single passage. The score is the fraction of supported claims.
+  </p>
+
+  <p>
+    The advantage over SAFE is fewer network calls. If you are asking a series of questions about the same topic, for example a user asking multiple questions about a historical figure, you can fetch the Wikipedia page once and reuse it. The judge model call still happens once per claim, but the search step is eliminated or reduced. This makes FActScore a bit faster and more predictable in terms of latency.
+  </p>
+
+  <p>
+    The limitation is that a single Wikipedia passage covers the topic broadly but may not contain the specific fact being checked. If the claim is "The Great Gatsby has five chapters" and the Wikipedia passage talks about the novel's themes and reception, it might not mention the chapter count at all. In that case the judge model has nothing to compare against and may incorrectly label the claim as unsupported or irrelevant. This is why in our benchmark we pass the expected answer as a reference alongside the Wikipedia passage, which significantly reduces false positives.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You are validating responses about well-documented topics where a single Wikipedia article covers the relevant facts. It is a good fit for batch processing where you can group queries by topic and reuse the reference document.
+    <br /><br />
+    <strong>Avoid it when:</strong> The relevant facts are scattered across multiple sources, or the topic is too recent or niche for a good Wikipedia article.
+  </div>
+
+  <pre><code class="language-python">import urllib.parse, urllib.request, json, re
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+
+def fetch_wiki_summary(topic):
+    url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(topic.replace(' ', '_'))}"
+    with urllib.request.urlopen(url, timeout=10) as r:
+        return json.loads(r.read()).get("extract", "")[:2500]
+
+def judge(prompt):
+    return client.chat.completions.create(
+        model="nemotron-3-super:cloud",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.0, max_tokens=20,
+    ).choices[0].message.content.strip().upper()
+
+question = "How many chapters does The Great Gatsby have?"
+answer = client.chat.completions.create(
+    model="ministral-3:3b-cloud",
+    messages=[{"role": "user", "content": question}],
+    temperature=0.2, max_tokens=80,
+).choices[0].message.content.strip()
+
+passage = fetch_wiki_summary("The Great Gatsby")
+claims = [c.strip() for c in answer.split(".") if c.strip()]
+
+supported = 0
+for claim in claims:
+    verdict = judge(f"Passage: {passage}\n\nClaim: {claim}\n\nAnswer with one word: SUPPORTED, REFUTED, or IRRELEVANT.")
+    if "SUPPORTED" in verdict:
+        supported += 1
+
+risk = 1.0 - (supported / len(claims)) if claims else 0.5
+print(f"Answer: {answer}")
+print(f"FActScore risk: {risk:.2%}  ({supported}/{len(claims)} claims supported)")</code></pre>
+
+  <!-- ===================== METHOD 6 ===================== -->
+  <h4 class="mt-5">8. Method 6: LLM-as-Judge</h4>
+
+  <p>
+    The most accurate and most expensive method is to ask a separate, stronger model to evaluate the answer. You take the generated response and send it to a judge model with a prompt that includes the question, the answer, and a request for a verdict: ACCURATE, PARTIALLY_ACCURATE, or INACCURATE. You also ask for a confidence score. The risk is then derived from the verdict and confidence, so a verdict of INACCURATE with high confidence produces a risk near 1.0, while ACCURATE with high confidence produces a risk near 0.
+  </p>
+
+  <p>
+    This method works fundamentally differently from the others. It does not measure consistency, and it does not search a reference. It relies on the judge model's own knowledge to evaluate whether the answer is correct. This makes it powerful for catching the kinds of errors that fool reference-based methods, such as confidently wrong answers about topics where Wikipedia is vague. In the benchmark, LLM-as-Judge correctly flagged the Australia versus Greenland error, the Gatsby chapter count, and the Mandela Effect attribution, all of which fooled some of the other methods.
+  </p>
+
+  <p>
+    The downside is cost. A strong judge model (such as nemotron-3-super) is significantly more expensive per call than an embedding model or a Wikipedia lookup. Latency is typically two to three seconds per query. If you are running this in a production pipeline at scale, the costs add up quickly. The judge model can also be wrong, especially on very niche topics or recent events that fall outside its training data. The key design decision, which is often overlooked, is to use a different model as the judge than the one generating the answers. If you use the same model as both generator and judge, it will agree with itself even when it is wrong, which defeats the purpose.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3 small">
+    <strong>Use it when:</strong> You need the highest possible accuracy and can afford the extra latency and cost. It is the right choice for final validation in high-stakes flows such as medical, legal, or financial question answering.
+    <br /><br />
+    <strong>Avoid it when:</strong> You need a response in under one second, or you are running millions of validations per day where cost becomes prohibitive.
+  </div>
+
+  <pre><code class="language-python">import re
+from openai import OpenAI
+
+generator = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+
+def generate(question):
+    return generator.chat.completions.create(
+        model="ministral-3:3b-cloud",
+        messages=[{"role": "user", "content": question}],
+        temperature=0.2, max_tokens=80,
+    ).choices[0].message.content.strip()
+
+def judge(question, answer):
+    import ollama
+    client = ollama.Client(host="http://localhost:11434")
+    prompt = f"""Question: {question}
+
+Answer: {answer}
+
+Is this answer factually correct? Reply with:
+VERDICT: ACCURATE | PARTIALLY_ACCURATE | INACCURATE
+CONFIDENCE: 0.0 to 1.0"""
+    return client.chat(model="nemotron-3-super:cloud", messages=[{"role": "user", "content": prompt}], options={"temperature": 0.0}).message.content
+
+question = "Which is larger in area, Australia or Greenland?"
+answer = generate(question)
+response = judge(question, answer)
+
+verdict = "INACCURATE" if "INACCURATE" in response.upper() else "ACCURATE" if "ACCURATE" in response.upper() else "PARTIALLY_ACCURATE"
+conf_match = re.search(r"CONFIDENCE\s*:\s*([01](?:\.\d+)?)", response, re.IGNORECASE)
+confidence = float(conf_match.group(1)) if conf_match else 0.5
+
+risk = (1.0 - confidence) if verdict == "ACCURATE" else max(confidence, 0.75) if verdict == "INACCURATE" else max(0.5, 1.0 - confidence)
+print(f"Answer: {answer}")
+print(f"Verdict: {verdict}  |  Confidence: {confidence:.2f}  |  Risk: {risk:.2%}")</code></pre>
+
+  <!-- ===================== COMPARISON TABLE ===================== -->
+  <h4 class="mt-5">9. Comparison Table</h4>
+
+  <p>
+    The table below summarizes the six methods across the dimensions that matter most in production: speed, cost, whether they catch confident hallucinations, and what they are best suited for. No single method is best for every situation. The right choice depends on what your system can afford and how much it needs to get right.
+  </p>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Method</th>
+          <th>Speed</th>
+          <th>Cost per Query</th>
+          <th>Catches Confident Errors</th>
+          <th>External Reference</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Internal State</strong></td>
+          <td>Under 5ms</td>
+          <td>Free</td>
+          <td>No</td>
+          <td>None</td>
+          <td>Real-time uncertainty screening</td>
+        </tr>
+        <tr>
+          <td><strong>Semantic Entropy</strong></td>
+          <td>Under 500ms</td>
+          <td>Very Low</td>
+          <td>No</td>
+          <td>None</td>
+          <td>Detecting genuinely uncertain questions</td>
+        </tr>
+        <tr>
+          <td><strong>SelfCheckGPT</strong></td>
+          <td>1-2 seconds</td>
+          <td>Low</td>
+          <td>No</td>
+          <td>None</td>
+          <td>Sentence-level uncertainty in long responses</td>
+        </tr>
+        <tr>
+          <td><strong>SAFE</strong></td>
+          <td>2-5 seconds</td>
+          <td>Medium</td>
+          <td>Yes</td>
+          <td>Wikipedia per claim</td>
+          <td>Catching factual errors in documented topics</td>
+        </tr>
+        <tr>
+          <td><strong>FActScore</strong></td>
+          <td>3-5 seconds</td>
+          <td>Medium</td>
+          <td>Yes</td>
+          <td>Wikipedia per topic</td>
+          <td>Batch validation on well-documented topics</td>
+        </tr>
+        <tr>
+          <td><strong>LLM Judge</strong></td>
+          <td>2-3 seconds</td>
+          <td>High</td>
+          <td>Yes</td>
+          <td>None (judge model knowledge)</td>
+          <td>Highest-accuracy final validation</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    A practical deployment usually combines methods. You might run Semantic Entropy on every query as a cheap first pass, escalate borderline cases to SAFE for reference-grounded verification, and reserve LLM-as-Judge for high-priority queries or anything flagged as likely wrong by the earlier methods. This layered approach gives you speed on most queries and accuracy where it counts.
+  </p>
+
+  <!-- ===================== CONCLUSION ===================== -->
+  <h4 class="mt-5">10. Final Thoughts</h4>
+
+  <p>
+    Hallucination detection is not a solved problem, but it is a manageable one. The key insight is to match the method to your constraints. If you have milliseconds and no budget, measure uncertainty. If you have seconds and can pay for a judge model, measure correctness. Most systems benefit from combining both.
+  </p>
+
+  <p>
+    One thing the benchmark made clear is that you should never evaluate detection methods on average risk score alone. A method that scores every answer as low risk looks great on average but is useless in practice. The right evaluation asks: when the answer is wrong, does the risk score go up? That is the only metric that reflects whether your detection system is actually working. Build your evaluation around ground truth, not just aggregated scores.
+  </p>
+
+  <p class="fw-bold">
+    Your model will hallucinate. The question is whether your system notices.
+  </p>
+
+  <div class="d-flex justify-content-between mt-5">
+    <span></span>
+    <a href="../index.html" class="btn btn-outline-primary">Back to Home</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

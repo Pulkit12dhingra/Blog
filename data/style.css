@@ -443,7 +443,7 @@ html, body {
 }
 
 /* =============================================
-   ANIMATIONS — KEYFRAMES
+   ANIMATIONS - KEYFRAMES
    ============================================= */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(18px); }
@@ -467,7 +467,7 @@ html, body {
 }
 
 /* =============================================
-   NAVBAR — SCROLL SHADOW
+   NAVBAR - SCROLL SHADOW
    ============================================= */
 .custom-navbar.scrolled {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
@@ -475,14 +475,14 @@ html, body {
 }
 
 /* =============================================
-   DARK MODE TOGGLE — SPIN ON CLICK
+   DARK MODE TOGGLE - SPIN ON CLICK
    ============================================= */
 #dark-mode-toggle.spinning #dark-icon {
   animation: spinPop 0.45s ease forwards;
 }
 
 /* =============================================
-   SIDEBAR LINKS — SLIDE IN ON LOAD
+   SIDEBAR LINKS - SLIDE IN ON LOAD
    ============================================= */
 .sidebar-link-item {
   opacity: 0;
@@ -502,7 +502,7 @@ html, body {
 .sidebar-link-item:nth-child(10) { animation-delay: 0.50s; }
 
 /* =============================================
-   BLOG CARDS — STAGGERED ENTRANCE
+   BLOG CARDS - STAGGERED ENTRANCE
    ============================================= */
 .blog-card {
   opacity: 0;
@@ -523,7 +523,7 @@ html, body {
 }
 
 /* =============================================
-   BLOG CARD LIST — FILTER FADE TRANSITION
+   BLOG CARD LIST - FILTER FADE TRANSITION
    ============================================= */
 .blog-card-list {
   transition: opacity 0.18s ease;
@@ -564,7 +564,7 @@ html, body {
 .skeleton-tags   { height: 13px; width: 40%; }
 
 /* =============================================
-   TOPIC FILTER BTN — ACTIVE PULSE
+   TOPIC FILTER BTN - ACTIVE PULSE
    ============================================= */
 .topic-filter-btn.active {
   animation: fadeIn 0.2s ease;

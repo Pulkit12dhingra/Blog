@@ -371,7 +371,7 @@ async def run_analysis(articles: list) -> dict:
     <tbody>
       <tr><td>You need crash isolation (a bug can't corrupt the parent)</td><td>You're just doing I/O  asyncio or threads are lighter</td></tr>
       <tr><td>You need a hard, enforceable timeout</td><td>You need to share in-memory objects between caller and callee</td></tr>
-      <tr><td>Running untrusted or LLM-generated code safely</td><td>The overhead of process spawning (~50–100ms) is too high for your use case</td></tr>
+      <tr><td>Running untrusted or LLM-generated code safely</td><td>The overhead of process spawning (~50-100ms) is too high for your use case</td></tr>
       <tr><td>Calling a CLI tool or a different language runtime</td><td>The work is purely CPU-bound Python  use ProcessPoolExecutor instead</td></tr>
       <tr><td>Running a script that has its own dependencies/environment</td><td>You just need parallel I/O  that's asyncio's job</td></tr>
     </tbody>

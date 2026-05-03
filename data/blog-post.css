@@ -380,7 +380,7 @@ hr {
 }
 
 /* =============================================
-   ANIMATIONS — KEYFRAMES
+   ANIMATIONS - KEYFRAMES
    ============================================= */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -417,7 +417,7 @@ hr {
 }
 
 /* =============================================
-   SCROLL-REVEAL — SECTIONS
+   SCROLL-REVEAL - SECTIONS
    ============================================= */
 h4 {
   opacity: 0;
@@ -431,7 +431,7 @@ h4.revealed {
 }
 
 /* =============================================
-   TOC — ACTIVE SECTION HIGHLIGHT
+   TOC - ACTIVE SECTION HIGHLIGHT
    ============================================= */
 #post-toc a.toc-active {
   color: var(--bp-accent);
@@ -442,14 +442,14 @@ h4.revealed {
 }
 
 /* =============================================
-   CODE COPY BUTTON — PULSE ON SUCCESS
+   CODE COPY BUTTON - PULSE ON SUCCESS
    ============================================= */
 .code-copy-btn.copied {
   animation: pulse 0.3s ease;
 }
 
 /* =============================================
-   SHARE BUTTON — RIPPLE FEEL
+   SHARE BUTTON - RIPPLE FEEL
    ============================================= */
 .share-btn {
   transition: background-color 0.2s ease, color 0.2s ease,
@@ -499,7 +499,7 @@ h4.revealed {
 }
 
 /* =============================================
-   POST CONTENT — ENTRANCE ANIMATION
+   POST CONTENT - ENTRANCE ANIMATION
    ============================================= */
 .container.mt-4 {
   animation: fadeSlideUp 0.5s ease both;

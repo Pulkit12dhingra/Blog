@@ -158,7 +158,7 @@ def check_quality(score: int, tool_context: ToolContext) -> dict:
   </p>
   <ul>
     <li><strong>writer_agent</strong>  writes or rewrites a piece of content, saving it to state</li>
-    <li><strong>critic_agent</strong>  scores the content on a scale of 1–10 and provides improvement notes. If the score reaches 8 or above, it escalates to stop the loop.</li>
+    <li><strong>critic_agent</strong>  scores the content on a scale of 1-10 and provides improvement notes. If the score reaches 8 or above, it escalates to stop the loop.</li>
   </ul>
   <p>
     The loop runs up to <code>max_iterations=4</code> times. If the critic is satisfied early, it exits before reaching the maximum.
