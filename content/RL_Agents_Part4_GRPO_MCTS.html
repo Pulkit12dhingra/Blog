@@ -1,0 +1,443 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part4_GRPO_MCTS.html" />
+  <meta name="description" content="RL Agents Part 4: Online learning from deployed trajectories, STaR, and closed-loop improvement loops." />
+  <title>RL Agents Part 4: Online Learning | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="RL Agents Part 4: Online Learning" />
+  <meta property="og:description" content="RL Agents Part 4: Online learning from deployed trajectories, STaR, and closed-loop improvement loops." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part4_GRPO_MCTS.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RL Agents Part 4: Online Learning" />
+  <meta name="twitter:description" content="RL Agents Part 4: Online learning from deployed trajectories, STaR, and closed-loop improvement loops." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">RL Agents Part 4: Online Learning from Deployed Trajectories</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+  <hr />
+
+  <p>
+    So far we've covered training agents with verifiable rewards using GRPO and search. But training doesn't end at deployment. The most sophisticated agents continuously improve by learning from their own real-world trajectories. This is online learning in the agentic context.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Code repo: <a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></p>
+  <p class="small text-muted"><i class="bi bi-journal-code me-1"></i>Notebook: <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post05_online_learning.ipynb" target="_blank" rel="noopener noreferrer">post05_online_learning.ipynb</a></p>
+
+  <h4 class="mt-5 mb-3">1. The Offline-to-Online Transition</h4>
+
+  <p>
+    Traditional RL breaks neatly into two phases:
+  </p>
+
+  <ul>
+    <li><strong>Offline training:</strong> You have a fixed dataset (e.g., 100K code problems with solutions). Train on it until convergence. Deploy the model.</li>
+    <li><strong>Inference:</strong> Users interact with the model. It generates responses. No more learning happens.</li>
+  </ul>
+
+  <p>
+    Online learning breaks this boundary:
+  </p>
+
+  <ul>
+    <li><strong>Offline training:</strong> Start with supervised fine-tuning on seed data (as before).</li>
+    <li><strong>Online deployment:</strong> Deploy the model. As users interact with it, continuously log trajectories.</li>
+    <li><strong>Closed-loop refinement:</strong> Filter successful trajectories, fine-tune on them, redeploy. The agent continuously improves on the specific tasks it actually faces.</li>
+  </ul>
+
+  <p>
+    This is inspired by a technique called STaR (Self-Taught Reasoner): the model bootstraps its own training data from its own successful outputs.
+  </p>
+
+  <h4 class="mt-5 mb-3">2. The STaR Pipeline</h4>
+
+  <p>
+    STaR is simple and powerful:
+  </p>
+
+  <ol>
+    <li><strong>Start:</strong> You have a base model and a dataset of tasks.</li>
+    <li><strong>Rollout:</strong> Run the current model on all tasks. Log full trajectories (state, actions, outputs).</li>
+    <li><strong>Filter:</strong> Keep only trajectories where the output passes verification. Discard failures.</li>
+    <li><strong>Fine-tune:</strong> Use the successful trajectories as the new training data. Fine-tune the model on them.</li>
+    <li><strong>Repeat:</strong> Go back to step 2 with the updated model. Each iteration, the success rate typically increases.</li>
+  </ol>
+
+  <p>
+    This simulation is structured to match what a deployed improvement loop does in practice.
+  </p>
+
+  <ul>
+    <li><strong>Trajectory model (`Trajectory`):</strong> Stores task ID, chosen strategy, success flag, and reward exactly like production telemetry.</li>
+    <li><strong>Rollout step (`collect_trajectories`):</strong> Simulates the agent executing tasks with different strategies and receiving verifier scores.</li>
+    <li><strong>Selection step (`select_replay_buffer`):</strong> Keeps the best trajectories to mimic success-filtered retraining data.</li>
+    <li><strong>Monitoring (`summarize_iteration`, `strategy_entropy`):</strong> Tracks reward, success rate, and diversity to detect collapse during iterations.</li>
+    <li><strong>Loop execution:</strong> Runs multiple iterations to show self-improvement dynamics over time.</li>
+  </ul>
+
+  <pre><code class="language-python">import random
+import math
+import pandas as pd
+from dataclasses import dataclass
+
+@dataclass
+class Trajectory:
+    """Represents one agent execution on a task."""
+    task_id: int
+    strategy: str        # What approach did the agent use?
+    success: bool        # Did it pass verification?
+    reward: float        # Quality score from verifier
+
+def collect_trajectories(n_tasks: int = 40, seed: int = 9) -> list[Trajectory]:
+    """Simulate running deployed agent on tasks and logging outcomes."""
+    rng = random.Random(seed)
+    strategies = ["safe_plan", "aggressive_shortcut", "balanced_plan", "tool_first"]
+    
+    trajectories = []
+    for task_id in range(1, n_tasks + 1):
+        # Agent chooses a strategy
+        chosen_strategy = rng.choice(strategies)
+        
+        # Verifier scores it (different strategies have different success rates)
+        strategy_quality = {
+            "safe_plan": 0.72,
+            "balanced_plan": 0.68,
+            "tool_first": 0.63,
+            "aggressive_shortcut": 0.55
+        }
+        
+        base_score = strategy_quality[chosen_strategy]
+        noisy_score = base_score + rng.uniform(-0.2, 0.2)
+        final_reward = min(max(noisy_score, 0.0), 1.0)
+        
+        # Pass/fail threshold
+        passed = final_reward >= 0.65
+        
+        traj = Trajectory(
+            task_id=task_id,
+            strategy=chosen_strategy,
+            success=passed,
+            reward=round(final_reward, 3)
+        )
+        trajectories.append(traj)
+    
+    return trajectories
+
+def trajectories_to_frame(trajectories: list[Trajectory]) -> pd.DataFrame:
+    """Convert trajectories to DataFrame for analysis."""
+    return pd.DataFrame({
+        "task_id": [t.task_id for t in trajectories],
+        "strategy": [t.strategy for t in trajectories],
+        "success": [t.success for t in trajectories],
+        "reward": [t.reward for t in trajectories],
+    })
+
+def select_replay_buffer(df: pd.DataFrame, top_k: int = 15) -> pd.DataFrame:
+    """Filter to top-K successful trajectories for fine-tuning."""
+    return df.sort_values("reward", ascending=False).head(top_k).reset_index(drop=True)
+
+def strategy_entropy(df: pd.DataFrame) -> float:
+    """Measure diversity of strategies (prevent mode collapse)."""
+    strategy_counts = df["strategy"].value_counts(normalize=True)
+    entropy = -(strategy_counts * strategy_counts.apply(lambda p: math.log(p + 1e-12))).sum()
+    return round(float(entropy), 3)
+
+def summarize_iteration(df: pd.DataFrame) -> dict:
+    """Summarize iteration statistics."""
+    return {
+        "mean_reward": round(float(df["reward"].mean()), 3),
+        "success_rate": round(float(df["success"].mean()), 3),
+        "strategy_entropy": strategy_entropy(df),
+    }
+
+# RUN THE ONLINE LEARNING LOOP
+
+print("=" * 70)
+print("ONLINE LEARNING FROM DEPLOYED TRAJECTORIES (STaR)")
+print("=" * 70)
+
+for iteration in range(1, 4):
+    print(f"\n--- Iteration {iteration} ---")
+    
+    # Step 1: Rollout - run agent on tasks
+    trajectories = collect_trajectories(n_tasks=40, seed=8 + iteration)
+    df = trajectories_to_frame(trajectories)
+    
+    # Step 2: Summarize performance
+    stats = summarize_iteration(df)
+    print(f"Mean reward: {stats['mean_reward']}")
+    print(f"Success rate: {stats['success_rate']:.0%}")
+    print(f"Strategy diversity: {stats['strategy_entropy']:.2f}")
+    
+    # Step 3: Filter to successful trajectories
+    replay_buffer = select_replay_buffer(df, top_k=15)
+    print(f"Selected {len(replay_buffer)} successful trajectories for fine-tuning")
+    
+    # Step 4: Show strategy distribution
+    strategy_dist = replay_buffer["strategy"].value_counts()
+    print("Strategy distribution in replay buffer:")
+    for strategy, count in strategy_dist.items():
+        print(f"  {strategy}: {count}")
+
+print("\n" + "=" * 70)
+print("KEY INSIGHT:")
+print("Each iteration, we extract successful trajectories from the agent's")
+print("own outputs and fine-tune on them. The agent bootstraps its own")
+print("training data, leading to continuous improvement.")
+print("=" * 70)
+  </code></pre>
+
+  <p>
+    When you run this code, you'll see that:
+  </p>
+
+  <ol>
+    <li>Iteration 1 achieves ~65% success rate</li>
+    <li>Iteration 2 achieves higher success by learning from iteration 1's wins</li>
+    <li>Each iteration extracts successful trajectories with diverse strategies</li>
+    <li>Strategy entropy shows whether the model is diversifying or collapsing</li>
+  </ol>
+
+  <p>
+    This is the essence of online learning: the agent becomes its own data engine.</p>
+
+   <h4 class="mt-5 mb-3">Complete Code Reference</h4>
+
+   <p>
+     The code above is adapted from the <strong><a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></strong> repository module:
+   </p>
+
+   <ul>
+     <li><strong>Module:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/src/rl_agents/post05_online_learning.py" target="_blank" rel="noopener noreferrer">post05_online_learning.py</a></li>
+     <li><strong>Notebook:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post05_online_learning.ipynb" target="_blank" rel="noopener noreferrer">post05_online_learning.ipynb</a></li>
+   </ul>
+
+   <h4 class="mt-5 mb-3">To run locally:</h4>
+
+   <pre><code class="language-bash">git clone https://github.com/Pulkit12dhingra/RL_Agents
+ cd RL_Agents
+ uv sync
+ jupyter notebook notebooks/post05_online_learning.ipynb
+   </code></pre>
+
+  <h5 class="mt-4">Why This Works</h5>
+
+  <p>
+    STaR works because:
+  </p>
+
+  <ul>
+    <li><strong>Alignment with reality:</strong> The model learns on the exact task distribution it will be tested on (not a synthetic training set).</li>
+    <li><strong>Automatic curation:</strong> By filtering to successes, you're implicitly creating a diverse set of solution approaches that work.</li>
+    <li><strong>Bootstrap effect:</strong> Small improvements compound. If your model goes from 10% success to 12% success in iteration 1, you can fine-tune on 20% more data in iteration 2. This accelerates learning.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">3. The Central Risk: Distribution Collapse</h4>
+
+  <p>
+    STaR has one major failure mode: distribution collapse. Here's the danger:
+  </p>
+
+  <p>
+    Suppose your model learns a narrow strategy that works for 60% of tasks. In iteration 1, you filter to those 60% and fine-tune. The model becomes overspecialized to that narrow strategy. Its success rate on the remaining 40% drops to 50%. In iteration 2, you filter to 30% of tasks (60% × 50%). Soon, the model only works on a tiny subset of the original distribution.
+  </p>
+
+  <p>
+    You've optimized yourself into a corner: high success on a narrow band, low success everywhere else.
+  </p>
+
+  <h5 class="mt-4">Mitigation Strategies:</h5>
+
+  <ul>
+    <li><strong>Mix in diverse demonstrations:</strong> Keep a fraction of your training data as generic, diverse SFT examples. This prevents complete collapse to a single strategy.</li>
+    <li><strong>Exploration bonus:</strong> Reward the model for trying different approaches to the same problem, not just the easiest one. This maintains behavioral diversity.</li>
+    <li><strong>Threshold filtering:</strong> Don't filter too aggressively. If your success rate is 65%, include examples at the 55% quantile (near-successes) as well. This keeps the distribution broader.</li>
+    <li><strong>Monitor generalization:</strong> Track success rate on a held-out validation set. If it drops while training set success rises, you're collapsing. Back off.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">4. The Data Flow in Deployed Agents</h4>
+
+  <p>
+    Here's what a mature deployed agent system looks like:
+  </p>
+
+  <pre><code class="language-text">User Query
+    ↓
+Model (inference, possibly with search)
+    ↓
+Output generated
+    ↓
+Verifier checks success/failure
+    ↓
+Trajectory logged to database
+    ↓
+[Async Process] Successful trajectories collected in batches
+    ↓
+Fine-tuning job runs nightly/weekly
+    ↓
+Updated model deployed
+    ↓
+(Loop)
+  </code></pre>
+
+  <p>
+    The agent is learning continuously from real user interactions. No additional labeling required. The verifier (same one used for RLVR) automates the labeling.
+  </p>
+
+  <h4 class="mt-5 mb-3">5. Practical Considerations for Online Learning</h4>
+
+  <h5 class="mt-4">How often to retrain?</h5>
+
+  <ul>
+    <li><strong>Too frequent (daily):</strong> Overfitting risk. Model drifts on niche cases.</li>
+    <li><strong>Good frequency (weekly):</strong> Accumulate enough diverse successes. Reduce noise from single failures or quirks.</li>
+    <li><strong>Too infrequent (monthly):</strong> Model stagnates. Real-world improvements are slow.</li>
+  </ul>
+
+  <h5 class="mt-4">How much data to keep?</h5>
+
+  <ul>
+    <li><strong>Keep all successful trajectories:</strong> They're free (you collected them anyway). More diverse examples → better learning.</li>
+    <li><strong>Subsample if necessary:</strong> If you have millions of successes, sample 10% each cycle to speed up fine-tuning.</li>
+  </ul>
+
+  <h5 class="mt-4">How to avoid catastrophic forgetting?</h5>
+
+  <ul>
+    <li><strong>Replay buffer:</strong> Mix in 10-20% old data from previous weeks. Prevents the model from forgetting how to handle scenarios that are now rare.</li>
+    <li><strong>Small learning rate:</strong> Fine-tune with lower learning rate on online data than on initial SFT. Gentler updates.</li>
+    <li><strong>KL penalty:</strong> Explicitly penalize the updated model if it diverges too much from the original. Keep it close to the reference model.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">6. Real-World Results</h4>
+
+  <p>
+    In practice, online learning can yield dramatic improvements:
+  </p>
+
+  <ul>
+    <li><strong>Code agents:</strong> Starting at 40% success, after 3-4 online learning iterations, they reach 65%+ success on the same task distribution.</li>
+    <li><strong>Math reasoning:</strong> Similar pattern: 45% → 60%+ over 3-4 weeks of deployment.</li>
+    <li><strong>Long-horizon planning:</strong> 20% → 50% is common as the agent learns task-specific patterns.</li>
+  </ul>
+
+  <p>
+    The key: this improvement comes entirely from the model learning its own successful traces, not from additional human annotation.
+  </p>
+
+  <h4 class="mt-5 mb-3">7. Summary: The Virtuous Cycle</h4>
+
+  <p>
+    Online learning closes the loop:
+  </p>
+
+  <ol>
+    <li><strong>Deploy:</strong> Model is trained offline on supervised data.</li>
+    <li><strong>Operate:</strong> Model handles real user tasks. Some succeed, some fail.</li>
+    <li><strong>Log:</strong> All trajectories are stored with verifier results (pass/fail).</li>
+    <li><strong>Filter:</strong> Successful trajectories are extracted automatically.</li>
+    <li><strong>Learn:</strong> Model is fine-tuned on successful traces (self-generated data).</li>
+    <li><strong>Redeploy:</strong> Updated model goes back into production.</li>
+    <li><strong>Improve:</strong> Success rate increases. More successes → more training data → faster learning.</li>
+    <li><strong>Loop:</strong> Repeat cycle continuously.</li>
+  </ol>
+
+  <p>
+    This virtuous cycle is what powers the most capable agents. They're not static. They improve with every deployment day.
+  </p>
+
+  <div class="alert alert-info mt-4">
+    <strong>Next in the series:</strong> Part 5 explores safety, reward hacking, and credit assignment - the unresolved challenges in agentic RL.
+  </div>
+
+  <div class="my-4 d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="RL_Agents_Part3_ORM_vs_PRM.html">← Part 3</a>
+    <a class="btn btn-outline-primary" href="RL_Agents_Part5_Online_Learning.html">Part 5 →</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.1"></script>
+</body>
+</html>

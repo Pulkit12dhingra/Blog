@@ -101,6 +101,14 @@
     const container = document.querySelector('.container.mt-4');
     if (!container) return;
 
+    // Guardrails:
+    // 1) Avoid duplicate auto-TOC if script runs more than once.
+    // 2) Skip auto-TOC when a page already defines its own static TOC section.
+    if (container.querySelector('#post-toc')) return;
+    const hasStaticTOCHeading = Array.from(container.querySelectorAll('h1,h2,h3,h4,h5,h6'))
+      .some(h => (h.textContent || '').trim().toLowerCase() === 'table of contents');
+    if (hasStaticTOCHeading) return;
+
     const headings = Array.from(container.querySelectorAll('h4, h5'));
     if (headings.length < 3) return; // skip TOC for short posts
 

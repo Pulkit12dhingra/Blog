@@ -1,0 +1,559 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part3_ORM_vs_PRM.html" />
+  <meta name="description" content="RL Agents Part 3: GRPO, MCTS, and search-based reasoning - efficient optimization and inference-time exploration." />
+  <title>RL Agents Part 3: GRPO and MCTS | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="RL Agents Part 3: GRPO and MCTS" />
+  <meta property="og:description" content="RL Agents Part 3: GRPO, MCTS, and search-based reasoning - efficient optimization and inference-time exploration." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part3_ORM_vs_PRM.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RL Agents Part 3: GRPO and MCTS" />
+  <meta name="twitter:description" content="RL Agents Part 3: GRPO, MCTS, and search-based reasoning - efficient optimization and inference-time exploration." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">RL Agents Part 3: GRPO, MCTS, and Search-Based Reasoning</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+  <hr />
+
+  <p>
+    Now that we understand RLVR and reward signal density, we reach the next layer: how do we actually optimize agents to maximize those rewards? This post covers two breakthrough approaches: GRPO (used by DeepSeek-R1) and MCTS (used by AlphaProof and competitive reasoning systems).
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Code repo: <a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></p>
+  <p class="small text-muted"><i class="bi bi-journal-code me-1"></i>Notebook: <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post04_grpo_mcts.ipynb" target="_blank" rel="noopener noreferrer">post04_grpo_mcts.ipynb</a></p>
+
+  <h4 class="mt-5 mb-3">1. The RL Optimization Problem</h4>
+
+  <p>
+    Once you have reward signals (from RLVR), the question becomes: how do you adjust the model's weights to produce higher-reward trajectories?
+  </p>
+
+  <p>
+    The classical approach is PPO (Proximal Policy Optimization), which works like this:
+  </p>
+
+  <ol>
+    <li>Sample trajectories from your current model</li>
+    <li>Compute advantages (how much better is this trajectory than average?)</li>
+    <li>Use gradient updates to increase the probability of high-advantage trajectories</li>
+    <li>Regularize: use KL divergence to keep the updated model close to the original (don't drift too far)</li>
+  </ol>
+
+  <p>
+    PPO works well, but it has a significant drawback: computing advantages requires a separate <strong>critic network</strong> - another neural network that predicts expected returns. For large models, this means duplicating the model size, doubling computation and memory.
+  </p>
+
+  <h4 class="mt-5 mb-3">2. GRPO: Group Relative Policy Optimization</h4>
+
+  <p>
+    <strong>GRPO (Group Relative Policy Optimization)</strong> is a clever alternative that sidesteps the critic network entirely. The core insight: instead of comparing each trajectory to a learned baseline, compare outputs within a group.
+  </p>
+
+  <h5 class="mt-4">How GRPO Works:</h5>
+
+  <ol>
+    <li><strong>Sample a batch of outputs:</strong> For a single prompt, generate multiple responses (say, 8 candidate solutions).</li>
+    <li><strong>Score them all:</strong> Use your reward model (or verifier) to score each response.</li>
+    <li><strong>Compute relative advantages:</strong> Instead of comparing to an expected value, compute advantages relative to the group mean. High scorer gets positive advantage. Low scorer gets negative advantage.</li>
+    <li><strong>Update the policy:</strong> Increase probability of high-advantage responses, decrease low-advantage responses.</li>
+  </ol>
+
+  <p>
+    Why is this efficient?
+  </p>
+
+  <ul>
+    <li><strong>No critic network:</strong> You're using the group mean as your baseline instead of a learned function. Saves 2x compute.</li>
+    <li><strong>Natural distribution:</strong> By sampling multiple outputs per prompt, you efficiently explore the space around your current policy.</li>
+    <li><strong>Empirically strong:</strong> DeepSeek-R1 used GRPO and achieved state-of-the-art results with significantly lower computational cost than expected.</li>
+  </ul>
+
+  <h5 class="mt-4">Simple Example:</h5>
+
+  <p>
+    Suppose you're training a math-solving agent. For the prompt "What is 5 + 3?", you generate 4 candidate answers:
+  </p>
+
+  <ul>
+    <li>Candidate A: "The answer is 8" → Verifier checks: correct! Reward = 1</li>
+    <li>Candidate B: "The answer is 9" → Verifier checks: incorrect. Reward = 0</li>
+    <li>Candidate C: "The answer is 8" → Verifier checks: correct! Reward = 1</li>
+    <li>Candidate D: "The answer is 10" → Verifier checks: incorrect. Reward = 0</li>
+  </ul>
+
+  <p>
+    Group mean reward = (1 + 0 + 1 + 0) / 4 = 0.5
+  </p>
+
+  <p>
+    Advantages: A gets +0.5, B gets -0.5, C gets +0.5, D gets -0.5
+  </p>
+
+  <p>
+    During the gradient update, you increase the probability of generating responses like A and C, and decrease the probability of responses like B and D. This is much cheaper than training a critic network.
+  </p>
+
+  <h4 class="mt-5 mb-3">3. Monte Carlo Tree Search + LLMs</h4>
+
+  <p>
+    An orthogonal approach: instead of pure RL fine-tuning, use MCTS (Monte Carlo Tree Search) at inference time to explore the space of reasoning paths.
+  </p>
+
+  <h5 class="mt-4">Classic MCTS in Games:</h5>
+
+  <p>
+    MCTS is the algorithm that powers AlphaGo. It works by:
+  </p>
+
+  <ol>
+    <li><strong>Selection:</strong> Starting from the root (current state), pick the most promising path using an exploration strategy (UCB1 formula).</li>
+    <li><strong>Expansion:</strong> When you reach a leaf node, add new children (new possible moves).</li>
+    <li><strong>Simulation:</strong> Run a fast simulation from the expanded node to estimate its value.</li>
+    <li><strong>Backpropagation:</strong> Update all nodes along the path with the simulation result.</li>
+  </ol>
+
+  <h5 class="mt-4">Applying MCTS to Reasoning:</h5>
+
+  <p>
+    For agent tasks, the analogy is:
+  </p>
+
+  <ul>
+    <li><strong>Moves:</strong> The next action or reasoning step the agent could take.</li>
+    <li><strong>Game state:</strong> The current context, partial solution, or partially-completed task.</li>
+    <li><strong>Value function:</strong> A neural network (or another LLM) that scores whether a state looks like it's on the path to a solution.</li>
+  </ul>
+
+  <p>
+    The agent generates candidate next steps (using the language model), MCTS explores them using the value function, and the path with the highest estimated value is executed.
+  </p>
+
+  <h5 class="mt-4">Example: Solving a Math Problem with MCTS</h5>
+
+  <p>
+    Prompt: "Solve for x: 3x + 5 = 20"
+  </p>
+
+  <ol>
+    <li><strong>Root:</strong> Initial state is the problem statement.</li>
+    <li><strong>MCTS samples steps:</strong>
+      <ul>
+        <li>Path A: "Subtract 5 from both sides" → "3x = 15"</li>
+        <li>Path B: "Divide both sides by 3" → "x + 5/3 = 20/3" (wrong approach)</li>
+        <li>Path C: "Subtract 5 from both sides" → "3x = 15" (same as A)</li>
+      </ul>
+    </li>
+    <li><strong>Value function evaluates each:</strong> Paths A and C look promising (score 0.9). Path B looks like a dead end (score 0.3).</li>
+    <li><strong>MCTS explores further:</strong> Expands path A/C: "Divide both sides by 3" → "x = 5"</li>
+    <li><strong>Final step:</strong> Verify "x = 5" against the original equation. It works! Done.</li>
+  </ol>
+
+  <h5 class="mt-4">Why MCTS for Reasoning?</h5>
+
+  <ul>
+    <li><strong>Explicit search:</strong> You explore multiple paths before committing, not just sampling once from the LLM.</li>
+    <li><strong>Efficient exploration:</strong> UCB1 balances exploring promising paths vs exploring new alternatives.</li>
+    <li><strong>Generalizes to complex problems:</strong> Beam search (a simpler version) and full MCTS handle much longer reasoning chains.</li>
+    <li><strong>State-of-the-art results:</strong> AlphaProof (DeepMind's math olympiad solver) used MCTS-like search and achieved silver-medal performance.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">4. GRPO vs MCTS: When to Use Which?</h4>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Aspect</th>
+        <th>GRPO (RL Fine-tuning)</th>
+        <th>MCTS (Inference Search)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>When applied</td>
+        <td>During training</td>
+        <td>At inference (test) time</td>
+      </tr>
+      <tr>
+        <td>Cost</td>
+        <td>Amortized during training</td>
+        <td>Per-query (can be slow)</td>
+      </tr>
+      <tr>
+        <td>How it helps</td>
+        <td>Model learns better policies</td>
+        <td>Explores best solutions at test time</td>
+      </tr>
+      <tr>
+        <td>Requires</td>
+        <td>Verifiable reward signal</td>
+        <td>Verifiable reward + value function</td>
+      </tr>
+      <tr>
+        <td>Best for</td>
+        <td>Scalable improvement, batch processing</td>
+        <td>Complex problems needing explicit search</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>The future approach:</strong> Use both. Fine-tune with GRPO to improve the base model. Then add MCTS at inference time for extra-hard problems where search helps.
+  </p>
+
+  <h4 class="mt-5 mb-3">5. The Branching Factor Problem in Language</h4>
+
+  <p>
+    MCTS is incredibly powerful, but it faces a challenge in language: the branching factor is huge. In Go, each position has ~300 legal moves. In language generation, each token could be any of ~100k vocabulary items, leading to combinatorial explosion.
+  </p>
+
+  <p>
+    Solutions:
+  </p>
+
+  <ul>
+    <li><strong>Beam search:</strong> Restrict to top-K candidates at each step (K=3 or K=5). Much cheaper than full MCTS.</li>
+    <li><strong>Constraint-guided generation:</strong> Only allow moves (tokens) that maintain validity (e.g., don't break syntax).</li>
+    <li><strong>Value-guided pruning:</strong> Discard branches with low value predictions early.</li>
+  </ul>
+
+  <p>
+    This is why AlphaProof worked: it combined a strong language model (proposing reasonable steps) with a value function (filtering implausible paths) and beam search (exploring top candidates). Not full MCTS, but the principle is the same.
+  </p>
+
+  <h4 class="mt-5 mb-3">6. Real-World Impact</h4>
+
+  <p>
+    The models leading the leaderboards now use some blend of:
+  </p>
+
+  <ul>
+    <li><strong>GRPO (or similar) during training:</strong> Efficient fine-tuning without doubling model size.</li>
+    <li><strong>Search at inference:</strong> Beam search or MCTS for hard problems, direct generation for easy ones (amortized cost).</li>
+    <li><strong>Value functions:</strong> Trained to predict solution likelihood, guiding search.</li>
+  </ul>
+
+  <p>
+    DeepSeek-R1's success came largely from this exact stack: GRPO training + test-time inference search. The cost tradeoff is real (inference is slower), but the capability jump is enormous.
+  </p>
+
+     <h4 class="mt-5 mb-3">7. Complete Code: GRPO and MCTS Demonstrations</h4>
+
+    <p>
+    The code is organized into three simulation blocks so you can map each algorithm to its real runtime behavior.
+    </p>
+
+    <ul>
+    <li><strong>GRPO block:</strong> Builds a candidate-response group, scores each response, and computes relative advantages to show which outputs get reinforced.</li>
+    <li><strong>MCTS block:</strong> Simulates node selection with UCB, showing how search balances high-value paths with under-explored paths.</li>
+    <li><strong>Beam search block:</strong> Expands top candidate traces over multiple steps, imitating inference-time reasoning path exploration.</li>
+    </ul>
+
+     <pre><code class="language-python">import math
+   import random
+   import pandas as pd
+
+   # PART 1: GRPO - Group Relative Policy Optimization
+
+   def ppo_clipped_objective(old_prob: float, new_prob: float, advantage: float, eps: float = 0.2) -> float:
+     """
+     Classical PPO objective (for reference).
+     Clips ratio to prevent too-large updates.
+     """
+     ratio = new_prob / max(old_prob, 1e-9)
+     clipped_ratio = min(max(ratio, 1 - eps), 1 + eps)
+     # Return the minimum of original and clipped, times advantage
+     return min(ratio * advantage, clipped_ratio * advantage)
+
+   def grpo_relative_advantages(rewards: list[float]) -> list[float]:
+     """
+     GRPO: Compute advantages relative to group mean (not a learned baseline).
+     """
+     group_mean = sum(rewards) / max(len(rewards), 1)
+     advantages = [round(r - group_mean, 3) for r in rewards]
+     return advantages
+
+   # Demo: GRPO on a simple problem
+   print("=" * 70)
+   print("GRPO: Group Relative Policy Optimization")
+   print("=" * 70)
+
+   # Scenario: Generate 6 solutions to "What is 2 + 3?"
+   rewards = [1.0, 0.0, 1.0, 0.0, 0.5, 0.8]  # 6 candidate outputs scored by verifier
+   candidate_names = ["Sol_A", "Sol_B", "Sol_C", "Sol_D", "Sol_E", "Sol_F"]
+
+   print("\nCandidate solutions and their verifier scores:")
+   for name, reward in zip(candidate_names, rewards):
+     print(f"  {name}: {reward}")
+
+   group_mean = sum(rewards) / len(rewards)
+   print(f"\nGroup mean reward: {group_mean:.2f}")
+
+   advantages = grpo_relative_advantages(rewards)
+   print("\nGRPO Advantages (relative to group mean):")
+   for name, adv in zip(candidate_names, advantages):
+     direction = "↑ increase prob" if adv > 0 else "↓ decrease prob"
+     print(f"  {name}: {adv:+.3f} {direction}")
+
+   # PART 2: MCTS - UCB-Based Selection
+
+   def ucb_score(win_rate: float, visits: int, total_visits: int, c: float = 1.4) -> float:
+     """
+     UCB1 formula: balances exploitation (win_rate) and exploration (math.log term).
+     """
+     if visits == 0:
+       return float("inf")  # Unvisited nodes get priority
+
+     exploitation = win_rate
+     exploration = c * math.sqrt(math.log(total_visits) / visits)
+     return exploitation + exploration
+
+   def mcts_lite_selection(seed: int = 5) -> pd.DataFrame:
+     """
+     Simulate MCTS selection: which path should we explore next?
+     Imagine 4 candidate next steps, each with different visit counts and values.
+     """
+     rng = random.Random(seed)
+
+     paths = []
+     total_visits = 50
+
+     for path_name in ["path_a", "path_b", "path_c", "path_d"]:
+       visits = rng.randint(1, 20)
+       win_rate = rng.uniform(0.1, 0.95)
+       ucb = ucb_score(win_rate, visits, total_visits)
+
+       paths.append({
+         "path": path_name,
+         "win_rate": round(win_rate, 3),
+         "visits": visits,
+         "ucb_score": round(ucb, 3)
+       })
+
+     frame = pd.DataFrame(paths)
+     return frame.sort_values("ucb_score", ascending=False)
+
+   # Demo: MCTS Selection
+   print("\n" + "=" * 70)
+   print("MCTS: Monte Carlo Tree Search - Path Selection")
+   print("=" * 70)
+
+   print("\nAfter 50 total simulations, 4 candidate next steps have different statistics:")
+   mcts_frame = mcts_lite_selection()
+   print(mcts_frame.to_string(index=False))
+
+   print("\nInterpretation:")
+   print("- path_a: high win rate but fewer visits")
+   print("- path_b: moderate stats, moderate UCB")
+   print("- path_c: good win rate with decent visits → high UCB (explore this!)")
+   print("- path_d: low win rate → low UCB (avoid)")
+
+   print("\nUCB selection priority:")
+   for idx, (path, ucb) in enumerate(zip(mcts_frame["path"], mcts_frame["ucb_score"]), 1):
+     print(f"  {idx}. {path} (UCB={ucb})")
+
+   # PART 3: Beam Search Example
+
+   def beam_search_arithmetic(target: int = 15, beam_width: int = 3, depth: int = 4) -> pd.DataFrame:
+     """
+     Simplified beam search: find a sequence of arithmetic operations to reach target.
+     Example: start=0, +3, +3, +3, +3, +3 = 15
+     """
+     # Start with initial state
+     beams = [(0, "start")]
+     operations = [("+1", 1), ("+3", 3), ("*2", 2)]  # Available operations
+
+     # Expand for `depth` iterations
+     for iteration in range(depth):
+       all_candidates = []
+
+       for value, trace in beams:
+         for op_name, op_value in operations:
+           # Apply operation
+           if op_name == "*2":
+             next_value = value * op_value
+           else:
+             next_value = value + op_value
+
+           new_trace = f"{trace} -> {op_name}({next_value})"
+           all_candidates.append((next_value, new_trace))
+
+       # Keep only top-K by distance to target
+       all_candidates.sort(key=lambda x: abs(target - x[0]))
+       beams = all_candidates[:beam_width]
+
+     # Return final results
+     results = []
+     for value, trace in beams:
+       results.append({
+         "value": value,
+         "distance_to_target": abs(target - value),
+         "trace": trace
+       })
+
+     return pd.DataFrame(results).sort_values("distance_to_target")
+
+   print("\n" + "=" * 70)
+   print("BEAM SEARCH: Arithmetic Path Finding")
+   print("=" * 70)
+
+   print("\nFind operations to reach target=15 (starting from 0)")
+   beam_results = beam_search_arithmetic(target=15, beam_width=3, depth=4)
+   print("\nTop beams after 4 steps:")
+   for idx, row in beam_results.iterrows():
+     print(f"\nValue: {row['value']}, Distance: {row['distance_to_target']}")
+     print(f"Trace: {row['trace']}")
+
+   print("\n" + "=" * 70)
+   print("KEY INSIGHTS:")
+   print("=" * 70)
+   print("1. GRPO avoids critic networks by using group-relative advantages")
+   print("2. MCTS uses UCB to balance exploitation and exploration")
+   print("3. Beam search is a practical variant: keep top-K, expand, repeat")
+   print("4. Combined: GRPO trains the policy, MCTS explores at inference")
+   print("=" * 70)
+     </code></pre>
+
+     <p>
+     When you run this code, you'll see:
+     </p>
+
+     <ul>
+     <li>GRPO advantages show which solutions should be reinforced (positive) vs discouraged (negative)</li>
+     <li>MCTS UCB scores prioritize well-performing paths while still exploring newcomers</li>
+     <li>Beam search efficiently finds near-optimal arithmetic sequences by exploring promising branches</li>
+     </ul>
+
+     <h4 class="mt-5 mb-3">Complete Code Reference</h4>
+
+     <p>
+     The code above is from the <strong><a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></strong> repository:
+     </p>
+
+     <ul>
+     <li><strong>Module:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/src/rl_agents/post04_optimization_search.py" target="_blank" rel="noopener noreferrer">post04_optimization_search.py</a></li>
+     <li><strong>Notebook:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post04_grpo_mcts.ipynb" target="_blank" rel="noopener noreferrer">post04_grpo_mcts.ipynb</a></li>
+     </ul>
+
+     <p>To run locally:</p>
+
+     <pre><code class="language-bash">git clone https://github.com/Pulkit12dhingra/RL_Agents
+   cd RL_Agents
+   uv sync
+   jupyter notebook notebooks/post04_grpo_mcts.ipynb
+     </code></pre>
+
+     <h4 class="mt-5 mb-3">8. Summary</h4>
+
+  <p>
+    <strong>GRPO:</strong> Efficient policy optimization that avoids critic networks by using group-relative advantages.
+  </p>
+
+  <p>
+    <strong>MCTS:</strong> Classical search algorithm adapted to language, exploring multiple reasoning paths at inference time.
+  </p>
+
+  <p>
+    <strong>Combined:</strong> A trained model that explores well at inference, achieving state-of-the-art results on complex reasoning.
+  </p>
+
+  <p>
+    In the next post, we'll explore online learning: how deployed agents continuously improve by learning from their own trajectories.
+  </p>
+
+  <div class="alert alert-info mt-4">
+    <strong>Next in the series:</strong> Part 4 explores online learning from deployed agent trajectories - STaR and self-improvement loops.
+  </div>
+
+  <div class="my-4 d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="RL_Agents_Part2_RLVR_Deep_Dive.html">← Part 2</a>
+    <a class="btn btn-outline-primary" href="RL_Agents_Part4_GRPO_MCTS.html">Part 4 →</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.1"></script>
+</body>
+</html>

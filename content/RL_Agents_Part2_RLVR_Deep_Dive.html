@@ -1,0 +1,448 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part2_RLVR_Deep_Dive.html" />
+  <meta name="description" content="RL Agents Part 2: Process vs Outcome Reward Models - understanding signal density, credit assignment, and multi-step reasoning." />
+  <title>RL Agents Part 2: Process vs Outcome Reward Models | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="RL Agents Part 2: Process vs Outcome Reward Models" />
+  <meta property="og:description" content="RL Agents Part 2: Process vs Outcome Reward Models - understanding signal density, credit assignment, and multi-step reasoning." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part2_RLVR_Deep_Dive.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RL Agents Part 2: Process vs Outcome Reward Models" />
+  <meta name="twitter:description" content="RL Agents Part 2: Process vs Outcome Reward Models - understanding signal density, credit assignment, and multi-step reasoning." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">RL Agents Part 2: Process vs Outcome Reward Models</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+  <hr />
+
+  <p>
+    Now that we understand RLVR, we hit the next critical question: when do you give the reward signal? At the very end of the task? Or at each intermediate step? This distinction matters enormously for long-horizon agent training.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Code repo: <a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></p>
+  <p class="small text-muted"><i class="bi bi-journal-code me-1"></i>Notebook: <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post03_orm_vs_prm.ipynb" target="_blank" rel="noopener noreferrer">post03_orm_vs_prm.ipynb</a></p>
+
+  <h4 class="mt-5 mb-3">1. The Two Reward Signal Architectures</h4>
+
+  <p>
+    There are fundamentally two ways to structure reward signals during agent trajectories:
+  </p>
+
+  <h5 class="mt-4"><strong>Outcome Reward Model (ORM):</strong> Reward Only at the End</h5>
+
+  <p>
+    An ORM evaluates the final output and gives a single reward (or score) for the entire trajectory. For example:
+  </p>
+
+  <ul>
+    <li><strong>Code task:</strong> Run all tests at the end. If they pass, reward = 1. If any fail, reward = 0.</li>
+    <li><strong>Math task:</strong> Check the final answer. If it matches, reward = 1. Otherwise reward = 0.</li>
+    <li><strong>Long agent task:</strong> Look at the final result. Did the agent achieve the goal? Reward = 1 or 0.</li>
+  </ul>
+
+  <p>
+    Advantages of ORM:
+  </p>
+
+  <ul>
+    <li><strong>Simple to implement:</strong> Just evaluate the end state.</li>
+    <li><strong>No intermediate annotation needed:</strong> You don't need to decide what's "good" at step 5 or 15.</li>
+    <li><strong>Computationally cheap:</strong> One evaluation per trajectory, not many.</li>
+  </ul>
+
+  <p>
+    Disadvantages of ORM:
+  </p>
+
+  <ul>
+    <li><strong>Sparse feedback:</strong> In a 50-step trajectory, you get exactly one reward signal. The agent doesn't know which of the 50 steps contributed to success or failure.</li>
+    <li><strong>Credit assignment nightmare:</strong> If step 5 was a bad decision but step 40 recovered, how does the model learn? It doesn't - the final outcome was good, so all steps get equal credit.</li>
+    <li><strong>Scaling issue:</strong> As task complexity grows, the probability of randomly getting the right sequence becomes vanishingly small. The agent struggles to find winning trajectories at all.</li>
+  </ul>
+
+  <h5 class="mt-4"><strong>Process Reward Model (PRM):</strong> Reward at Each Step</h5>
+
+  <p>
+    A PRM evaluates the trajectory at each step and provides feedback throughout. For example:
+  </p>
+
+  <ul>
+    <li><strong>Code development:</strong> After each function definition, syntax check, or test run, provide feedback on whether that step improved things.</li>
+    <li><strong>Math reasoning:</strong> After each line of work, verify the algebraic steps are correct. Reward = 1 if correct, 0 if not.</li>
+    <li><strong>Long agent task:</strong> After each action, check whether the agent is making progress toward the goal.</li>
+  </ul>
+
+  <p>
+    Advantages of PRM:
+  </p>
+
+  <ul>
+    <li><strong>Dense feedback:</strong> In a 50-step trajectory, you get up to 50 reward signals. The model knows which steps are good and which are bad immediately.</li>
+    <li><strong>Credit assignment clarity:</strong> If step 5 was bad, the model sees immediate negative feedback and learns to avoid that action pattern.</li>
+    <li><strong>Exploration efficiency:</strong> The model learns faster because it gets more gradient signal per episode.</li>
+    <li><strong>Long-horizon capability:</strong> Models can tackle much longer tasks because each step is evaluated in isolation.</li>
+  </ul>
+
+  <p>
+    Disadvantages of PRM:
+  </p>
+
+  <ul>
+    <li><strong>Requires step-level annotations:</strong> You need to define what makes a "good" intermediate state. For some tasks, this is easy (test passes). For others, it's hard.</li>
+    <li><strong>Computationally expensive:</strong> You run the evaluator at every step, not just the end. A 50-step task costs 50x more evaluation than ORM.</li>
+    <li><strong>Annotation overhead:</strong> For tasks where you can't auto-verify each step, you need human raters at each step. This is prohibitively expensive.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">2. Concrete Example: Debugging a Python Script</h4>
+
+  <p>
+    Let's say an agent is tasked with fixing a broken Python script. It can take up to 20 actions: read the error, hypothesize a bug, modify the code, run tests, iterate, etc.
+  </p>
+
+  <h5 class="mt-4">With ORM (Outcome-only):</h5>
+
+  <ul>
+    <li>Action 1: Agent reads the error message → no reward yet</li>
+    <li>Action 2: Agent adds a print statement → no reward yet</li>
+    <li>Action 3: Agent runs the script → no reward yet</li>
+    <li>... (17 more actions)</li>
+    <li>Action 20: Agent runs final tests → NOW we evaluate. Tests pass? Reward = 1. Tests fail? Reward = 0.</li>
+  </ul>
+
+  <p>
+    Problem: if tests fail, the agent has no idea which of the 20 actions was wrong. Was it action 3? Action 15? Was the final modification unnecessary and bad? The model must figure this out entirely from the one binary signal at the end. This is extremely sample-inefficient.
+  </p>
+
+  <h5 class="mt-4">With PRM (Step-level):</h5>
+
+  <ul>
+    <li>Action 1: Agent reads the error message → Verify: is the error message correctly parsed? Reward = 1 or 0.</li>
+    <li>Action 2: Agent adds a print statement → Verify: does this actually help diagnose the issue? Reward = 1 or 0.</li>
+    <li>Action 3: Agent runs the script → Verify: does the modified code execute? Reward = 1 or 0.</li>
+    <li>... (17 more actions, each evaluated immediately)</li>
+    <li>Action 20: Tests pass? Reward = 1. Tests fail? Reward = 0.</li>
+  </ul>
+
+  <p>
+    Now the agent gets step-level feedback. If action 15 was a bad code change, the agent sees immediately that it failed the step-level verifier. It learns to avoid that pattern. This is much more efficient.
+  </p>
+
+  <h4 class="mt-5 mb-3">3. Why PRM Dominates for Agentic Tasks</h4>
+
+  <p>
+    The research on this is clear: for multi-step reasoning and agent tasks, PRMs significantly outperform ORMs. Here's why:
+  </p>
+
+  <ul>
+    <li><strong>Mathematical reasoning:</strong> In a 10-step proof, if step 7 is wrong, a PRM catches it immediately. An ORM says "your final answer is wrong" with no guidance on where the error originated.</li>
+    <li><strong>Code generation:</strong> A syntax error on line 5 compounds through the entire generated solution. A PRM detects it at line 5. An ORM only sees the failure at the end.</li>
+    <li><strong>Planning tasks:</strong> A bad routing decision early on wastes many subsequent steps. A PRM penalizes it early. An ORM credits the agent for trying, even though the plan is doomed.</li>
+  </ul>
+
+  <p>
+    The tradeoff is real: PRM requires defining intermediate evaluation criteria, and it's more computationally expensive. But for agents that must reliably solve multi-step problems, it's non-negotiable.
+  </p>
+
+  <h4 class="mt-5 mb-3">4. When Can We Use ORM? When Must We Use PRM?</h4>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Task Characteristics</th>
+        <th>ORM Viable?</th>
+        <th>PRM Needed?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Single decision (translate, summarize)</td>
+        <td>✓ Yes</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>Few steps (3-5), clear goal</td>
+        <td>✓ Maybe</td>
+        <td>Helps, but ORM works</td>
+      </tr>
+      <tr>
+        <td>Multi-step (10-20), complex reasoning</td>
+        <td>✗ No</td>
+        <td>✓ Strongly recommended</td>
+      </tr>
+      <tr>
+        <td>Long horizon (40-100 steps)</td>
+        <td>✗ No way</td>
+        <td>✓ Essential</td>
+      </tr>
+      <tr>
+        <td>Intermediate states hard to evaluate</td>
+        <td>✓ Acceptable</td>
+        <td>Difficult to implement</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-5 mb-3">5. Complete Code: ORM vs PRM Comparison</h4>
+
+  <p>
+    The simulation below mirrors a real multi-step agent episode and shows exactly where each reward architecture injects learning signal.
+  </p>
+
+  <ul>
+    <li><strong>Episode generator (`build_episode`):</strong> Creates a 20-step trajectory where each step has a quality score, representing how useful each action was.</li>
+    <li><strong>Reward wiring:</strong> Assigns ORM reward only at the terminal step and PRM reward at every step, so the only difference is signal timing.</li>
+    <li><strong>Return computation (`discounted_return`):</strong> Converts raw rewards into training targets used by policy updates.</li>
+    <li><strong>Comparison routine (`compare_orm_vs_prm`):</strong> Measures how many steps actually carry signal and quantifies density ratio.</li>
+  </ul>
+
+  <pre><code class="language-python">import numpy as np
+import pandas as pd
+
+# Build a synthetic multi-step trajectory
+def build_episode(steps: int = 20, seed: int = 11) -> pd.DataFrame:
+    """Generate a trajectory with step quality scores."""
+    rng = np.random.default_rng(seed)
+    
+    # Each step has some inherent quality
+    quality = rng.uniform(0.2, 1.0, size=steps)
+    
+    frame = pd.DataFrame({
+        "step": np.arange(1, steps + 1),
+        "action_quality": quality.round(3)
+    })
+    
+    # ORM: Only give reward at the final step
+    frame["orm_reward"] = 0.0
+    frame.loc[steps - 1, "orm_reward"] = 1.0  # Success at end only
+    
+    # PRM: Give reward proportional to step quality
+    frame["prm_reward"] = frame["action_quality"]
+    
+    return frame
+
+# Compute discounted returns for learning signal
+def discounted_return(rewards: np.ndarray, gamma: float = 0.95) -> np.ndarray:
+    """Compute cumulative discounted returns (used in policy optimization)."""
+    returns = np.zeros_like(rewards, dtype=float)
+    running = 0.0
+    
+    # Backward pass: compute cumulative future rewards
+    for i in range(len(rewards) - 1, -1, -1):
+        running = rewards[i] + gamma * running
+        returns[i] = running
+    
+    return returns
+
+# Compare the two approaches
+def compare_orm_vs_prm():
+    # Generate episode
+    episode = build_episode(steps=20, seed=11)
+    
+    # Compute returns for both
+    orm_returns = discounted_return(episode["orm_reward"].to_numpy())
+    prm_returns = discounted_return(episode["prm_reward"].to_numpy())
+    
+    episode["orm_returns"] = orm_returns
+    episode["prm_returns"] = prm_returns
+    
+    # Compute signal statistics
+    orm_nonzero = float((episode["orm_reward"] > 0).sum())
+    prm_nonzero = float((episode["prm_reward"] > 0).sum())
+    
+    stats = {
+        "orm_steps_with_signal": orm_nonzero,
+        "prm_steps_with_signal": prm_nonzero,
+        "signal_density_ratio": prm_nonzero / max(orm_nonzero, 1),
+        "orm_average_return": episode["orm_returns"].mean(),
+        "prm_average_return": episode["prm_returns"].mean(),
+    }
+    
+    return episode, stats
+
+# Run the comparison
+episode_data, statistics = compare_orm_vs_prm()
+
+print("=== Trajectory Data (first 5 steps shown) ===")
+print(episode_data[["step", "action_quality", "orm_reward", "prm_reward", "orm_returns", "prm_returns"]].head())
+
+print("\n=== Signal Density Analysis ===")
+for key, value in statistics.items():
+    if isinstance(value, float):
+        print(f"{key}: {value:.2f}")
+
+print("\n=== Key Insight ===")
+print(f"ORM provides signal to {int(statistics['orm_steps_with_signal'])} step (final only)")
+print(f"PRM provides signal to all {int(statistics['prm_steps_with_signal'])} steps")
+print(f"Learning signal density is {statistics['signal_density_ratio']:.0f}x higher with PRM!")
+
+# Visualize the difference
+print("\n=== ORM vs PRM: Learning Signal Comparison ===")
+print("Step | Action Quality | ORM Return | PRM Return")
+print("-" * 50)
+for idx, row in episode_data[::4].iterrows():  # Show every 4th step
+    print(f"{int(row['step']):3d}  |      {row['action_quality']:.2f}       |    {row['orm_returns']:.3f}    |   {row['prm_returns']:.3f}")
+  </code></pre>
+
+  <p>
+    When you run this code, you'll see that ORM provides a single reward of 1.0 at the final step, creating a sparse learning signal. PRM, by contrast, provides dense feedback throughout the trajectory - approximately proportional to the quality of each step. This density difference is why PRM dramatically outperforms ORM on long-horizon tasks.
+  </p>
+
+  <h4 class="mt-5 mb-3">Complete Code Reference</h4>
+
+  <p>
+    The code above is adapted from the <strong><a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></strong> repository module:
+  </p>
+
+  <ul>
+    <li><strong>Module:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/src/rl_agents/post03_rewards.py" target="_blank" rel="noopener noreferrer">post03_rewards.py</a></li>
+    <li><strong>Notebook:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post03_orm_vs_prm.ipynb" target="_blank" rel="noopener noreferrer">post03_orm_vs_prm.ipynb</a></li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">6. Building a Verifier for Each Step</h4>
+
+  <p>
+    If you commit to PRM, you need step-level verifiers. Here are examples:
+  </p>
+
+  <ul>
+    <li><strong>Code writing:</strong> After each function/block, run syntax check and unit tests. Score = number of passing tests / total tests.</li>
+    <li><strong>Math:</strong> After each algebraic step, check whether the equation is valid (use symbolic computation or expert verification).</li>
+    <li><strong>Planning:</strong> After each action, check whether the agent is closer to the goal (distance to goal decreases? Resource constraints still met?).</li>
+    <li><strong>Web navigation:</strong> After each click/action, check whether the agent is closer to the target (did page load correctly? Did navigation succeed?).</li>
+  </ul>
+
+  <p>
+    The key insight: you need domain-specific verifiers for each task type. But the payoff is enormous: your agents learn much faster and solve much harder problems.
+  </p>
+
+  <h4 class="mt-5 mb-3">7. Real-World Data: ORM vs PRM Performance</h4>
+
+  <p>
+    In OpenAI's o1 and DeepSeek-R1 research, models trained with process rewards (step-level feedback) dramatically outperform models trained with only outcome rewards (final answer only):
+  </p>
+
+  <ul>
+    <li><strong>Mathematical problem solving:</strong> PRM-trained agents solve ~20% more problems correctly.</li>
+    <li><strong>Code generation:</strong> PRM-trained agents pass ~15% more test suites with fewer attempts.</li>
+    <li><strong>Multi-step reasoning:</strong> PRM-trained agents show better generalization to out-of-distribution reasoning patterns.</li>
+  </ul>
+
+  <p>
+    The reason: PRMs provide much richer learning signal, reducing the sample complexity of learning long-horizon policies.
+  </p>
+
+  <h4 class="mt-5 mb-3">8. Summary and Implications</h4>
+
+  <p>
+    <strong>For short, well-defined tasks:</strong> ORM is sufficient and cheaper.
+  </p>
+
+  <p>
+    <strong>For long-horizon agent tasks:</strong> PRM is nearly mandatory. The dense feedback enables much more reliable learning.
+  </p>
+
+  <p>
+    <strong>For deployed agents in the wild:</strong> The best-performing systems use PRM selectively - evaluating steps that matter most and skipping steps where feedback is obvious.
+  </p>
+
+  <p>
+    In the next post, we'll explore the optimization algorithms that actually use these rewards - PPO, GRPO, and why newer approaches are often more efficient than classic policy gradient methods.
+  </p>
+
+  <div class="alert alert-info mt-4">
+    <strong>Next in the series:</strong> Part 3 explores GRPO and MCTS - the algorithms powering state-of-the-art reasoning agents.
+  </div>
+
+  <div class="my-4 d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="RL_Agents_Part1_RLHF_RLVR.html">← Part 1</a>
+    <a class="btn btn-outline-primary" href="RL_Agents_Part3_ORM_vs_PRM.html">Part 3 →</a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.1"></script>
+</body>
+</html>

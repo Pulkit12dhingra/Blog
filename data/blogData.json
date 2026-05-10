@@ -1,5 +1,53 @@
 [
   {
+    "file": "RL_Agents_Part6_Safety_Credit_Assignment.html",
+    "title": "RL Agents Part 6: RLAIF, Reward Hacking, and Credit Assignment",
+    "summary": "Final part of the RL agents series covering RLAIF-based critics, reward hacking failure patterns and mitigations, KL regularization, and why long-horizon credit assignment remains the hardest open problem.",
+    "tags": ["RL", "RLAIF", "Reward Hacking", "Credit Assignment", "Agents", "AI", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "RL_Agents_Part5_Online_Learning.html",
+    "title": "RL Agents Part 5: Online Learning from Agent Trajectories",
+    "summary": "A practical guide to closed-loop agent improvement with live trajectory logging, replay buffers, STaR-style updates, anti-collapse safeguards, and diversity-aware redeployment.",
+    "tags": ["RL", "Online Learning", "STaR", "Agents", "Trajectory", "AI", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "RL_Agents_Part4_GRPO_MCTS.html",
+    "title": "RL Agents Part 4: PPO, GRPO, and Search-Time Reasoning",
+    "summary": "Understand PPO clipping, GRPO group-relative baselines, and MCTS-like reasoning search with runnable examples that connect training-time optimization and inference-time planning.",
+    "tags": ["RL", "PPO", "GRPO", "MCTS", "Reasoning", "Agents", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "RL_Agents_Part3_ORM_vs_PRM.html",
+    "title": "RL Agents Part 3: Outcome vs Process Rewards",
+    "summary": "Learn the practical tradeoffs between outcome reward models and process reward models, with a clear view of why dense step-level signals are essential for long-horizon agent tasks.",
+    "tags": ["RL", "ORM", "PRM", "Reward Modeling", "Agents", "AI", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "RL_Agents_Part2_RLVR_Deep_Dive.html",
+    "title": "RL Agents Part 2: RLVR Deep Dive",
+    "summary": "A detailed walkthrough of verifiable rewards in math, code, SQL, and tool-use tasks, including verifier design principles, failure cases, and practical rollout considerations.",
+    "tags": ["RL", "RLVR", "Verifiers", "Agents", "AI", "LLM", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "RL_Agents_Part1_RLHF_RLVR.html",
+    "title": "RL Agents Part 1: RLHF to RLVR Foundations",
+    "summary": "A beginner-friendly practical walkthrough of the RLHF pipeline, its scaling limits for long-horizon agents, and the shift to RLVR with objective verifiable rewards in code, math, SQL, and tool-use tasks.",
+    "tags": ["RL", "RLHF", "RLVR", "Agents", "LLM", "AI", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
     "file": "Hallucination_Detection.html",
     "title": "Detecting LLM Hallucinations: From Cheap to Accurate Methods",
     "summary": "A practical guide to six hallucination detection methods ranked from fastest and cheapest to most accurate, covering Internal State, Semantic Entropy, SelfCheckGPT, SAFE, FActScore, and LLM-as-Judge, with Python code for each and a final comparison table.",

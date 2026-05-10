@@ -1,0 +1,519 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part1_RLHF_RLVR.html" />
+  <meta name="description" content="RL Agents Part 1: understand why supervised imitation is not enough, how RLHF works, where it breaks, and how RLVR unlocks scalable training with verifiable rewards." />
+  <title>RL Agents Part 1: RLHF to RLVR Foundations | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="RL Agents Part 1: RLHF to RLVR Foundations" />
+  <meta property="og:description" content="A beginner-friendly practical walkthrough of RLHF foundations and RLVR with verifiable rewards, backed by runnable notebook code." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part1_RLHF_RLVR.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RL Agents Part 1: RLHF to RLVR Foundations" />
+  <meta name="twitter:description" content="A beginner-friendly practical walkthrough of RLHF foundations and RLVR with verifiable rewards, backed by runnable notebook code." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">RL Agents Part 1: From RLHF to RLVR  -  The Foundations</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <div class="alert alert-info">
+    <strong>Series Overview:</strong> This is Part 1 of a deep dive into Reinforcement Learning for AI agents. We start with the foundations: RLHF and RLVR, then build toward process rewards, optimization techniques, online learning, and safety.
+  </div>
+
+  <p>
+    If we only trained agents through imitation - copying what humans demonstrated - they would inherit all the limitations of those demonstrations. Agents would never improve beyond the ceiling of the training data. But the real world demands more. An agent navigating a 50-step workflow needs feedback that guides it toward success, not just copies of averagely-good traces.
+  </p>
+
+  <p>
+    This is where <strong>Reinforcement Learning (RL)</strong> comes in. Unlike supervised learning which asks "can you copy this?", reinforcement learning asks "can you maximize success over time?" This fundamental shift unlocks agents that continuously improve.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Code repo: <a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></p>
+  <p class="small text-muted"><i class="bi bi-journal-code me-1"></i>Notebook: <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post01_rlhf_rlvr_foundations.ipynb" target="_blank" rel="noopener noreferrer">post01_rlhf_rlvr_foundations.ipynb</a></p>
+
+  <h4 class="mt-5 mb-3">1. Why Imitation Alone Fails for Long-Horizon Tasks</h4>
+  <p>
+    Consider training a software development agent. You could collect 10,000 transcripts of expert programmers and have your agent learn to copy their style. But here's the problem: once your agent encounters a situation slightly different from those transcripts, it has no principled way to decide what to do. It learned patterns, not principles. And critically, it never learned from failure, because the training data only contained successful examples (or at least, the annotator's best judgment of what successful looks like).
+  </p>
+
+  <p>
+    For short, well-defined tasks this might work. For long workflows with many decisions, it breaks down immediately. The agent needs <em>outcome feedback</em> - a signal that says "that sequence of actions worked, or it didn't" - so it can propagate learning from failures and reinforce successes.
+  </p>
+
+  <div class="alert alert-secondary py-2 px-3">
+    <strong>Real-world analogy:</strong> Teaching a support agent only from polished customer service transcripts teaches it to sound professional. But if you want it to actually resolve tickets faster, you need to measure resolution success and fine-tune the agent on transcripts that correlate with resolutions. That's reinforcement learning.
+  </div>
+
+  <h4 class="mt-5 mb-3">2. Enter RLHF: Reinforcement Learning from Human Feedback</h4>
+
+  <p>
+    <strong>RLHF (Reinforcement Learning from Human Feedback)</strong> is the technique that gave modern large language models (LLMs) their instruction-following ability. It emerged as the key breakthrough for making GPT-style models useful for real-world tasks. Here's the full pipeline:
+  </p>
+
+  <h5 class="mt-4">Step 1: Collect Preference Data</h5>
+  <p>
+    Take a base model (usually just supervised fine-tuned on conversations). Generate two candidate responses to the same prompt. Show both to human raters and ask: "Which response is better?" Better could mean more helpful, more honest, safer, more detailed - whatever your values are.
+  </p>
+
+  <p>
+    Collect thousands of these pairwise comparisons. Each comparison is a data point: prompt → (response A, response B) → "A is better" (or "B is better", or "tie").
+  </p>
+
+  <h5 class="mt-4">Step 2: Train a Reward Model</h5>
+  <p>
+    Now you have a classification dataset. Use it to train a reward model (RM) - a neural network that learns to predict what humans prefer. Feed it a prompt + response, it outputs a scalar reward score. This model essentially learns to approximate the implicit human preference function.
+  </p>
+
+  <p>
+    The code below simulates the same three RLHF stages you would run in production, but with synthetic data so results are instant.
+  </p>
+
+  <ul>
+    <li><strong>Dataset construction (`build_preference_dataset`):</strong> Simulates human pairwise choices by generating two candidate responses per prompt and labeling which one is preferred.</li>
+    <li><strong>Reward model fitting (`train_reward_model`):</strong> Trains a lightweight classifier to imitate the preference function, exactly like a reward model learns from rater choices.</li>
+    <li><strong>Pipeline run (`df = ...`, `rm, accuracy = ...`):</strong> Executes the end-to-end loop so you can inspect inputs, learned coefficients, and training quality.</li>
+  </ul>
+
+  <pre><code class="language-python">import pandas as pd
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+
+# Step 1: Generate synthetic preference dataset
+# In a real system, this would be human annotations of "which response is better"
+
+def build_preference_dataset(n_samples: int = 40, seed: int = 7):
+    """Create synthetic human-preference dataset for RLHF."""
+    import random
+    rng = random.Random(seed)
+    rows = []
+    
+    for idx in range(n_samples):
+        qa = rng.uniform(0.0, 1.0)  # Quality score for response A
+        qb = rng.uniform(0.0, 1.0)  # Quality score for response B
+        rows.append({
+            "prompt": f"Task {idx + 1}: explain a concept clearly",
+            "len_a": rng.randint(30, 220),      # Length of response A
+            "len_b": rng.randint(30, 220),      # Length of response B
+            "quality_a": qa,
+            "quality_b": qb,
+            "preferred": int(qa >= qb),         # Binary label: A > B?
+        })
+    
+    return pd.DataFrame(rows)
+
+# Step 2: Extract features and train RM
+def train_reward_model(df: pd.DataFrame):
+    """Fit a reward model on preference data."""
+    features = pd.DataFrame({
+        "len_diff": df["len_a"] - df["len_b"],
+        "quality_diff": df["quality_a"] - df["quality_b"],
+    })
+    target = df["preferred"]
+    
+    # Train logistic regression as our reward model
+    model = LogisticRegression(max_iter=300)
+    model.fit(features, target)
+    accuracy = model.score(features, target)
+    
+    return model, accuracy
+
+# Run the pipeline
+df = build_preference_dataset(n_samples=40, seed=7)
+rm, accuracy = train_reward_model(df)
+
+print(f"Preference Dataset:")
+print(df.head())
+print(f"\nRM Training Accuracy: {accuracy:.1%}")
+print(f"Trained RM coefficients: {rm.coef_[0]}")
+  </code></pre>
+
+  <p>
+    The RM learns to score responses on whatever implicit quality signal the human raters were using. In the example above, it learns that responses with higher quality differences should be preferred. In a real system, this is trained on tens of thousands of examples from actual human raters.
+  </p>
+
+  <h5 class="mt-4">Step 3: Fine-tune the Policy with PPO</h5>
+  <p>
+    Now use this learned reward model to fine-tune your original base model via <strong>PPO (Proximal Policy Optimization)</strong> - a type of reinforcement learning algorithm. The training loop is:
+
+    <ul>
+      <li>Sample a prompt from your distribution</li>
+      <li>Use the current model to generate a response</li>
+      <li>Score that response with your trained RM</li>
+      <li>Use PPO to nudge the model's weights to make high-scoring responses more likely</li>
+      <li>Repeat until convergence</li>
+    </ul>
+  </p>
+
+  <p>
+    The result: your model learns to generate responses that the RM predicts are high-quality. Since the RM was trained to predict human preference, the model becomes better at following human intentions.
+  </p>
+
+  <h4 class="mt-5 mb-3">3. The Critical Limitations of RLHF</h4>
+
+  <p>
+    RLHF was a massive breakthrough. It's the foundation of ChatGPT, Claude, and other instruction-tuned LLMs. But it hits hard walls for agentic tasks:
+  </p>
+
+  <ul>
+    <li><strong>Human raters are expensive:</strong> A single preference labeling task costs real money and time. Scaling to millions of examples is prohibitively costly.</li>
+    <li><strong>Human raters are slow:</strong> You need humans in the loop continuously. This blocks rapid iteration.</li>
+    <li><strong>Human raters are inconsistent:</strong> Two raters often disagree on quality. This noise pollutes the RM training signal.</li>
+    <li><strong>Humans cannot judge complex reasoning:</strong> If an agent generates a 50-step mathematical proof, how do you reliably ask a human to verify it's correct? You need a domain expert. This doesn't scale.</li>
+  </ul>
+
+  <p>
+    Imagine training an agent to debug software at scale using RLHF. You'd need to hire hundreds of experienced engineers to judge whether the agent's debugging approach was correct on each attempt. The cost is astronomical. The inconsistency is terrible. It's simply not feasible.
+  </p>
+
+  <div class="alert alert-warning py-2 px-3">
+    <strong>Key insight:</strong> Human feedback is fundamentally limited by the rate at which humans can produce labels. You cannot scale a human-in-the-loop system indefinitely. You need a way to generate supervision automatically.
+  </div>
+
+  <h4 class="mt-5 mb-3">4. RLVR: The Breakthrough for Agents</h4>
+
+  <p>
+    <strong>RLVR (Reinforcement Learning on Verifiable Rewards)</strong> removes the human-in-the-loop bottleneck entirely. Instead of asking humans "which response is better?", you ask verifiers "did this response pass an objective test?"
+  </p>
+
+  <p>
+    For many agent tasks, correctness is objective:
+  </p>
+
+  <ul>
+    <li><strong>Code:</strong> Does the generated code pass the test suite? Binary: yes or no.</li>
+    <li><strong>Math:</strong> Is the final answer numerically equal to the expected answer? Binary: yes or no.</li>
+    <li><strong>SQL:</strong> Does the generated query return the exact rows specified? Binary: yes or no.</li>
+    <li><strong>Tool use:</strong> Did the agent complete the task without runtime errors? Binary: yes or no.</li>
+  </ul>
+
+  <p>
+    The verifier is a simple program - a test suite, a validator function, a diff checker - not a human. And here's the magic: you can generate unlimited amounts of supervision by simply creating more problems programmatically.
+  </p>
+
+  <p>
+    Here's the complete implementation of verifiers for all four task types:
+  </p>
+
+  <pre><code class="language-python">import sqlite3
+from dataclasses import dataclass
+
+@dataclass
+class VerifierResult:
+    task_name: str
+    passed: bool
+    reward: int
+    details: str
+
+# VERIFIER 1: Math Tasks (exact answer matching)
+def verify_math(expected: int, predicted: int) -> VerifierResult:
+    """Check if predicted answer matches expected answer."""
+    passed = expected == predicted
+    return VerifierResult(
+        "math", 
+        passed, 
+        int(passed),  # reward = 1 if passed, 0 if failed
+        f"expected={expected}, predicted={predicted}"
+    )
+
+# VERIFIER 2: Code Tasks (test suite execution)
+def verify_code() -> VerifierResult:
+    """Check if generated code passes all tests."""
+    # Simulate code that needs to implement is_even function
+    def is_even(n: int) -> bool:
+        return n % 2 == 0
+    
+    # Run test cases
+    tests = [
+        is_even(2),      # Should pass (2 is even)
+        not is_even(3),  # Should pass (3 is not even)
+        is_even(8),      # Should pass (8 is even)
+    ]
+    
+    passed = all(tests)
+    return VerifierResult(
+        "code",
+        passed,
+        int(passed),
+        f"test_results={tests}"
+    )
+
+# VERIFIER 3: SQL Tasks (query result matching)
+def verify_sql() -> VerifierResult:
+    """Check if generated SQL returns expected rows."""
+    conn = sqlite3.connect(":memory:")
+    cur = conn.cursor()
+    
+    # Create table and insert data
+    cur.execute("CREATE TABLE orders(customer TEXT, amount INTEGER)")
+    cur.executemany(
+        "INSERT INTO orders VALUES(?, ?)",
+        [("alice", 120), ("bob", 40), ("alice", 80)]
+    )
+    
+    # Run the query
+    cur.execute(
+        "SELECT customer, SUM(amount) total FROM orders "
+        "GROUP BY customer ORDER BY total DESC"
+    )
+    rows = cur.fetchall()
+    conn.close()
+    
+    # Check if output matches expected
+    expected = [("alice", 200), ("bob", 40)]
+    passed = rows == expected
+    return VerifierResult(
+        "sql",
+        passed,
+        int(passed),
+        f"query_result={rows}"
+    )
+
+# VERIFIER 4: Tool Use Tasks (execution success)
+def verify_tool(exit_code: int, stderr: str) -> VerifierResult:
+    """Check if tool execution completed without errors."""
+    passed = exit_code == 0 and stderr.strip() == ""
+    return VerifierResult(
+        "tool_use",
+        passed,
+        int(passed),
+        f"exit_code={exit_code}, had_errors={stderr.strip() != ''}"
+    )
+
+# RUN ALL VERIFIERS
+def batch_verify_tasks():
+    """Execute all verifiers and return results."""
+    results = [
+        verify_math(expected=64, predicted=64),    # Correct answer
+        verify_code(),                              # All tests pass
+        verify_sql(),                               # Query returns correct rows
+        verify_tool(exit_code=0, stderr=""),        # Tool ran successfully
+    ]
+    
+    import pandas as pd
+    df = pd.DataFrame({
+        "task_type": [r.task_name for r in results],
+        "passed": [r.passed for r in results],
+        "reward": [r.reward for r in results],
+        "details": [r.details for r in results],
+    })
+    df["cumulative_success_rate"] = df["passed"].expanding().mean().round(2)
+    return df
+
+# Execute the batch
+results = batch_verify_tasks()
+print(results)
+print(f"\nBatch Success Rate: {results['reward'].mean():.1%}")
+  </code></pre>
+
+  <p>
+    In this example, all four verifiers pass, giving rewards of 1 each. In a real training loop, you'd generate many problems (1000s or 10,000s), run the agent on each, collect verifier signals, and accumulate a reward dataset. Then use GRPO or PPO to fine-tune the model.
+  </p>
+
+  <p>
+    This is exactly what powered DeepSeek-R1, OpenAI's o1, and similar reasoning-focused models. The models learned to generate chain-of-thought reasoning, check the answer, and propagate the reward signal backward through all the reasoning steps. The result: agents that can reason through multi-step problems effectively.
+  </p>
+
+  <h4 class="mt-5 mb-3">5. The Tension: When Verifiers Aren't Available</h4>
+
+  <p>
+    RLVR is transformative, but it requires objective correctness checks. What if your task doesn't have a clear verifier?
+  </p>
+
+  <ul>
+    <li>Generating a novel paragraph: there's no "correct" output, only "good" and "bad"</li>
+    <li>Planning a trip: many valid itineraries exist; no single ground truth</li>
+    <li>Conversational response: depends on subjective quality and safety</li>
+  </ul>
+
+  <p>
+    For these tasks, RLHF remains necessary - you need human feedback. But the more you can decompose your agent's task into verifiable subtasks, the more you can use RLVR instead. This becomes a key design pattern: structure agent tasks to maximize the verifiable components.
+  </p>
+
+  <h4 class="mt-5 mb-3">6. Practical Comparison: RLHF vs RLVR</h4>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>RLHF</th>
+        <th>RLVR</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Reward source</td>
+        <td>Human raters</td>
+        <td>Automated verifier</td>
+      </tr>
+      <tr>
+        <td>Scaling cost</td>
+        <td>Linear with volume (hire more raters)</td>
+        <td>Sublinear (write problems, run verifier)</td>
+      </tr>
+      <tr>
+        <td>Consistency</td>
+        <td>Variable (humans disagree)</td>
+        <td>Perfect (verifier is deterministic)</td>
+      </tr>
+      <tr>
+        <td>Applicable domains</td>
+        <td>Any task</td>
+        <td>Tasks with objective correctness</td>
+      </tr>
+      <tr>
+        <td>Training speed</td>
+        <td>Slow (waiting for human annotations)</td>
+        <td>Fast (automated rewards)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 class="mt-5 mb-3">7. Real-World Implications for Agents</h4>
+
+  <p>
+    The shift from RLHF to RLVR is reshaping the entire field. Here's why:
+  </p>
+
+  <ul>
+    <li><strong>Scalability:</strong> RLVR enables training at massive scale without proportional cost increases. DeepSeek-R1 was trained significantly cheaper than comparable models because of RLVR.</li>
+    <li><strong>Generalization:</strong> Because verifiers are objective, the model learns to genuinely solve problems, not pattern-match to human preferences. This transfers better to new unseen problems.</li>
+    <li><strong>Alignment incentive:</strong> When the reward is "does this pass the test suite", the model is incentivized to produce correct code, not to game the human's judgment.</li>
+  </ul>
+
+  <p>
+    The frontier agentic models being built now use RLVR as a core component. Where human feedback is needed (for tasks without clear verifiers), they layer in RLAIF (Reinforcement Learning from AI Feedback - using a strong model to rate outputs instead of humans), which we'll cover later.
+  </p>
+
+  <h4 class="mt-5 mb-3">Summary: Building the Foundation</h4>
+
+  <p>
+    To recap: RLHF was the breakthrough that made LLMs instruction-following. But for agents performing long-horizon, verifiable tasks, RLVR is the better approach. It removes the human bottleneck and enables scalable training with objective reward signals.
+  </p>
+
+  <p>
+    In the next post, we'll dive deep into the verifier design patterns used in practice - how to build verifiers for code, math, SQL, and tool use. We'll also explore what happens when verifiers are imperfect, and how to handle edge cases.
+  </p>
+
+  <h4 class="mt-5 mb-3">Complete Code Reference</h4>
+
+  <p>
+    All code examples above are from the <strong><a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></strong> repository:
+  </p>
+
+  <ul>
+    <li><strong>Module:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/src/rl_agents/post01_foundations.py" target="_blank" rel="noopener noreferrer">post01_foundations.py</a>  -  Contains preference dataset builder, reward model training, and RLVR verifiers</li>
+    <li><strong>Notebook:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post01_rlhf_rlvr_foundations.ipynb" target="_blank" rel="noopener noreferrer">post01_rlhf_rlvr_foundations.ipynb</a>  -  Executable notebook with full demos</li>
+  </ul>
+
+  <p>
+    To run locally:
+  </p>
+
+  <pre><code class="language-bash"># Clone the repo
+git clone https://github.com/Pulkit12dhingra/RL_Agents
+cd RL_Agents
+
+# Sync dependencies with uv
+uv sync
+
+# Run the notebook
+jupyter notebook notebooks/post01_rlhf_rlvr_foundations.ipynb
+  </code></pre>
+
+  <div class="alert alert-info mt-4">
+    <strong>Next in the series:</strong> Part 2 explores Outcome vs Process Reward Models - the crucial distinction for multi-step tasks.
+  </div>
+
+  <div class="my-4">
+    <a class="btn btn-outline-primary" href="../index.html">Browse all posts</a>
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.1"></script>
+</body>
+</html>

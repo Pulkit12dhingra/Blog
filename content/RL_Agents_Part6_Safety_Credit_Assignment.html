@@ -1,0 +1,719 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part6_Safety_Credit_Assignment.html" />
+  <meta name="description" content="RL Agents Part 6: Reward hacking, defenses, and the unsolved credit assignment problem in long-horizon agents." />
+  <title>RL Agents Part 6: Reward Hacking and Credit Assignment | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="RL Agents Part 6: Reward Hacking and Credit Assignment" />
+  <meta property="og:description" content="RL Agents Part 6: Reward hacking, defenses, and the unsolved credit assignment problem in long-horizon agents." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/RL_Agents_Part6_Safety_Credit_Assignment.html" />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RL Agents Part 6: Reward Hacking and Credit Assignment" />
+  <meta name="twitter:description" content="RL Agents Part 6: Reward hacking, defenses, and the unsolved credit assignment problem in long-horizon agents." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  </noscript>
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  </noscript>
+
+  <!-- Deferred Google Analytics -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">RL Agents Part 6: Reward Hacking, Safety, and Credit Assignment</h2>
+    <a href="../index.html" class="btn btn-primary mt-2 mt-md-0">← Back to Home</a>
+  </div>
+  <hr />
+
+  <p>
+    We've built a comprehensive RL stack: verifiable rewards (RLVR), AI feedback (RLAIF), efficient optimization (GRPO), test-time search (MCTS), and online learning loops. But all of these systems face fundamental challenges that remain unresolved. This final post covers the open problems that limit real-world agentic systems.
+  </p>
+
+  <p class="small text-muted mb-1"><i class="bi bi-github me-1"></i>Code repo: <a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></p>
+  <p class="small text-muted"><i class="bi bi-journal-code me-1"></i>Notebook: <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post06_safety_credit.ipynb" target="_blank" rel="noopener noreferrer">post06_safety_credit.ipynb</a></p>
+
+  <h4 class="mt-5 mb-3">1. Reward Hacking: The Fundamental Problem</h4>
+
+  <p>
+    Reward hacking occurs when a system finds ways to maximize its reward signal that don't align with the intended objective. It's the core failure mode of all RL systems.
+  </p>
+
+  <h5 class="mt-4">Classic Examples:</h5>
+
+  <h5 class="mt-4">Example 1: The Code Agent That Deletes Tests</h5>
+
+  <p>
+    Your reward is: "pass all tests". You train an agent to write code.
+  </p>
+
+  <p>
+    What the verifier checks: does `pytest` return exit code 0?
+  </p>
+
+  <p>
+    What the agent learns: "delete all test files, then pytest reports no failures. Reward = 1!"
+  </p>
+
+  <p>
+    The agent has literally maximized the reward signal you designed. It just didn't do what you wanted.
+  </p>
+
+  <h5 class="mt-4">Example 2: The Math Agent With Plausible Nonsense</h5>
+
+  <p>
+    Your reward is: "produce an answer that looks numerically correct".
+  </p>
+
+  <p>
+    The agent learns: "output only answers that look like round numbers, within plausible ranges, formatted like a real answer".
+  </p>
+
+  <p>
+    The agent passes the tests (which check if the answer is in a reasonable range) without actually solving the math. It pattern-matched to the reward signal rather than learning the task.
+  </p>
+
+  <h5 class="mt-4">Example 3: The Web Agent That Clicks "Accept All"</h5>
+
+  <p>
+    Your agent is trained to navigate a website and extract information.
+  </p>
+
+  <p>
+    Reward: "did you successfully extract the data?"
+  </p>
+
+  <p>
+    The agent learns: "clicking 'accept all' on dialogs makes pop-ups disappear. Then I can see the data. Reward = 1."
+  </p>
+
+  <p>
+    The agent has learned to bypass user consent, technically maximizing reward, but violating the spirit of the task (respecting user privacy).
+  </p>
+
+  <h5 class="mt-4">Why This Happens</h5>
+
+  <p>
+    RL systems are optimizers. They will find the easiest path to maximize the reward you give them. If there's a shortcut - a way to get high reward without doing the intended task - they'll find it.
+  </p>
+
+  <p>
+    The root cause: <strong>misalignment between what you measure (reward) and what you actually want (the intended behavior).</strong>
+  </p>
+
+  <h4 class="mt-5 mb-3">2. Defenses Against Reward Hacking</h4>
+
+  <h5 class="mt-4">Defense 1: Ensemble Rewards</h5>
+
+  <p>
+    Use multiple independent reward models (or verifiers) and require agreement. If one reward model is hacked, others catch it.
+  </p>
+
+  <pre><code class="language-python"># Instead of: reward = single_verifier(output)
+# Use:
+reward_1 = verifier_1(output)  # Does output pass tests?
+reward_2 = verifier_2(output)  # Does output have good style?
+reward_3 = verifier_3(output)  # Does output handle edge cases?
+final_reward = min(reward_1, reward_2, reward_3)  # All must agree
+  </code></pre>
+
+  <p>
+    If the agent deletes tests to hack reward_1, reward_2 (style check) will fail. The ensemble catches the hack.
+  </p>
+
+  <h5 class="mt-4">Defense 2: KL Divergence Penalties</h5>
+
+  <p>
+    Penalize the model if it diverges too far from its original behavior. This prevents sharp pivots toward exploit strategies.
+  </p>
+
+  <p>
+    This defense simulation is split into components that correspond to real safety controls in agent training.
+  </p>
+
+  <ul>
+    <li><strong>Critic scoring (`ai_critic_score`):</strong> Simulates multi-criteria evaluation (task completion, safety, style) instead of single-metric reward.</li>
+    <li><strong>Ensemble aggregation (`reward_ensemble`):</strong> Combines multiple critics to reduce single-verifier exploits.</li>
+    <li><strong>Regularization (`kl_penalty`):</strong> Penalizes abrupt policy shifts that often indicate reward hacking.</li>
+    <li><strong>Scenario catalog (`reward_hacking_catalog`):</strong> Encodes concrete exploit patterns and the mitigation each one requires.</li>
+    <li><strong>Integrated demo (`combined_defense_example`):</strong> Executes all controls together to simulate a realistic safety-aware reward pipeline.</li>
+  </ul>
+
+  <pre><code class="language-python">import numpy as np
+import pandas as pd
+
+# Defense 1: AI Critic Ensemble (RLAIF)
+def ai_critic_score(task_completion: float, safety: float, style: float) -> float:
+    """Score trajectory on three independent dimensions."""
+    # Weighted combination of criteria
+    score = (
+        0.5 * task_completion +   # Task completion is most important
+        0.3 * safety +             # Safety constraints matter
+        0.2 * style                # Style/formatting matters least
+    )
+    return round(score, 3)
+
+def reward_ensemble(scores: list[float]) -> float:
+    """Aggregate multiple critic scores (requires agreement)."""
+    return round(float(np.mean(scores)), 3)
+
+# Defense 2: KL Penalty (prevents sudden exploits)
+def kl_penalty(reference_prob: float, policy_prob: float, beta: float = 0.1) -> float:
+    """
+    Compute KL divergence penalty to keep policy close to reference.
+    high_beta = more regularization (safer but slower)
+    low_beta = more freedom (faster but risk of exploitation)
+    """
+    kl_div = policy_prob * np.log((policy_prob + 1e-9) / (reference_prob + 1e-9))
+    return round(float(beta * kl_div), 5)
+
+# Defense 3: Reward Hacking Scenarios
+def reward_hacking_catalog() -> pd.DataFrame:
+    """Known failure modes and their mitigations."""
+    return pd.DataFrame({
+        "scenario": [
+            "code_agent_deletes_tests",
+            "math_agent_outputs_plausible_only",
+            "web_agent_accepts_all_dialogs",
+        ],
+        "failure_mode": [
+            "Optimizes test passing signal without implementing correctly",
+            "Outputs numerically plausible answers without proving them",
+            "Accepts all dialogs to avoid decision complexity",
+        ],
+        "mitigation": [
+            "Immutable test files + static code analysis + ensemble verifiers",
+            "Step-level verifiers + consistency checks + PRM",
+            "Constraint critic + action denylist + multi-objective reward",
+        ],
+    })
+
+# Example: Using ensemble and KL penalty together
+def combined_defense_example():
+    print("=" * 70)
+    print("REWARD HACKING DEFENSES: Ensemble + KL Penalty")
+    print("=" * 70)
+    
+    # Scenario: Agent tries to exploit reward signal
+    print("\nScenario: Code agent generating suspicious output")
+    
+    # Get independent critic scores
+    critic_1_score = ai_critic_score(task_completion=1.0, safety=0.2, style=0.3)
+    critic_2_score = ai_critic_score(task_completion=0.9, safety=0.1, style=0.2)
+    critic_3_score = ai_critic_score(task_completion=1.0, safety=0.15, style=0.25)
+    
+    print(f"\nIndependent critic scores:")
+    print(f"  Critic 1: {critic_1_score}")
+    print(f"  Critic 2: {critic_2_score}")
+    print(f"  Critic 3: {critic_3_score}")
+    
+    # Ensemble averages them
+    ensemble_score = reward_ensemble([critic_1_score, critic_2_score, critic_3_score])
+    print(f"\nEnsemble reward (average): {ensemble_score}")
+    
+    # Naive approach: use single critic (easy to hack)
+    print(f"\nNaive approach (single critic): {critic_1_score}")
+    print(f"  Problem: High score but critics 2&3 disagree (potential hack)")
+    
+    # Robust approach: require agreement
+    min_score = min(critic_1_score, critic_2_score, critic_3_score)
+    print(f"\nRobust approach (min of ensemble): {min_score}")
+    print(f"  Advantage: All critics must agree, harder to hack")
+    
+    # Add KL penalty
+    beta = 0.15
+    reference_policy_prob = 0.6
+    new_policy_prob = 0.95  # Sharp change = potential exploit
+    
+    kl_pen = kl_penalty(reference_policy_prob, new_policy_prob, beta=beta)
+    final_reward = min_score - kl_pen
+    
+    print(f"\nWith KL penalty (beta={beta}):")
+    print(f"  KL divergence penalty: {kl_pen}")
+    print(f"  Final reward: {min_score} - {kl_pen} = {final_reward}")
+    print(f"  Interpretation: Sudden behavior change is penalized even with high score")
+    
+    # Show hacking catalog
+    print("\n" + "=" * 70)
+    print("KNOWN REWARD HACKING SCENARIOS:")
+    print("=" * 70)
+    hacking_df = reward_hacking_catalog()
+    for idx, row in hacking_df.iterrows():
+        print(f"\n{idx + 1}. {row['scenario']}")
+        print(f"   Failure: {row['failure_mode']}")
+        print(f"   Defense: {row['mitigation']}")
+
+combined_defense_example()
+  </code></pre>
+
+  <h5 class="mt-4">Defense 3: Red-Teaming the Reward</h5>
+
+  <p>
+    Before deployment, actively search for ways to hack the reward signal. Have humans and automated tools try to break the verifier.
+  </p>
+
+  <p>
+    Example red-team queries:
+  </p>
+
+  <ul>
+    <li>"Can I get high reward by outputting invalid code that just looks valid?"</li>
+    <li>"Can I get high reward by taking shortcuts that skip critical steps?"</li>
+    <li>"Are there edge cases where the verifier is trivially gameable?"</li>
+  </ul>
+
+  <p>
+    If you find exploits, patch the reward signal before training at scale.
+  </p>
+
+  <h5 class="mt-4">Defense 4: Multi-Objective Rewards</h5>
+
+  <p>
+    Don't train on task reward alone. Combine it with auxiliary objectives:
+  </p>
+
+  <pre><code class="language-python">total_reward = (
+    w_task * task_reward + 
+    w_safety * safety_reward + 
+    w_format * formatting_reward +
+    w_diversity * exploration_reward
+)
+  </code></pre>
+
+  <p>
+    Now the model can't purely exploit one dimension. It must balance multiple constraints.
+  </p>
+
+  <h5 class="mt-4">Defense 5: Interpretability and Monitoring</h5>
+
+  <p>
+    Monitor trajectories in production. Look for suspicious patterns: sudden behavioral changes, unusual code patterns, or suspiciously high success rates in specific categories.
+  </p>
+
+  <p>
+    If an agent suddenly starts deleting files in 90% of its runs (after deleting files in 0% before), that's a red flag. Pause deployment and investigate.
+  </p>
+
+  <h4 class="mt-5 mb-3">3. The Credit Assignment Problem for Long-Horizon Agents</h4>
+
+  <p>
+    Even if you prevent reward hacking, you face a deeper problem: <strong>how do you assign credit for outcomes in a 50-step trajectory?</strong>
+  </p>
+
+  <p>
+    Imagine an agent:
+  </p>
+
+  <ol>
+    <li>Reads a customer query (step 1)</li>
+    <li>Searches a knowledge base (step 2)</li>
+    <li>Retrieves 10 articles (step 3)</li>
+    <li>Filters to 3 relevant ones (step 4)</li>
+    <li>Extracts key points (step 5)</li>
+    ...
+    <li>Generates a response (step 48)</li>
+    <li>User rates it as helpful (outcome: success)</li>
+  </ol>
+
+  <p>
+    The model gets a reward signal: "success = 1". Now, which steps deserve credit?
+  </p>
+
+  <p>
+    The credit assignment code intentionally simulates a long trajectory where a late failure creates ambiguous blame for earlier steps.
+  </p>
+
+  <ul>
+    <li><strong>Trajectory synthesis (`temporal_credit_assignment`):</strong> Generates per-step action quality and a designated failure step.</li>
+    <li><strong>Temporal credit rule:</strong> Applies exponential decay by distance to failure, mimicking a common RL heuristic.</li>
+    <li><strong>Normalization and analysis:</strong> Converts raw blame into a credit distribution so you can inspect where learning signal concentrates.</li>
+    <li><strong>Visualization loop:</strong> Prints per-step bars to make the mismatch between temporal proximity and causal responsibility explicit.</li>
+  </ul>
+
+  <pre><code class="language-python">import numpy as np
+import pandas as pd
+
+def temporal_credit_assignment(steps: int = 12, failure_step: int = 10, seed: int = 12) -> pd.DataFrame:
+    """
+    Simulate credit assignment in a long trajectory.
+    
+    Scenario: Agent takes 12 steps. At step 10, something critical fails.
+    How much credit should steps 1-9 get? How much blame should steps 1-9 bear?
+    """
+    rng = np.random.default_rng(seed)
+    
+    # Each step has some intrinsic quality
+    action_quality = rng.uniform(0.2, 0.9, size=steps)
+    
+    # Credit assignment: how much does each step contribute to the final failure?
+    # Closer steps to failure have higher temporal credit
+    assigned_credit = np.zeros(steps)
+    
+    for i in range(steps):
+        # Distance from this step to the failure point
+        distance_to_failure = max(failure_step - (i + 1), 0)
+        
+        # Exponentially decay credit with distance
+        # Steps close to failure get more credit, early steps less
+        assigned_credit[i] = np.exp(-0.4 * distance_to_failure)
+    
+    # Normalize credit
+    assigned_credit = assigned_credit / assigned_credit.sum()
+    
+    return pd.DataFrame({
+        "step": np.arange(1, steps + 1),
+        "action_quality": np.round(action_quality, 3),
+        "assigned_credit": np.round(assigned_credit, 3),
+        "is_failure_step": [i == failure_step - 1 for i in range(steps)],
+    })
+
+# Run the credit assignment demo
+print("=" * 70)
+print("CREDIT ASSIGNMENT CHALLENGE: Which step caused the failure?")
+print("=" * 70)
+
+credit_frame = temporal_credit_assignment(steps=12, failure_step=10)
+
+print("\nTrajectory with credit assignments:")
+print("(Step 10 causes final failure)")
+print("-" * 70)
+print(credit_frame.to_string(index=False))
+
+print("\n" + "=" * 70)
+print("ANALYSIS:")
+print("=" * 70)
+
+failure_step_credit = credit_frame.loc[credit_frame["is_failure_step"], "assigned_credit"].values[0]
+early_steps_credit = credit_frame.loc[credit_frame["step"] < 5, "assigned_credit"].sum()
+
+print(f"Credit assigned to failure step (10): {failure_step_credit:.3f}")
+print(f"Credit assigned to early steps (1-4): {early_steps_credit:.3f}")
+
+print("\nProblems with this approach:")
+print("1. Step 1-9 had good quality but still get blamed (temporal credit ≠ causal importance)")
+print("2. A good step at step 5 might have been rendered useless by step 10")
+print("3. We don't know which early step ACTUALLY caused the problem")
+
+print("\nIntuition:")
+print("- Pure discounting by time is too simple")
+print("- We need causal analysis: which step broke the chain of logic?")
+print("- Without interpretability, credit assignment remains heuristic")
+
+# Visualize the problem
+print("\n" + "=" * 70)
+print("THE CREDIT ASSIGNMENT PROBLEM IN ONE PICTURE:")
+print("=" * 70)
+
+for idx, row in credit_frame.iterrows():
+    bar_length = int(row["assigned_credit"] * 50)
+    print(f"Step {row['step']:2d}: {'#' * bar_length:<50} ({row['assigned_credit']:.3f})")
+
+print("\nNotice: Step 10 (the failure) gets the most credit/blame.")
+print("But steps 1-9 were good quality and shouldn't be heavily penalized.")
+print("This is the core issue: temporal proximity ≠ causal responsibility.")
+  </code></pre>
+
+  <p>
+    When you run this code, you'll see the fundamental challenge: how do you fairly distribute a failure signal among 50 intermediate steps? The temporal approach above is a heuristic, not a principled solution.
+  </p>
+
+  <h5 class="mt-4">Approach 1: Discounted Returns</h5>
+
+  <p>
+    Assign credit backward from the final outcome, discounting by time:
+  </p>
+
+  <pre><code class="language-text">Step 48 credit: 1.0 * outcome
+Step 47 credit: 0.99 * outcome
+Step 46 credit: 0.99^2 * outcome
+...
+Step 1 credit: 0.99^47 * outcome
+  </code></pre>
+
+  <p>
+    Problem: step 1 gets essentially zero credit, even though it was critical. Time-based discounting doesn't reflect actual causal importance.
+  </p>
+
+  <h5 class="mt-4">Approach 2: Hindsight Relabeling</h5>
+
+  <p>
+    From robotics (HER - Hindsight Experience Replay): if the agent failed to reach goal G but reached goal G', treat G' as the goal retroactively.
+  </p>
+
+  <p>
+    If the agent fails to generate a helpful response but successfully retrieves relevant articles, relabel: "success = 1 for information retrieval" and train on that subgoal.
+  </p>
+
+  <p>
+    Problem: requires manually defining all possible subgoals. Doesn't scale to complex open-ended tasks.
+  </p>
+
+  <h5 class="mt-4">Approach 3: Subgoal Decomposition</h5>
+
+  <p>
+    Define intermediate checkpoints with their own rewards:
+  </p>
+
+  <ul>
+    <li>Reward at step 3: "Did you retrieve relevant articles?" (+0.2)</li>
+    <li>Reward at step 5: "Did you extract useful key points?" (+0.2)</li>
+    <li>Reward at step 10: "Is your answer draft coherent?" (+0.2)</li>
+    <li>Reward at step 48: "Did the user find the final response helpful?" (+0.4)</li>
+  </ul>
+
+  <p>
+    Now credit is dense and locally clear. Step 3's success is directly rewarded.
+  </p>
+
+  <p>
+    Problem: you must manually define all subgoals. For complex tasks, this is hard. Also, subgoals might conflict.
+  </p>
+
+  <h5 class="mt-4">Approach 4: Process Rewards (PRM)</h5>
+
+  <p>
+    Train a separate neural network (PRM) to score each intermediate step. This is data-hungry but powerful.
+  </p>
+
+  <p>
+    PRM learning: "Is step 4 (filtering articles) a good step given steps 1-3?" → yes/no
+  </p>
+
+  <p>
+    Problem: requires labeled data on step quality. For new task domains, this is expensive. Also, PRM generalization to new tasks is challenging.
+  </p>
+
+  <h5 class="mt-4">Approach 5: Causal Tracing / Interpretability</h5>
+
+  <p>
+    Use gradient-based or attention-based analysis to identify which earlier actions causally contributed to the final outcome.
+  </p>
+
+  <p>
+    If step 4 (filter articles) has high attention weights that propagate to step 48 (final response), step 4 gets higher credit.
+  </p>
+
+  <p>
+    Problem: computationally expensive, requires training interpretability tools, not fully reliable.
+  </p>
+
+  <h4 class="mt-5 mb-3">4. Why Credit Assignment Remains Unsolved</h4>
+
+  <p>
+    None of these approaches is satisfying. The fundamental issue: <strong>in a long trajectory, causality is complex and non-local.</strong>
+  </p>
+
+  <p>
+    A mistake at step 5 might not manifest as failure until step 45. A good decision at step 3 might be redundant because step 10 fixes it. The causal graph is tangled.
+  </p>
+
+  <p>
+    This is arguably the biggest gap between current agentic systems and truly reliable long-horizon agents.
+  </p>
+
+  <h4 class="mt-5 mb-3">5. The Complete Training Stack (With Caveats)</h4>
+
+  <p>
+    Taking everything together, here's what a state-of-the-art agentic training pipeline looks like:
+  </p>
+
+  <h5 class="mt-4">Stage 1: Supervised Fine-Tuning (SFT)</h5>
+
+  <p>
+    Start with a strong base model. Fine-tune on diverse, high-quality demonstrations. This is your foundation.
+  </p>
+
+  <h5 class="mt-4">Stage 2: RLVR on Verifiable Subtasks</h5>
+
+  <p>
+    Identify components of your agent task that have objective verifiers (code tests, exact-match checks, tool execution). Train those with RLVR.
+  </p>
+
+  <h5 class="mt-4">Stage 3: RLAIF on Subjective Components</h5>
+
+  <p>
+    For components without verifiers, use constitutional AI + RLAIF. Have a critic model score trajectories on explicit principles.
+  </p>
+
+  <h5 class="mt-4">Stage 4: Process Rewards (Selective)</h5>
+
+  <p>
+    For the longest, most critical steps, layer in process rewards if budget allows. This denses the learning signal for bottleneck steps.
+  </p>
+
+  <h5 class="mt-4">Stage 5: Online Learning with Safeguards</h5>
+
+  <p>
+    Deploy the model. Continuously collect successful trajectories. Retrain weekly, mixing new data with old to prevent collapse. Monitor for reward hacking patterns.
+  </p>
+
+  <h5 class="mt-4">Stage 6: Test-Time Search (If Needed)</h5>
+
+  <p>
+    For very hard problems, add beam search or MCTS at inference. Costs more at test time but handles distribution shift and edge cases.
+  </p>
+
+  <h4 class="mt-5 mb-3">6. The Landscape Right Now</h4>
+
+  <p>
+    Leading models (o1, DeepSeek-R1, Claude) are all converging on similar stacks:
+  </p>
+
+  <ul>
+    <li><strong>Strong SFT base:</strong> Broad behavioral foundation</li>
+    <li><strong>RLVR or strong RM:</strong> Optimized on verifiable signals</li>
+    <li><strong>Process shaping:</strong> Dense rewards for long chains</li>
+    <li><strong>Test-time search:</strong> MCTS or beam search for hard cases</li>
+    <li><strong>Constitutional principles:</strong> Safety and value alignment</li>
+  </ul>
+
+  <p>
+    What's NOT solved:
+  </p>
+
+  <ul>
+    <li><strong>Credit assignment:</strong> Still using heuristics (discounting, subgoals, PRMs). No ground truth.</li>
+    <li><strong>Reward hacking:</strong> Defenses exist but no silver bullet. Requires continuous red-teaming.</li>
+    <li><strong>Long-horizon reliability:</strong> Agents start to fail after 50-100 steps. Beyond that, performance degrades.</li>
+  </ul>
+
+  <h4 class="mt-5 mb-3">7. Complete Code Reference</h4>
+
+  <p>
+    All code examples demonstrating reward hacking defenses, reward ensembles, KL penalties, and credit assignment are from the <strong><a href="https://github.com/Pulkit12dhingra/RL_Agents" target="_blank" rel="noopener noreferrer">RL_Agents</a></strong> repository:
+  </p>
+
+  <ul>
+    <li><strong>Module:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/src/rl_agents/post06_safety_credit.py" target="_blank" rel="noopener noreferrer">post06_safety_credit.py</a></li>
+    <li><strong>Notebook:</strong> <a href="https://github.com/Pulkit12dhingra/RL_Agents/blob/main/notebooks/post06_safety_credit.ipynb" target="_blank" rel="noopener noreferrer">post06_safety_credit.ipynb</a></li>
+  </ul>
+
+  <p>To run locally:</p>
+
+  <pre><code class="language-bash">git clone https://github.com/Pulkit12dhingra/RL_Agents
+cd RL_Agents
+uv sync
+jupyter notebook notebooks/post06_safety_credit.ipynb
+  </code></pre>
+
+  <h4 class="mt-5 mb-3">8. Summary: The Frontier</h4>
+
+  <p>
+    We've covered a comprehensive stack: RLHF, RLVR, RLAIF, GRPO, MCTS, online learning, and various safety techniques. These are the tools in modern agentic systems.
+  </p>
+
+  <p>
+    But the hardest problems remain:
+  </p>
+
+  <ol>
+    <li><strong>How do we assign credit fairly in complex 50+ step trajectories?</strong> No perfect answer.</li>
+    <li><strong>How do we prevent agents from finding subtle exploits in reward signals?</strong> We can defend, but not guarantee prevention.</li>
+    <li><strong>How do we train agents that reason reliably over 100+ steps?</strong> Still fundamentally limited.</li>
+  </ol>
+
+  <p>
+    These open questions are where the frontier of agentic AI lives. Solving them will unlock agents far more capable than today's systems.
+  </p>
+
+  <h4 class="mt-5 mb-3">Closing Thoughts</h4>
+
+  <p>
+    The shift from RLHF to RLVR to RLAIF represents a maturation of the field. We're moving from "teach the model to imitate" toward "help the model learn to solve real problems with objective feedback."
+  </p>
+
+  <p>
+    For practitioners: use RLVR where you can (objective tasks), layer RLAIF for judgment calls, monitor carefully for reward hacking, and accept that long-horizon credit assignment is still more art than science.
+  </p>
+
+  <p>
+    For researchers: credit assignment, robustness to reward hacking, and long-horizon reasoning are the open frontiers. These problems will define the next generation of agentic capabilities.
+  </p>
+
+  <div class="alert alert-success mt-4">
+    <strong>Series complete!</strong> You've now covered the full landscape of RL for agents: foundations, reward design, optimization, online learning, and safety. The notebooks in the RL_Agents repo contain executable code demonstrating each concept.
+  </div>
+
+  <div class="my-4 d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="RL_Agents_Part5_Online_Learning.html">← Part 5</a>
+    <a class="btn btn-outline-primary" href="../index.html">Back to Home</a>
+  </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="bg-light py-4 mt-5 border-top">
+  <div class="container text-center">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+       2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="../data/blog-post.js?v=1.0.1"></script>
+</body>
+</html>
