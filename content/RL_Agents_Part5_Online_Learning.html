@@ -356,6 +356,108 @@ Constitutional evaluation:
  jupyter notebook notebooks/post06_safety_credit.ipynb
    </code></pre>
 
+  <h4 class="mt-5 mb-3">STaR: Self-Taught Reasoner in Action</h4>
+
+  <p>
+    The STaR loop shows how a policy can improve itself iteration by iteration by learning only from its own successful traces.
+  </p>
+
+  <ul>
+    <li><strong>Environment (`_ChainMDP`):</strong> 5-step chain where all steps must be correct to earn a reward of 1 — the simplest task that exposes the online-learning bottleneck.</li>
+    <li><strong>Policy (`_TabularPolicy`):</strong> Independent per-step softmax, updated via REINFORCE only on successful episodes.</li>
+    <li><strong>STaR filter (`star_loop`):</strong> Each iteration collects 60 episodes, keeps only the successful ones, and fine-tunes on those traces — mimicking the "fine-tune on correct rationales" step from the original STaR paper.</li>
+    <li><strong>Success rate climb:</strong> Starting from ~3% random success, each iteration increases the probability of choosing the correct action at every step.</li>
+  </ul>
+
+  <pre><code class="language-python">from __future__ import annotations
+import numpy as np
+import pandas as pd
+
+
+class _ChainMDP:
+    """5-step chain MDP. Correct action = 1. ORM reward = 1 if all correct."""
+    N_STEPS     = 5
+    CORRECT_ACT = 1
+
+    def run_episode(self, policy: "_TabularPolicy") -> tuple[list[int], float]:
+        actions   = [policy.sample(s) for s in range(self.N_STEPS)]
+        n_correct = sum(a == self.CORRECT_ACT for a in actions)
+        return actions, 1.0 if n_correct == self.N_STEPS else 0.0
+
+
+class _TabularPolicy:
+    """Independent softmax per state. Updated via REINFORCE."""
+    def __init__(self, n_states: int, n_actions: int = 2,
+                 lr: float = 0.12, seed: int = 0) -> None:
+        self.logits = np.zeros((n_states, n_actions))
+        self.lr     = lr
+        self.rng    = np.random.default_rng(seed)
+
+    def probs(self, state: int) -> np.ndarray:
+        e = np.exp(self.logits[state] - self.logits[state].max())
+        return e / e.sum()
+
+    def sample(self, state: int) -> int:
+        return int(self.rng.choice(self.logits.shape[1], p=self.probs(state)))
+
+    def update(self, state: int, action: int,
+               reward: float, baseline: float) -> None:
+        advantage     = reward - baseline
+        grad          = -self.probs(state)
+        grad[action] += 1.0
+        self.logits[state] += self.lr * advantage * grad
+
+
+def star_loop(
+    n_iterations: int = 5,
+    episodes_per_iter: int = 60,
+    seed: int = 0,
+) -> pd.DataFrame:
+    """
+    STaR outer loop on ChainMDP.
+    Each iteration: collect -> filter successes -> REINFORCE on successes only.
+    """
+    env      = _ChainMDP()
+    policy   = _TabularPolicy(n_states=env.N_STEPS, lr=0.20, seed=seed)
+    baseline = 0.03
+    alpha_b  = 0.20
+    history  = []
+
+    for iteration in range(1, n_iterations + 1):
+        ep_records: list[tuple[list[int], float]] = []
+        successes = 0
+        for _ in range(episodes_per_iter):
+            actions, reward = env.run_episode(policy)
+            ep_records.append((actions, reward))
+            successes += int(reward == 1.0)
+
+        success_rate = successes / episodes_per_iter
+
+        for actions, reward in ep_records:
+            if reward == 1.0:
+                for s, a in enumerate(actions):
+                    policy.update(s, a, reward, baseline)
+
+        baseline += alpha_b * (success_rate - baseline)
+        p_correct = float(policy.probs(0)[_ChainMDP.CORRECT_ACT])
+
+        history.append({
+            "iteration":       iteration,
+            "successes":       successes,
+            "success_rate":    round(success_rate, 3),
+            "p_correct_step0": round(p_correct, 3),
+        })
+
+    return pd.DataFrame(history)
+
+
+# Run the STaR loop
+df = star_loop(n_iterations=5, episodes_per_iter=60)
+print(df.to_string(index=False))
+print(f"\nSuccess rate iteration 1 -> 5: "
+      f"{df['success_rate'].iloc[0]:.1%} -> {df['success_rate'].iloc[-1]:.1%}")
+  </code></pre>
+
    <h4 class="mt-5 mb-3">Summary: Bridging Verifiable and Subjective Tasks</h4>
 
   <p>

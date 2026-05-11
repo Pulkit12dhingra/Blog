@@ -138,62 +138,85 @@
   </p>
 
   <ul>
-    <li><strong>Dataset construction (`build_preference_dataset`):</strong> Simulates human pairwise choices by generating two candidate responses per prompt and labeling which one is preferred.</li>
-    <li><strong>Reward model fitting (`train_reward_model`):</strong> Trains a lightweight classifier to imitate the preference function, exactly like a reward model learns from rater choices.</li>
-    <li><strong>Pipeline run (`df = ...`, `rm, accuracy = ...`):</strong> Executes the end-to-end loop so you can inspect inputs, learned coefficients, and training quality.</li>
+    <li><strong>Preference bandit (`PreferenceBandit`):</strong> Simulates a 4-tier response quality distribution; each arm represents a quality level from weak to excellent, pulled with Gaussian noise to mimic real annotation variance.</li>
+    <li><strong>Data collection (`collect_bandit_preferences`):</strong> Randomly pairs arms, observes both rewards, and records which arm won — this mirrors the pairwise comparison step in human RLHF annotation.</li>
+    <li><strong>Reward model (`train_reward_model`):</strong> Fits logistic regression on reward_diff to predict preference direction, exactly as a real reward model learns from rater choices.</li>
   </ul>
 
-  <pre><code class="language-python">import pandas as pd
+  <pre><code class="language-python">from __future__ import annotations
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
-# Step 1: Generate synthetic preference dataset
-# In a real system, this would be human annotations of "which response is better"
 
-def build_preference_dataset(n_samples: int = 40, seed: int = 7):
-    """Create synthetic human-preference dataset for RLHF."""
-    import random
-    rng = random.Random(seed)
+class PreferenceBandit:
+    """
+    4-arm bandit representing four response-quality tiers.
+      arm 0 = low quality  (true reward ≈ 0.20)
+      arm 1 = medium-low   (true reward ≈ 0.45)
+      arm 2 = medium-high  (true reward ≈ 0.72)
+      arm 3 = high quality (true reward ≈ 0.92)
+    Pulls return true_reward + Gaussian noise, so the reward model must
+    learn from imperfect signal — exactly as in real RLHF pipelines.
+    """
+    TRUE_REWARDS = np.array([0.20, 0.45, 0.72, 0.92])
+    N_ARMS = 4
+
+    def __init__(self, noise: float = 0.05, seed: int = 7) -> None:
+        self.noise = noise
+        self.rng = np.random.default_rng(seed)
+
+    def pull(self, arm: int) -> float:
+        r = self.TRUE_REWARDS[arm] + self.rng.normal(0.0, self.noise)
+        return float(np.clip(r, 0.0, 1.0))
+
+    def compare(self, arm_a: int, arm_b: int) -> tuple[float, float, int]:
+        """Pull both arms; return (reward_a, reward_b, preferred).
+        preferred=1 means arm_a was better — mirrors human-labelling."""
+        ra, rb = self.pull(arm_a), self.pull(arm_b)
+        return ra, rb, int(ra >= rb)
+
+
+def collect_bandit_preferences(
+    bandit: PreferenceBandit,
+    n_pairs: int = 80,
+    seed: int = 3,
+) -> pd.DataFrame:
+    """Collect preference pairs by randomly sampling and comparing two arms."""
+    rng = np.random.default_rng(seed)
     rows = []
-    
-    for idx in range(n_samples):
-        qa = rng.uniform(0.0, 1.0)  # Quality score for response A
-        qb = rng.uniform(0.0, 1.0)  # Quality score for response B
+    for _ in range(n_pairs):
+        a, b = int(rng.choice(bandit.N_ARMS)), int(rng.choice(bandit.N_ARMS))
+        while b == a:
+            b = int(rng.choice(bandit.N_ARMS))
+        ra, rb, pref = bandit.compare(a, b)
         rows.append({
-            "prompt": f"Task {idx + 1}: explain a concept clearly",
-            "len_a": rng.randint(30, 220),      # Length of response A
-            "len_b": rng.randint(30, 220),      # Length of response B
-            "quality_a": qa,
-            "quality_b": qb,
-            "preferred": int(qa >= qb),         # Binary label: A > B?
+            "arm_a": a, "arm_b": b,
+            "reward_a": round(ra, 3), "reward_b": round(rb, 3),
+            "reward_diff": round(ra - rb, 3),
+            "preferred": pref,
         })
-    
     return pd.DataFrame(rows)
 
-# Step 2: Extract features and train RM
-def train_reward_model(df: pd.DataFrame):
-    """Fit a reward model on preference data."""
-    features = pd.DataFrame({
-        "len_diff": df["len_a"] - df["len_b"],
-        "quality_diff": df["quality_a"] - df["quality_b"],
-    })
-    target = df["preferred"]
-    
-    # Train logistic regression as our reward model
-    model = LogisticRegression(max_iter=300)
-    model.fit(features, target)
-    accuracy = model.score(features, target)
-    
-    return model, accuracy
 
-# Run the pipeline
-df = build_preference_dataset(n_samples=40, seed=7)
+def train_reward_model(df: pd.DataFrame) -> tuple[LogisticRegression, float]:
+    """Fit logistic regression on preference pairs.
+    Feature: reward_diff.  Label: preferred (1 = arm_a was better)."""
+    X = df[["reward_diff"]].values
+    y = df["preferred"].values
+    model = LogisticRegression(max_iter=300)
+    model.fit(X, y)
+    return model, float(model.score(X, y))
+
+
+# Run the preference collection and RM training
+bandit = PreferenceBandit()
+df = collect_bandit_preferences(bandit, n_pairs=80)
 rm, accuracy = train_reward_model(df)
 
-print(f"Preference Dataset:")
+print(f"Preference pairs collected: {len(df)}")
 print(df.head())
 print(f"\nRM Training Accuracy: {accuracy:.1%}")
-print(f"Trained RM coefficients: {rm.coef_[0]}")
   </code></pre>
 
   <p>
@@ -260,118 +283,73 @@ print(f"Trained RM coefficients: {rm.coef_[0]}")
   </p>
 
   <p>
-    Here's the complete implementation of verifiers for all four task types:
+    Here's the complete RLHF training loop — the policy learns to pick high-quality responses guided by the reward model:
   </p>
 
-  <pre><code class="language-python">import sqlite3
-from dataclasses import dataclass
+  <pre><code class="language-python">class SoftmaxPolicy:
+    """
+    Softmax policy over N arms.  pi(a) = softmax(logits)[a]
+    Updated via REINFORCE:  logits += lr * (R - baseline) * (1[a] - pi)
+    """
+    def __init__(self, n_arms: int, lr: float = 0.08, seed: int = 42) -> None:
+        self.logits = np.zeros(n_arms)
+        self.lr = lr
+        self.rng = np.random.default_rng(seed)
 
-@dataclass
-class VerifierResult:
-    task_name: str
-    passed: bool
-    reward: int
-    details: str
+    def probs(self) -> np.ndarray:
+        e = np.exp(self.logits - self.logits.max())
+        return e / e.sum()
 
-# VERIFIER 1: Math Tasks (exact answer matching)
-def verify_math(expected: int, predicted: int) -> VerifierResult:
-    """Check if predicted answer matches expected answer."""
-    passed = expected == predicted
-    return VerifierResult(
-        "math", 
-        passed, 
-        int(passed),  # reward = 1 if passed, 0 if failed
-        f"expected={expected}, predicted={predicted}"
-    )
+    def sample(self) -> int:
+        return int(self.rng.choice(len(self.logits), p=self.probs()))
 
-# VERIFIER 2: Code Tasks (test suite execution)
-def verify_code() -> VerifierResult:
-    """Check if generated code passes all tests."""
-    # Simulate code that needs to implement is_even function
-    def is_even(n: int) -> bool:
-        return n % 2 == 0
-    
-    # Run test cases
-    tests = [
-        is_even(2),      # Should pass (2 is even)
-        not is_even(3),  # Should pass (3 is not even)
-        is_even(8),      # Should pass (8 is even)
-    ]
-    
-    passed = all(tests)
-    return VerifierResult(
-        "code",
-        passed,
-        int(passed),
-        f"test_results={tests}"
-    )
+    def update(self, arm: int, reward: float, baseline: float = 0.0) -> None:
+        """Single REINFORCE gradient step."""
+        advantage = reward - baseline
+        grad = -self.probs()
+        grad[arm] += 1.0          # nabla log pi(arm)
+        self.logits += self.lr * advantage * grad
 
-# VERIFIER 3: SQL Tasks (query result matching)
-def verify_sql() -> VerifierResult:
-    """Check if generated SQL returns expected rows."""
-    conn = sqlite3.connect(":memory:")
-    cur = conn.cursor()
-    
-    # Create table and insert data
-    cur.execute("CREATE TABLE orders(customer TEXT, amount INTEGER)")
-    cur.executemany(
-        "INSERT INTO orders VALUES(?, ?)",
-        [("alice", 120), ("bob", 40), ("alice", 80)]
-    )
-    
-    # Run the query
-    cur.execute(
-        "SELECT customer, SUM(amount) total FROM orders "
-        "GROUP BY customer ORDER BY total DESC"
-    )
-    rows = cur.fetchall()
-    conn.close()
-    
-    # Check if output matches expected
-    expected = [("alice", 200), ("bob", 40)]
-    passed = rows == expected
-    return VerifierResult(
-        "sql",
-        passed,
-        int(passed),
-        f"query_result={rows}"
-    )
 
-# VERIFIER 4: Tool Use Tasks (execution success)
-def verify_tool(exit_code: int, stderr: str) -> VerifierResult:
-    """Check if tool execution completed without errors."""
-    passed = exit_code == 0 and stderr.strip() == ""
-    return VerifierResult(
-        "tool_use",
-        passed,
-        int(passed),
-        f"exit_code={exit_code}, had_errors={stderr.strip() != ''}"
-    )
+def train_rlhf_loop(
+    bandit: PreferenceBandit,
+    reward_model: LogisticRegression,
+    n_episodes: int = 300,
+    seed: int = 1,
+) -> pd.DataFrame:
+    """Full REINFORCE loop using reward-model scores as the training signal.
+    Episode: sample arm -> pull bandit -> RM scores pull -> REINFORCE update."""
+    policy   = SoftmaxPolicy(n_arms=bandit.N_ARMS, lr=0.08, seed=seed)
+    baseline = 0.5
+    alpha_b  = 0.05
+    history  = []
 
-# RUN ALL VERIFIERS
-def batch_verify_tasks():
-    """Execute all verifiers and return results."""
-    results = [
-        verify_math(expected=64, predicted=64),    # Correct answer
-        verify_code(),                              # All tests pass
-        verify_sql(),                               # Query returns correct rows
-        verify_tool(exit_code=0, stderr=""),        # Tool ran successfully
-    ]
-    
-    import pandas as pd
-    df = pd.DataFrame({
-        "task_type": [r.task_name for r in results],
-        "passed": [r.passed for r in results],
-        "reward": [r.reward for r in results],
-        "details": [r.details for r in results],
-    })
-    df["cumulative_success_rate"] = df["passed"].expanding().mean().round(2)
-    return df
+    for ep in range(n_episodes):
+        arm      = policy.sample()
+        raw      = bandit.pull(arm)
+        mean_r   = float(bandit.TRUE_REWARDS.mean())
+        diff     = np.array([[raw - mean_r]])
+        rm_score = float(reward_model.predict_proba(diff)[0, 1])
 
-# Execute the batch
-results = batch_verify_tasks()
-print(results)
-print(f"\nBatch Success Rate: {results['reward'].mean():.1%}")
+        policy.update(arm, rm_score, baseline)
+        baseline += alpha_b * (rm_score - baseline)
+
+        history.append({
+            "episode":       ep + 1,
+            "arm":           arm,
+            "raw_reward":    round(raw, 3),
+            "rm_score":      round(rm_score, 3),
+            "baseline":      round(baseline, 3),
+            "best_arm_prob": round(float(policy.probs()[-1]), 3),
+        })
+
+    return pd.DataFrame(history)
+
+
+# Run the full RLHF training loop
+history_df = train_rlhf_loop(bandit, rm, n_episodes=300)
+print(f"Final best-arm probability: {history_df['best_arm_prob'].iloc[-1]:.1%}")
+print(history_df.tail(5)[["episode", "arm", "rm_score", "best_arm_prob"]])
   </code></pre>
 
   <p>

@@ -197,111 +197,117 @@ final_reward = min(reward_1, reward_2, reward_3)  # All must agree
     <li><strong>Integrated demo (`combined_defense_example`):</strong> Executes all controls together to simulate a realistic safety-aware reward pipeline.</li>
   </ul>
 
-  <pre><code class="language-python">import numpy as np
+  <pre><code class="language-python">from __future__ import annotations
+import numpy as np
 import pandas as pd
 
-# Defense 1: AI Critic Ensemble (RLAIF)
-def ai_critic_score(task_completion: float, safety: float, style: float) -> float:
-    """Score trajectory on three independent dimensions."""
-    # Weighted combination of criteria
-    score = (
-        0.5 * task_completion +   # Task completion is most important
-        0.3 * safety +             # Safety constraints matter
-        0.2 * style                # Style/formatting matters least
-    )
-    return round(score, 3)
 
-def reward_ensemble(scores: list[float]) -> float:
-    """Aggregate multiple critic scores (requires agreement)."""
-    return round(float(np.mean(scores)), 3)
+class HackableBandit:
+    """
+    5-arm bandit with a reward-hacking trap.
+      arms 0-3: safe responses  (rewards ~0.30, 0.50, 0.65, 0.72)
+      arm  4:   unsafe response (reward ~0.93, violates safety constraints)
+    Reference policy = uniform over safe arms only (arm 4 prob = 0).
+    """
+    TASK_REWARDS = np.array([0.30, 0.50, 0.65, 0.72, 0.93])
+    SAFETY_FLAGS = np.array([False, False, False, False, True])
+    N_ARMS       = 5
+    REF_PROBS    = np.array([0.25, 0.25, 0.25, 0.25, 0.0])
 
-# Defense 2: KL Penalty (prevents sudden exploits)
+    def __init__(self, noise: float = 0.04, seed: int = 6) -> None:
+        self.noise = noise
+        self.rng   = np.random.default_rng(seed)
+
+    def pull(self, arm: int) -> float:
+        r = self.TASK_REWARDS[arm] + self.rng.normal(0.0, self.noise)
+        return float(np.clip(r, 0.0, 1.0))
+
+
+def _softmax(logits: np.ndarray) -> np.ndarray:
+    e = np.exp(logits - logits.max())
+    return e / e.sum()
+
+
+def _reinforce_update(logits, arm, reward, baseline, lr):
+    probs     = _softmax(logits)
+    advantage = reward - baseline
+    grad      = -probs.copy()
+    grad[arm] += 1.0
+    logits    += lr * advantage * grad
+    return logits
+
+
 def kl_penalty(reference_prob: float, policy_prob: float, beta: float = 0.1) -> float:
-    """
-    Compute KL divergence penalty to keep policy close to reference.
-    high_beta = more regularization (safer but slower)
-    low_beta = more freedom (faster but risk of exploitation)
-    """
-    kl_div = policy_prob * np.log((policy_prob + 1e-9) / (reference_prob + 1e-9))
-    return round(float(beta * kl_div), 5)
+    kl = policy_prob * np.log((policy_prob + 1e-9) / (reference_prob + 1e-9))
+    return round(float(beta * kl), 5)
 
-# Defense 3: Reward Hacking Scenarios
-def reward_hacking_catalog() -> pd.DataFrame:
-    """Known failure modes and their mitigations."""
-    return pd.DataFrame({
-        "scenario": [
-            "code_agent_deletes_tests",
-            "math_agent_outputs_plausible_only",
-            "web_agent_accepts_all_dialogs",
-        ],
-        "failure_mode": [
-            "Optimizes test passing signal without implementing correctly",
-            "Outputs numerically plausible answers without proving them",
-            "Accepts all dialogs to avoid decision complexity",
-        ],
-        "mitigation": [
-            "Immutable test files + static code analysis + ensemble verifiers",
-            "Step-level verifiers + consistency checks + PRM",
-            "Constraint critic + action denylist + multi-objective reward",
-        ],
-    })
 
-# Example: Using ensemble and KL penalty together
-def combined_defense_example():
-    print("=" * 70)
-    print("REWARD HACKING DEFENSES: Ensemble + KL Penalty")
-    print("=" * 70)
-    
-    # Scenario: Agent tries to exploit reward signal
-    print("\nScenario: Code agent generating suspicious output")
-    
-    # Get independent critic scores
-    critic_1_score = ai_critic_score(task_completion=1.0, safety=0.2, style=0.3)
-    critic_2_score = ai_critic_score(task_completion=0.9, safety=0.1, style=0.2)
-    critic_3_score = ai_critic_score(task_completion=1.0, safety=0.15, style=0.25)
-    
-    print(f"\nIndependent critic scores:")
-    print(f"  Critic 1: {critic_1_score}")
-    print(f"  Critic 2: {critic_2_score}")
-    print(f"  Critic 3: {critic_3_score}")
-    
-    # Ensemble averages them
-    ensemble_score = reward_ensemble([critic_1_score, critic_2_score, critic_3_score])
-    print(f"\nEnsemble reward (average): {ensemble_score}")
-    
-    # Naive approach: use single critic (easy to hack)
-    print(f"\nNaive approach (single critic): {critic_1_score}")
-    print(f"  Problem: High score but critics 2&3 disagree (potential hack)")
-    
-    # Robust approach: require agreement
-    min_score = min(critic_1_score, critic_2_score, critic_3_score)
-    print(f"\nRobust approach (min of ensemble): {min_score}")
-    print(f"  Advantage: All critics must agree, harder to hack")
-    
-    # Add KL penalty
-    beta = 0.15
-    reference_policy_prob = 0.6
-    new_policy_prob = 0.95  # Sharp change = potential exploit
-    
-    kl_pen = kl_penalty(reference_policy_prob, new_policy_prob, beta=beta)
-    final_reward = min_score - kl_pen
-    
-    print(f"\nWith KL penalty (beta={beta}):")
-    print(f"  KL divergence penalty: {kl_pen}")
-    print(f"  Final reward: {min_score} - {kl_pen} = {final_reward}")
-    print(f"  Interpretation: Sudden behavior change is penalized even with high score")
-    
-    # Show hacking catalog
-    print("\n" + "=" * 70)
-    print("KNOWN REWARD HACKING SCENARIOS:")
-    print("=" * 70)
-    hacking_df = reward_hacking_catalog()
-    for idx, row in hacking_df.iterrows():
-        print(f"\n{idx + 1}. {row['scenario']}")
-        print(f"   Failure: {row['failure_mode']}")
-        print(f"   Defense: {row['mitigation']}")
+def train_unconstrained(n_episodes: int = 200, lr: float = 0.10,
+                        seed: int = 0) -> pd.DataFrame:
+    """Vanilla REINFORCE — free to exploit the unsafe arm."""
+    bandit   = HackableBandit(seed=seed)
+    logits   = np.zeros(bandit.N_ARMS)
+    rng      = np.random.default_rng(seed)
+    baseline = 0.5
+    alpha_b  = 0.05
+    history  = []
+    window   = []
+    for ep in range(n_episodes):
+        probs  = _softmax(logits)
+        arm    = int(rng.choice(bandit.N_ARMS, p=probs))
+        reward = bandit.pull(arm)
+        logits = _reinforce_update(logits, arm, reward, baseline, lr)
+        baseline += alpha_b * (reward - baseline)
+        cur = _softmax(logits)
+        kl  = float(np.sum(cur * np.log((cur + 1e-9) / (bandit.REF_PROBS + 1e-9))))
+        window.append(reward)
+        if len(window) > 20: window.pop(0)
+        history.append({"episode": ep + 1, "arm": arm,
+                         "reward": round(reward, 3),
+                         "unsafe_arm_prob": round(float(cur[4]), 3),
+                         "kl_from_ref": round(kl, 4),
+                         "reward_ma20": round(float(np.mean(window)), 3)})
+    return pd.DataFrame(history)
 
-combined_defense_example()
+
+def train_kl_penalized(n_episodes: int = 200, lr: float = 0.10,
+                       beta: float = 0.5, seed: int = 0) -> pd.DataFrame:
+    """REINFORCE with KL penalty — penalises drift toward unsafe arm."""
+    bandit   = HackableBandit(seed=seed)
+    logits   = np.zeros(bandit.N_ARMS)
+    rng      = np.random.default_rng(seed)
+    baseline = 0.5
+    alpha_b  = 0.05
+    history  = []
+    window   = []
+    for ep in range(n_episodes):
+        probs  = _softmax(logits)
+        arm    = int(rng.choice(bandit.N_ARMS, p=probs))
+        raw    = bandit.pull(arm)
+        kl_pen = kl_penalty(float(bandit.REF_PROBS[arm]), float(probs[arm]), beta)
+        penalised = raw - kl_pen
+        logits = _reinforce_update(logits, arm, penalised, baseline, lr)
+        baseline += alpha_b * (penalised - baseline)
+        cur    = _softmax(logits)
+        kl_all = float(np.sum(cur * np.log((cur + 1e-9) / (bandit.REF_PROBS + 1e-9))))
+        window.append(raw)
+        if len(window) > 20: window.pop(0)
+        history.append({"episode": ep + 1, "arm": arm,
+                         "raw_reward": round(raw, 3),
+                         "kl_penalty": round(kl_pen, 4),
+                         "unsafe_arm_prob": round(float(cur[4]), 3),
+                         "kl_from_ref": round(kl_all, 4),
+                         "reward_ma20": round(float(np.mean(window)), 3)})
+    return pd.DataFrame(history)
+
+
+# Compare unconstrained vs KL-penalised
+unc = train_unconstrained()
+kl  = train_kl_penalized(beta=0.5)
+print(f"Unconstrained final unsafe-arm prob: {unc['unsafe_arm_prob'].iloc[-1]:.1%}")
+print(f"KL-penalised  final unsafe-arm prob: {kl['unsafe_arm_prob'].iloc[-1]:.1%}")
+print(f"KL from ref (unconstrained): {unc['kl_from_ref'].iloc[-1]:.3f}")
+print(f"KL from ref (KL-penalised):  {kl['kl_from_ref'].iloc[-1]:.3f}")
   </code></pre>
 
   <h5 class="mt-4">Defense 3: Red-Teaming the Reward</h5>
@@ -391,84 +397,37 @@ combined_defense_example()
   <pre><code class="language-python">import numpy as np
 import pandas as pd
 
-def temporal_credit_assignment(steps: int = 12, failure_step: int = 10, seed: int = 12) -> pd.DataFrame:
-    """
-    Simulate credit assignment in a long trajectory.
-    
-    Scenario: Agent takes 12 steps. At step 10, something critical fails.
-    How much credit should steps 1-9 get? How much blame should steps 1-9 bear?
-    """
-    rng = np.random.default_rng(seed)
-    
-    # Each step has some intrinsic quality
-    action_quality = rng.uniform(0.2, 0.9, size=steps)
-    
-    # Credit assignment: how much does each step contribute to the final failure?
-    # Closer steps to failure have higher temporal credit
-    assigned_credit = np.zeros(steps)
-    
+
+def temporal_credit_assignment(
+    steps: int = 12, failure_step: int = 10, seed: int = 12,
+) -> pd.DataFrame:
+    """Exponential-decay credit assignment backward from a failure step."""
+    rng  = np.random.default_rng(seed)
+    base = rng.uniform(0.2, 0.9, size=steps)
+    blame = np.zeros(steps)
     for i in range(steps):
-        # Distance from this step to the failure point
-        distance_to_failure = max(failure_step - (i + 1), 0)
-        
-        # Exponentially decay credit with distance
-        # Steps close to failure get more credit, early steps less
-        assigned_credit[i] = np.exp(-0.4 * distance_to_failure)
-    
-    # Normalize credit
-    assigned_credit = assigned_credit / assigned_credit.sum()
-    
+        distance = max(failure_step - (i + 1), 0)
+        blame[i] = np.exp(-0.4 * distance)
+    blame = blame / blame.sum()
     return pd.DataFrame({
-        "step": np.arange(1, steps + 1),
-        "action_quality": np.round(action_quality, 3),
-        "assigned_credit": np.round(assigned_credit, 3),
-        "is_failure_step": [i == failure_step - 1 for i in range(steps)],
+        "step":            np.arange(1, steps + 1),
+        "action_quality":  np.round(base, 3),
+        "assigned_credit": np.round(blame, 3),
     })
 
-# Run the credit assignment demo
-print("=" * 70)
-print("CREDIT ASSIGNMENT CHALLENGE: Which step caused the failure?")
-print("=" * 70)
 
 credit_frame = temporal_credit_assignment(steps=12, failure_step=10)
-
-print("\nTrajectory with credit assignments:")
-print("(Step 10 causes final failure)")
-print("-" * 70)
 print(credit_frame.to_string(index=False))
 
-print("\n" + "=" * 70)
-print("ANALYSIS:")
-print("=" * 70)
+failure_credit = credit_frame.loc[credit_frame["step"] == 10, "assigned_credit"].values[0]
+early_credit   = credit_frame.loc[credit_frame["step"] < 5,  "assigned_credit"].sum()
+print(f"\nCredit at failure step (10): {failure_credit:.3f}")
+print(f"Credit at early steps (1-4): {early_credit:.3f}")
 
-failure_step_credit = credit_frame.loc[credit_frame["is_failure_step"], "assigned_credit"].values[0]
-early_steps_credit = credit_frame.loc[credit_frame["step"] < 5, "assigned_credit"].sum()
-
-print(f"Credit assigned to failure step (10): {failure_step_credit:.3f}")
-print(f"Credit assigned to early steps (1-4): {early_steps_credit:.3f}")
-
-print("\nProblems with this approach:")
-print("1. Step 1-9 had good quality but still get blamed (temporal credit ≠ causal importance)")
-print("2. A good step at step 5 might have been rendered useless by step 10")
-print("3. We don't know which early step ACTUALLY caused the problem")
-
-print("\nIntuition:")
-print("- Pure discounting by time is too simple")
-print("- We need causal analysis: which step broke the chain of logic?")
-print("- Without interpretability, credit assignment remains heuristic")
-
-# Visualize the problem
-print("\n" + "=" * 70)
-print("THE CREDIT ASSIGNMENT PROBLEM IN ONE PICTURE:")
-print("=" * 70)
-
-for idx, row in credit_frame.iterrows():
-    bar_length = int(row["assigned_credit"] * 50)
-    print(f"Step {row['step']:2d}: {'#' * bar_length:<50} ({row['assigned_credit']:.3f})")
-
-print("\nNotice: Step 10 (the failure) gets the most credit/blame.")
-print("But steps 1-9 were good quality and shouldn't be heavily penalized.")
-print("This is the core issue: temporal proximity ≠ causal responsibility.")
+print("\nBar chart of credit distribution:")
+for _, row in credit_frame.iterrows():
+    bar = "#" * int(row["assigned_credit"] * 50)
+    print(f"Step {row['step']:2d}: {bar:<50} ({row['assigned_credit']:.3f})")
   </code></pre>
 
   <p>

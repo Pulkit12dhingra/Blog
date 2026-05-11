@@ -131,127 +131,151 @@
   </ol>
 
   <p>
-    This simulation is structured to match what a deployed improvement loop does in practice.
+    The code maps each GRPO component to a concrete bandit experiment so you can watch the update mechanics in action.
   </p>
 
   <ul>
-    <li><strong>Trajectory model (`Trajectory`):</strong> Stores task ID, chosen strategy, success flag, and reward exactly like production telemetry.</li>
-    <li><strong>Rollout step (`collect_trajectories`):</strong> Simulates the agent executing tasks with different strategies and receiving verifier scores.</li>
-    <li><strong>Selection step (`select_replay_buffer`):</strong> Keeps the best trajectories to mimic success-filtered retraining data.</li>
-    <li><strong>Monitoring (`summarize_iteration`, `strategy_entropy`):</strong> Tracks reward, success rate, and diversity to detect collapse during iterations.</li>
-    <li><strong>Loop execution:</strong> Runs multiple iterations to show self-improvement dynamics over time.</li>
+    <li><strong>PPO helper (`ppo_clipped_objective`):</strong> Scalar reference showing how ratio clipping prevents large updates when advantage and ratio disagree.</li>
+    <li><strong>GRPO advantages (`grpo_relative_advantages`):</strong> Computes per-candidate advantages relative to the group mean — no critic network required.</li>
+    <li><strong>Bandit proxy (`_ResponseBandit`):</strong> Four-arm bandit with true rewards [0.20, 0.50, 0.75, 0.92] standing in for model responses of increasing quality.</li>
+    <li><strong>Trainer (`GRPOTrainer`):</strong> Samples a group of K=4 candidates, scores each, applies PPO-clipped REINFORCE — mirroring how DeepSeek-R1 was trained.</li>
+    <li><strong>Training loop (`train_grpo`):</strong> 100 steps; best-arm probability climbs from ~25% to near 100% using only group-relative rewards.</li>
   </ul>
 
-  <pre><code class="language-python">import random
-import math
+  <pre><code class="language-python">from __future__ import annotations
+import math, random
+import numpy as np
 import pandas as pd
-from dataclasses import dataclass
 
-@dataclass
-class Trajectory:
-    """Represents one agent execution on a task."""
-    task_id: int
-    strategy: str        # What approach did the agent use?
-    success: bool        # Did it pass verification?
-    reward: float        # Quality score from verifier
 
-def collect_trajectories(n_tasks: int = 40, seed: int = 9) -> list[Trajectory]:
-    """Simulate running deployed agent on tasks and logging outcomes."""
-    rng = random.Random(seed)
-    strategies = ["safe_plan", "aggressive_shortcut", "balanced_plan", "tool_first"]
-    
-    trajectories = []
-    for task_id in range(1, n_tasks + 1):
-        # Agent chooses a strategy
-        chosen_strategy = rng.choice(strategies)
-        
-        # Verifier scores it (different strategies have different success rates)
-        strategy_quality = {
-            "safe_plan": 0.72,
-            "balanced_plan": 0.68,
-            "tool_first": 0.63,
-            "aggressive_shortcut": 0.55
+def ppo_clipped_objective(
+    old_prob: float, new_prob: float, advantage: float, eps: float = 0.2,
+) -> float:
+    """PPO clipped surrogate: L = min(r*A, clip(r, 1-eps, 1+eps)*A)"""
+    ratio         = new_prob / max(old_prob, 1e-9)
+    clipped_ratio = min(max(ratio, 1 - eps), 1 + eps)
+    return min(ratio * advantage, clipped_ratio * advantage)
+
+
+def grpo_relative_advantages(rewards: list[float]) -> list[float]:
+    """A_i = r_i - mean(r_1...r_k)  — no critic, only group baseline."""
+    baseline = sum(rewards) / max(len(rewards), 1)
+    return [round(r - baseline, 3) for r in rewards]
+
+
+def beam_search_to_target(
+    target: int = 15, width: int = 3, depth: int = 4,
+) -> pd.DataFrame:
+    """Beam search with {+1, +3, *2}, keeping top-width beams by distance."""
+    beams = [(0, "start")]
+    ops   = [("+1", 1), ("+3", 3), ("*2", 2)]
+    for _ in range(depth):
+        candidates: list[tuple[int, str]] = []
+        for value, trace in beams:
+            for name, op in ops:
+                nv = value + op if name != "*2" else value * op
+                candidates.append((nv, f"{trace} -> {name}={nv}"))
+        candidates.sort(key=lambda x: abs(target - x[0]))
+        beams = candidates[:width]
+    frame = pd.DataFrame(beams, columns=["value", "trace"])
+    frame["distance_to_target"] = (frame["value"] - target).abs()
+    return frame.sort_values("distance_to_target")
+
+
+class _ResponseBandit:
+    """
+    4-arm bandit: arm 0=weak(0.20), arm 1=mediocre(0.50),
+                  arm 2=good(0.75), arm 3=excellent(0.92).
+    """
+    TRUE_REWARDS = np.array([0.20, 0.50, 0.75, 0.92])
+    N_ARMS       = 4
+
+    def __init__(self, noise: float = 0.04, seed: int = 5) -> None:
+        self.noise = noise
+        self.rng   = np.random.default_rng(seed)
+
+    def pull(self, arm: int) -> float:
+        r = self.TRUE_REWARDS[arm] + self.rng.normal(0.0, self.noise)
+        return float(np.clip(r, 0.0, 1.0))
+
+
+class GRPOTrainer:
+    """
+    GRPO on a 4-arm bandit.
+    Each step: sample K candidates, score them, compute relative advantages,
+    apply PPO-clipped REINFORCE update to logits.
+    """
+    K_GROUP = 4
+    EPS     = 0.2
+
+    def __init__(self, bandit: _ResponseBandit,
+                 lr: float = 0.15, seed: int = 42) -> None:
+        self.bandit  = bandit
+        self.lr      = lr
+        self.logits  = np.zeros(bandit.N_ARMS)
+        self.rng     = np.random.default_rng(seed)
+
+    def _probs(self) -> np.ndarray:
+        e = np.exp(self.logits - self.logits.max())
+        return e / e.sum()
+
+    def step(self) -> dict:
+        old_probs  = self._probs()
+        arms       = [int(self.rng.choice(self.bandit.N_ARMS, p=old_probs))
+                      for _ in range(self.K_GROUP)]
+        rewards    = [self.bandit.pull(a) for a in arms]
+        advantages = grpo_relative_advantages(rewards)
+        clip_count = 0
+        for arm, adv in zip(arms, advantages):
+            new_probs     = self._probs()
+            ratio         = new_probs[arm] / max(old_probs[arm], 1e-9)
+            clipped_ratio = np.clip(ratio, 1 - self.EPS, 1 + self.EPS)
+            use_clipped   = (adv > 0 and ratio > 1 + self.EPS) or \
+                            (adv < 0 and ratio < 1 - self.EPS)
+            clipped_adv   = float(clipped_ratio * adv if use_clipped else ratio * adv)
+            if use_clipped:
+                clip_count += 1
+            grad         = -new_probs.copy()
+            grad[arm]   += 1.0
+            self.logits += self.lr * clipped_adv * grad
+        return {
+            "mean_reward":   round(float(np.mean(rewards)), 3),
+            "best_arm_prob": round(float(self._probs()[-1]), 3),
+            "clip_frac":     round(clip_count / self.K_GROUP, 2),
         }
-        
-        base_score = strategy_quality[chosen_strategy]
-        noisy_score = base_score + rng.uniform(-0.2, 0.2)
-        final_reward = min(max(noisy_score, 0.0), 1.0)
-        
-        # Pass/fail threshold
-        passed = final_reward >= 0.65
-        
-        traj = Trajectory(
-            task_id=task_id,
-            strategy=chosen_strategy,
-            success=passed,
-            reward=round(final_reward, 3)
-        )
-        trajectories.append(traj)
-    
-    return trajectories
 
-def trajectories_to_frame(trajectories: list[Trajectory]) -> pd.DataFrame:
-    """Convert trajectories to DataFrame for analysis."""
-    return pd.DataFrame({
-        "task_id": [t.task_id for t in trajectories],
-        "strategy": [t.strategy for t in trajectories],
-        "success": [t.success for t in trajectories],
-        "reward": [t.reward for t in trajectories],
-    })
 
-def select_replay_buffer(df: pd.DataFrame, top_k: int = 15) -> pd.DataFrame:
-    """Filter to top-K successful trajectories for fine-tuning."""
-    return df.sort_values("reward", ascending=False).head(top_k).reset_index(drop=True)
+def train_grpo(n_steps: int = 100, seed: int = 42) -> pd.DataFrame:
+    """Run GRPO on the response-quality bandit. Completes in < 0.1 s."""
+    bandit  = _ResponseBandit(seed=seed)
+    trainer = GRPOTrainer(bandit=bandit, lr=0.15, seed=seed)
+    history = []
+    window  = []
+    for step in range(1, n_steps + 1):
+        stats = trainer.step()
+        window.append(stats["mean_reward"])
+        if len(window) > 10:
+            window.pop(0)
+        history.append({
+            "step":          step,
+            "mean_reward":   stats["mean_reward"],
+            "best_arm_prob": stats["best_arm_prob"],
+            "clip_frac":     stats["clip_frac"],
+            "reward_ma10":   round(float(np.mean(window)), 3),
+        })
+    return pd.DataFrame(history)
 
-def strategy_entropy(df: pd.DataFrame) -> float:
-    """Measure diversity of strategies (prevent mode collapse)."""
-    strategy_counts = df["strategy"].value_counts(normalize=True)
-    entropy = -(strategy_counts * strategy_counts.apply(lambda p: math.log(p + 1e-12))).sum()
-    return round(float(entropy), 3)
 
-def summarize_iteration(df: pd.DataFrame) -> dict:
-    """Summarize iteration statistics."""
-    return {
-        "mean_reward": round(float(df["reward"].mean()), 3),
-        "success_rate": round(float(df["success"].mean()), 3),
-        "strategy_entropy": strategy_entropy(df),
-    }
+# Run GRPO
+df = train_grpo(n_steps=100)
+print(f"Final best-arm probability: {df['best_arm_prob'].iloc[-1]:.1%}")
+print(f"Clip fraction last 10 steps: {df['clip_frac'].tail(10).mean():.0%}")
+print(df.tail(5)[["step", "mean_reward", "best_arm_prob", "clip_frac"]])
 
-# RUN THE ONLINE LEARNING LOOP
-
-print("=" * 70)
-print("ONLINE LEARNING FROM DEPLOYED TRAJECTORIES (STaR)")
-print("=" * 70)
-
-for iteration in range(1, 4):
-    print(f"\n--- Iteration {iteration} ---")
-    
-    # Step 1: Rollout - run agent on tasks
-    trajectories = collect_trajectories(n_tasks=40, seed=8 + iteration)
-    df = trajectories_to_frame(trajectories)
-    
-    # Step 2: Summarize performance
-    stats = summarize_iteration(df)
-    print(f"Mean reward: {stats['mean_reward']}")
-    print(f"Success rate: {stats['success_rate']:.0%}")
-    print(f"Strategy diversity: {stats['strategy_entropy']:.2f}")
-    
-    # Step 3: Filter to successful trajectories
-    replay_buffer = select_replay_buffer(df, top_k=15)
-    print(f"Selected {len(replay_buffer)} successful trajectories for fine-tuning")
-    
-    # Step 4: Show strategy distribution
-    strategy_dist = replay_buffer["strategy"].value_counts()
-    print("Strategy distribution in replay buffer:")
-    for strategy, count in strategy_dist.items():
-        print(f"  {strategy}: {count}")
-
-print("\n" + "=" * 70)
-print("KEY INSIGHT:")
-print("Each iteration, we extract successful trajectories from the agent's")
-print("own outputs and fine-tune on them. The agent bootstraps its own")
-print("training data, leading to continuous improvement.")
-print("=" * 70)
+# Beam search reference
+beams = beam_search_to_target(target=15, width=3, depth=4)
+print("\nBeam search to reach 15:")
+print(beams[["value", "distance_to_target", "trace"]].to_string(index=False))
   </code></pre>
 
   <p>

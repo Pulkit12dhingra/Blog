@@ -258,102 +258,157 @@
   </p>
 
   <ul>
-    <li><strong>Episode generator (`build_episode`):</strong> Creates a 20-step trajectory where each step has a quality score, representing how useful each action was.</li>
-    <li><strong>Reward wiring:</strong> Assigns ORM reward only at the terminal step and PRM reward at every step, so the only difference is signal timing.</li>
-    <li><strong>Return computation (`discounted_return`):</strong> Converts raw rewards into training targets used by policy updates.</li>
-    <li><strong>Comparison routine (`compare_orm_vs_prm`):</strong> Measures how many steps actually carry signal and quantifies density ratio.</li>
+    <li><strong>Verifiers (`verify_math`, `verify_code`, `verify_sql`):</strong> Programmatic checks that return a binary reward without any human judgment — the core RLVR primitive.</li>
+    <li><strong>Task environment (`MathTaskEnv`):</strong> Generates integer addition problems; the agent never sees the answer, only the binary verifier signal after each prediction.</li>
+    <li><strong>Policy (`GaussianPolicy`):</strong> Learns to select offset=0 (the correct answer) via REINFORCE; starts near-random and converges to near-perfect accuracy.</li>
+    <li><strong>Training loop (`train_rlvr_loop`):</strong> Runs 200 episodes; the 20-episode pass rate climbs from ~30% to near 100% using only binary verifier rewards.</li>
   </ul>
 
-  <pre><code class="language-python">import numpy as np
+  <pre><code class="language-python">from dataclasses import dataclass
+import sqlite3
+import numpy as np
 import pandas as pd
 
-# Build a synthetic multi-step trajectory
-def build_episode(steps: int = 20, seed: int = 11) -> pd.DataFrame:
-    """Generate a trajectory with step quality scores."""
-    rng = np.random.default_rng(seed)
-    
-    # Each step has some inherent quality
-    quality = rng.uniform(0.2, 1.0, size=steps)
-    
+
+@dataclass
+class VerifierResult:
+    task_name: str
+    passed: bool
+    reward: int
+    details: str
+
+
+def verify_math(expected: int, predicted: int) -> VerifierResult:
+    passed = expected == predicted
+    return VerifierResult("math", passed, int(passed),
+                          f"expected={expected}, predicted={predicted}")
+
+
+def verify_code() -> VerifierResult:
+    def is_even(n: int) -> bool:
+        return n % 2 == 0
+    tests = [is_even(2), not is_even(3), is_even(8)]
+    passed = all(tests)
+    return VerifierResult("code", passed, int(passed), f"tests={tests}")
+
+
+def verify_sql() -> VerifierResult:
+    conn = sqlite3.connect(":memory:")
+    cur  = conn.cursor()
+    cur.execute("CREATE TABLE orders(customer TEXT, amount INTEGER)")
+    cur.executemany("INSERT INTO orders VALUES(?, ?)",
+                    [("alice", 120), ("bob", 40), ("alice", 80)])
+    cur.execute(
+        "SELECT customer, SUM(amount) total "
+        "FROM orders GROUP BY customer ORDER BY total DESC"
+    )
+    rows = cur.fetchall()
+    conn.close()
+    expected = [("alice", 200), ("bob", 40)]
+    passed   = rows == expected
+    return VerifierResult("sql", passed, int(passed), f"rows={rows}")
+
+
+def run_verifier_batch() -> pd.DataFrame:
+    results = [verify_math(expected=64, predicted=64), verify_code(), verify_sql()]
     frame = pd.DataFrame({
-        "step": np.arange(1, steps + 1),
-        "action_quality": quality.round(3)
+        "task":    [r.task_name for r in results],
+        "passed":  [r.passed    for r in results],
+        "reward":  [r.reward    for r in results],
+        "details": [r.details   for r in results],
     })
-    
-    # ORM: Only give reward at the final step
-    frame["orm_reward"] = 0.0
-    frame.loc[steps - 1, "orm_reward"] = 1.0  # Success at end only
-    
-    # PRM: Give reward proportional to step quality
-    frame["prm_reward"] = frame["action_quality"]
-    
+    frame["pass_rate"] = frame["passed"].expanding().mean().round(2)
     return frame
 
-# Compute discounted returns for learning signal
-def discounted_return(rewards: np.ndarray, gamma: float = 0.95) -> np.ndarray:
-    """Compute cumulative discounted returns (used in policy optimization)."""
-    returns = np.zeros_like(rewards, dtype=float)
-    running = 0.0
-    
-    # Backward pass: compute cumulative future rewards
-    for i in range(len(rewards) - 1, -1, -1):
-        running = rewards[i] + gamma * running
-        returns[i] = running
-    
-    return returns
 
-# Compare the two approaches
-def compare_orm_vs_prm():
-    # Generate episode
-    episode = build_episode(steps=20, seed=11)
-    
-    # Compute returns for both
-    orm_returns = discounted_return(episode["orm_reward"].to_numpy())
-    prm_returns = discounted_return(episode["prm_reward"].to_numpy())
-    
-    episode["orm_returns"] = orm_returns
-    episode["prm_returns"] = prm_returns
-    
-    # Compute signal statistics
-    orm_nonzero = float((episode["orm_reward"] > 0).sum())
-    prm_nonzero = float((episode["prm_reward"] > 0).sum())
-    
-    stats = {
-        "orm_steps_with_signal": orm_nonzero,
-        "prm_steps_with_signal": prm_nonzero,
-        "signal_density_ratio": prm_nonzero / max(orm_nonzero, 1),
-        "orm_average_return": episode["orm_returns"].mean(),
-        "prm_average_return": episode["prm_returns"].mean(),
-    }
-    
-    return episode, stats
+# ── Real RLVR: REINFORCE on integer addition tasks ───────────────────────────
 
-# Run the comparison
-episode_data, statistics = compare_orm_vs_prm()
+class MathTaskEnv:
+    """Integer addition environment. Agent learns a+b from binary reward only."""
+    def __init__(self, seed: int = 17) -> None:
+        self.rng = np.random.default_rng(seed)
+        self.a = self.b = self.answer = 0
 
-print("=== Trajectory Data (first 5 steps shown) ===")
-print(episode_data[["step", "action_quality", "orm_reward", "prm_reward", "orm_returns", "prm_returns"]].head())
+    def reset(self) -> tuple[int, int]:
+        self.a      = int(self.rng.integers(1, 6))
+        self.b      = int(self.rng.integers(1, 6))
+        self.answer = self.a + self.b
+        return self.a, self.b
 
-print("\n=== Signal Density Analysis ===")
-for key, value in statistics.items():
-    if isinstance(value, float):
-        print(f"{key}: {value:.2f}")
+    def step(self, predicted: int) -> int:
+        return verify_math(self.answer, predicted).reward
 
-print("\n=== Key Insight ===")
-print(f"ORM provides signal to {int(statistics['orm_steps_with_signal'])} step (final only)")
-print(f"PRM provides signal to all {int(statistics['prm_steps_with_signal'])} steps")
-print(f"Learning signal density is {statistics['signal_density_ratio']:.0f}x higher with PRM!")
 
-# Visualize the difference
-print("\n=== ORM vs PRM: Learning Signal Comparison ===")
-print("Step | Action Quality | ORM Return | PRM Return")
-print("-" * 50)
-for idx, row in episode_data[::4].iterrows():  # Show every 4th step
-    print(f"{int(row['step']):3d}  |      {row['action_quality']:.2f}       |    {row['orm_returns']:.3f}    |   {row['prm_returns']:.3f}")
+class GaussianPolicy:
+    """Learns to always pick offset=0 (the correct answer) via REINFORCE."""
+    OFFSETS = [-2, -1, 0, 1, 2]
+    N       = 5
+
+    def __init__(self, lr: float = 0.20, seed: int = 7) -> None:
+        self.logits    = np.array([-0.2, -0.1, 0.0, -0.1, -0.2])
+        self.lr        = lr
+        self.rng       = np.random.default_rng(seed)
+        self._last_idx = 0
+        self.bias      = 0.0
+
+    def _probs(self) -> np.ndarray:
+        e = np.exp(self.logits - self.logits.max())
+        return e / e.sum()
+
+    def sample(self, a: int, b: int) -> int:
+        probs = self._probs()
+        self._last_idx = int(self.rng.choice(self.N, p=probs))
+        return a + b + self.OFFSETS[self._last_idx]
+
+    def update(self, reward: float, baseline: float) -> None:
+        advantage = reward - baseline
+        grad = -self._probs()
+        grad[self._last_idx] += 1.0
+        self.logits += self.lr * advantage * grad
+        self.bias = round(float(self.logits[2] - self.logits.mean()), 3)
+
+
+def train_rlvr_loop(n_episodes: int = 200) -> pd.DataFrame:
+    """REINFORCE on math tasks. Binary verifier is the sole reward signal."""
+    env      = MathTaskEnv()
+    policy   = GaussianPolicy()
+    baseline = 0.3
+    alpha_b  = 0.05
+    history  = []
+    window   = []
+
+    for ep in range(n_episodes):
+        a, b      = env.reset()
+        predicted = policy.sample(a, b)
+        reward    = env.step(predicted)
+        policy.update(float(reward), baseline)
+        baseline += alpha_b * (float(reward) - baseline)
+        window.append(reward)
+        if len(window) > 20:
+            window.pop(0)
+        history.append({
+            "episode":      ep + 1,
+            "a": a, "b": b,
+            "predicted":    predicted,
+            "correct":      a + b,
+            "reward":       reward,
+            "bias":         policy.bias,
+            "pass_rate_20": round(float(np.mean(window)), 3),
+        })
+
+    return pd.DataFrame(history)
+
+
+# Run verifiers, then the RLVR training loop
+print(run_verifier_batch().to_string(index=False))
+print()
+df = train_rlvr_loop(n_episodes=200)
+print(f"Final 20-ep pass rate: {df['pass_rate_20'].iloc[-1]:.1%}")
+print(df.tail(5)[["episode", "predicted", "correct", "reward", "pass_rate_20"]])
   </code></pre>
 
   <p>
-    When you run this code, you'll see that ORM provides a single reward of 1.0 at the final step, creating a sparse learning signal. PRM, by contrast, provides dense feedback throughout the trajectory - approximately proportional to the quality of each step. This density difference is why PRM dramatically outperforms ORM on long-horizon tasks.
+    The verifiers are pure Python functions that return a binary reward with no human involvement. The RLVR training loop shows the policy improving from random (~30% pass rate) to near-perfect accuracy purely from binary verifier signals — no ground truth is ever exposed to the policy directly.
   </p>
 
   <h4 class="mt-5 mb-3">Complete Code Reference</h4>
