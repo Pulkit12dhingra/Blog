@@ -1,0 +1,503 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Memory_Agents_Part2_Redis.html" />
+  <meta name="description" content="Upgrade your agent's memory with a two-layer Redis plus SQL architecture. Learn rolling windows, running summaries, cold-resume on returning users, and async Redis with adk-redis and redis-py." />
+  <title>Memory Management in Agentic Systems Part 2: Short-Term &amp; Long-Term Memory with Redis | Byte-Sized-Brilliance-AI</title>
+  <link rel="icon" type="image/png" href="../img/icon.png" />
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
+  <meta property="og:title" content="Memory Management in Agentic Systems Part 2: Short-Term &amp; Long-Term Memory with Redis" />
+  <meta property="og:description" content="Upgrade your agent's memory with a two-layer Redis plus SQL architecture. Learn rolling windows, running summaries, cold-resume, and async Redis." />
+  <meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Memory_Agents_Part2_Redis.html" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Memory Management in Agentic Systems Part 2: Short-Term &amp; Long-Term Memory with Redis" />
+  <meta name="twitter:description" content="Upgrade your agent's memory with a two-layer Redis plus SQL architecture. Learn rolling windows, running summaries, cold-resume, and async Redis." />
+  <meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8JMS98M7C7';
+        script.async = true;
+        script.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-8JMS98M7C7');
+        };
+        document.head.appendChild(script);
+      }, 1500);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+    <h2 class="fw-bold mb-3">Memory Management in Agentic Systems Part 2: Short-Term &amp; Long-Term Memory with Redis</h2>
+    <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+  </div>
+
+  <hr />
+
+  <!-- Series Nav -->
+  <div class="alert alert-info mb-4">
+    <strong>Memory Management in Agentic Systems Series:</strong>
+    <a href="Memory_Agents_Part1_SQL.html">Part 1: Session Memory with SQLite</a> &nbsp;|&nbsp;
+    <strong>Part 2: Short-Term &amp; Long-Term Memory with Redis</strong> &nbsp;|&nbsp;
+    <a href="Memory_Agents_Part3_Mem0_Semantic.html">Part 3: Cross-Session Memory with mem0, LangMem &amp; Semantic Caching</a>
+  </div>
+
+  <p>
+    In <a href="Memory_Agents_Part1_SQL.html">Part 1</a> we gave our customer support bot a memory using SQLite. It can now remember the current conversation and load it back after a server restart. But there are two problems we still have not solved: speed and session continuity.
+  </p>
+  <p>
+    This part upgrades the architecture to a <strong>two-layer memory system</strong>: Redis handles the fast, hot path for active conversations, and SQL acts as the permanent archive. We introduce rolling windows and running summaries so the bot never loses context, even when a user returns after days of inactivity.
+  </p>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">1. The Problem with SQL Alone</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    SQLite reads from disk. Disk is slow relative to RAM; typically 5&ndash;50ms per query vs 0.1&ndash;1ms for an in-memory store. For a chat application where the bot needs to load conversation history on every single turn, those milliseconds compound fast.
+  </p>
+  <p>
+    There is a second problem: growing context. As a session gets longer, loading the entire message history means sending more and more text to the LLM. Token counts grow, costs rise, and you eventually hit the context limit. We need a smarter approach to what we keep hot and what we compress.
+  </p>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">2. Redis in One Paragraph</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    Redis is an in-memory data store. Think of it as your computer's RAM organised as a database: everything lives in memory so reads and writes are measured in microseconds, not milliseconds. It supports key-value pairs, lists, hashes, and more. Critically, every key can have a <strong>TTL (time-to-live)</strong>; you tell Redis "delete this key after 2 hours of inactivity" and it handles eviction automatically. This makes Redis a natural fit for active session storage: sessions that go quiet get cleaned up without any cron jobs.
+  </p>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">3. The Two-Layer Architecture</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    The new system uses two complementary stores with clearly defined responsibilities:
+  </p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr><th>Layer</th><th>Store</th><th>What lives here</th><th>Lifetime</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Working memory</strong></td>
+          <td>Redis</td>
+          <td>Last N turns (rolling window) + running summary of the whole session</td>
+          <td>TTL-based (e.g. 2 hours of inactivity)</td>
+        </tr>
+        <tr>
+          <td><strong>Long-term archive</strong></td>
+          <td>SQL (SQLite / PostgreSQL)</td>
+          <td>Full conversation summary written on session close</td>
+          <td>Permanent (until you explicitly delete)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mt-4">Rolling Window</h4>
+  <p>
+    Instead of storing every message forever in Redis, we keep only the last N turns (say, 10). When turn 11 arrives, turn 1 is dropped from Redis (but not deleted; it has already been archived to SQL). This keeps the active context lean and token-efficient.
+  </p>
+  <p>
+    In raw Redis this is a list with <code>LPUSH</code> (push new message to the front) + <code>LTRIM</code> (trim to max N items). The <code>adk-redis</code> library does this automatically via the Agent Memory Server.
+  </p>
+
+  <h4 class="mt-4">Running Summary</h4>
+  <p>
+    Alongside the rolling window, a second Redis key stores a compressed plain-English summary of everything discussed so far, updated after each turn. Even though turn 1 has been evicted from the window, its key facts (order number, problem description, resolution attempted) live on in the summary. The LLM receives both the window (recent verbatim turns) and the summary (older compressed context). This is the pattern used by most production chatbot systems.
+  </p>
+
+  <h4 class="mt-4">Cold Resume</h4>
+  <p>
+    When a session TTL expires in Redis (user was inactive for hours), the next time they return:
+  </p>
+  <ol>
+    <li>The bot checks Redis: key is gone (miss).</li>
+    <li>It loads the session summary from SQL (fast single-row lookup).</li>
+    <li>It seeds Redis with that summary as the starting context.</li>
+    <li>The conversation resumes naturally. The bot can say &ldquo;Welcome back. Last time we were working on your order #1234...&rdquo;</li>
+  </ol>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">4. Setting Up adk-redis</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    <code>adk-redis</code> is the official Redis integration library for Google ADK. It connects ADK's session and memory interfaces to <strong>Redis Agent Memory Server</strong>, a purpose-built service that handles working memory, auto-summarisation, and long-term memory storage. See the <a href="https://redis.io/docs/latest/integrate/google-adk/" target="_blank" rel="noopener noreferrer">official Redis ADK docs</a> for full reference.
+  </p>
+
+  <h4 class="mt-4">Docker Setup (Redis 8.4 + Agent Memory Server)</h4>
+  <pre><code class="language-python"># 1. Start Redis 8.4 with vector search support
+docker run -d --name redis -p 6379:6379 redis:8.4-alpine
+
+# 2. Start Agent Memory Server (handles summarisation, working memory, long-term memory)
+docker run -d --name agent-memory-server -p 8088:8088 \
+  -e REDIS_URL=redis://host.docker.internal:6379 \
+  -e GEMINI_API_KEY=your-gemini-key \
+  -e GENERATION_MODEL=gemini/gemini-2.0-flash \
+  -e EMBEDDING_MODEL=gemini/text-embedding-004 \
+  redislabs/agent-memory-server:latest \
+  agent-memory api --host 0.0.0.0 --port 8088 --task-backend=asyncio
+</code></pre>
+
+  <pre><code class="language-python"># Install the ADK Redis integration
+pip install adk-redis[memory]
+</code></pre>
+
+  <div class="alert alert-secondary py-2 px-3 small mt-3">
+    The Agent Memory Server is the key piece: it talks directly to Redis and exposes a REST API on port 8088 that <code>adk-redis</code> calls. It handles the rolling window and auto-summarisation natively; you do not need to implement these yourself when using ADK.
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">5. ADK + adk-redis Implementation</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <pre><code class="language-python">from google.adk.agents import Agent
+from google.adk.runners import Runner
+from google.adk.agents.callback_context import CallbackContext
+from adk_redis.sessions import (
+    RedisWorkingMemorySessionService,
+    RedisWorkingMemorySessionServiceConfig,
+)
+
+# Point adk-redis at the Agent Memory Server
+session_service = RedisWorkingMemorySessionService(
+    config=RedisWorkingMemorySessionServiceConfig(
+        api_base_url="http://localhost:8088",
+        default_namespace="support_app",
+    )
+)
+
+async def after_agent_turn(callback_context: CallbackContext):
+    """After every agent turn, persist the session to long-term memory.
+
+    The Agent Memory Server automatically manages:
+    - The rolling window (last N messages in Redis)
+    - The running summary (incrementally updated after each call)
+    - Archival to its own long-term store (backed by Redis)
+    """
+    await callback_context.add_session_to_memory()
+
+agent = Agent(
+    name="support_bot_v2",
+    model="gemini-2.5-flash",
+    instruction="""You are a helpful customer support agent for an e-commerce platform.
+You have access to a summary of previous interactions. Use it to personalise your response.""",
+    after_agent_callback=after_agent_turn,
+)
+
+runner = Runner(
+    agent=agent,
+    app_name="support_app",
+    session_service=session_service,  # Redis-backed, replaces InMemorySessionService
+)
+</code></pre>
+
+  <p>
+    The key difference from Part 1 is the <code>session_service</code>. Swapping <code>InMemorySessionService</code> for <code>RedisWorkingMemorySessionService</code> is all it takes for ADK. The rolling window and summary management are handled server-side by the Agent Memory Server.
+  </p>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">6. LangChain + redis-py: Rolling Window + Summary + Cold Resume</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    The LangChain path uses <code>redis-py</code> directly, giving you full control over the rolling window and summary keys. We also add the SQL cold-resume pattern explicitly.
+  </p>
+
+  <pre><code class="language-python">pip install redis langchain-community
+</code></pre>
+
+  <h4 class="mt-4">Redis helpers: rolling window + summary key</h4>
+  <pre><code class="language-python">import redis
+import sqlite3
+import json
+
+r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+
+WINDOW_SIZE = 10       # keep last 10 turns in Redis
+SESSION_TTL  = 7200    # 2 hours of inactivity before Redis evicts the session
+SUMMARY_TTL  = 86400   # summary key lives 24 hours (longer than the window)
+
+# ── Rolling window ──────────────────────────────────────────────────
+
+def push_message(session_id: str, role: str, content: str):
+    """Add a message to the rolling window and trim to WINDOW_SIZE."""
+    key = f"window:{session_id}"
+    message = json.dumps({"role": role, "content": content})
+    r.lpush(key, message)           # push to front
+    r.ltrim(key, 0, WINDOW_SIZE - 1)  # keep only the last WINDOW_SIZE items
+    r.expire(key, SESSION_TTL)
+
+def get_window(session_id: str) -> list[dict]:
+    """Return the last N messages in chronological order."""
+    key = f"window:{session_id}"
+    raw = r.lrange(key, 0, -1)
+    return [json.loads(m) for m in reversed(raw)]  # reverse: LPUSH stores newest first
+
+# ── Running summary ─────────────────────────────────────────────────
+
+def update_summary(session_id: str, new_line: str):
+    """Append a one-line summary of the latest turn."""
+    key = f"summary:{session_id}"
+    existing = r.get(key) or ""
+    r.set(key, existing + f"\n- {new_line}", ex=SUMMARY_TTL)
+
+def get_summary(session_id: str) -> str:
+    return r.get(f"summary:{session_id}") or ""
+
+# ── SQL long-term store (cold-resume) ───────────────────────────────
+
+def archive_summary(session_id: str):
+    """Write the running summary to SQL on session close."""
+    summary = get_summary(session_id)
+    if not summary:
+        return
+    conn = sqlite3.connect("support.db")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS session_summaries (
+            session_id TEXT PRIMARY KEY,
+            summary    TEXT,
+            updated_at REAL DEFAULT (unixepoch())
+        )""")
+    conn.execute(
+        "INSERT OR REPLACE INTO session_summaries (session_id, summary) VALUES (?,?)",
+        (session_id, summary)
+    )
+    conn.commit()
+    conn.close()
+
+def load_summary_from_sql(session_id: str) -> str:
+    """Load the archived summary when Redis has no entry (cold-resume)."""
+    conn = sqlite3.connect("support.db")
+    row = conn.execute(
+        "SELECT summary FROM session_summaries WHERE session_id=?",
+        (session_id,)
+    ).fetchone()
+    conn.close()
+    return row[0] if row else ""
+
+def restore_session(session_id: str):
+    """On cold-resume: load summary from SQL and seed Redis."""
+    if not r.exists(f"summary:{session_id}"):
+        archived = load_summary_from_sql(session_id)
+        if archived:
+            r.set(f"summary:{session_id}", archived, ex=SUMMARY_TTL)
+</code></pre>
+
+  <h4 class="mt-4">LangChain chain with window + summary context</h4>
+  <pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_ollama import ChatOllama
+
+llm = ChatOllama(model="llama3.2")
+
+def chat(session_id: str, user_input: str) -> str:
+    # Cold-resume: restore summary from SQL if Redis has expired
+    restore_session(session_id)
+
+    summary = get_summary(session_id)
+    window  = get_window(session_id)
+
+    # Build message list for the LLM: system + past window + new user turn
+    messages = [
+        ("system",
+         f"You are a helpful customer support agent.\n\n"
+         f"Summary of past interactions:\n{summary or 'No prior context.'}")
+    ]
+    for msg in window:
+        if msg["role"] == "user":
+            messages.append(("human", msg["content"]))
+        else:
+            messages.append(("ai", msg["content"]))
+    messages.append(("human", user_input))
+
+    prompt = ChatPromptTemplate.from_messages(messages)
+    response = (prompt | llm).invoke({})
+    response_text = response.content
+
+    # Update Redis
+    push_message(session_id, "user", user_input)
+    push_message(session_id, "model", response_text)
+    update_summary(session_id, f"User: {user_input[:60]} | Bot: {response_text[:60]}")
+
+    return response_text
+</code></pre>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">7. Async Upgrade</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    Redis is a network service, which means every call involves a round-trip over the loopback. Under concurrent load, sync Redis calls block the thread just like sync SQLite. <code>aioredis</code> gives you async-native Redis clients.
+  </p>
+  <p>
+    The ADK path is already fully async; <code>after_agent_callback</code> is <code>async def</code> and the Runner uses an async event loop. For the LangChain path:
+  </p>
+
+  <pre><code class="language-python">pip install redis[asyncio]   # aioredis is now part of the redis package
+</code></pre>
+
+  <pre><code class="language-python">import redis.asyncio as aioredis
+
+# Create once at startup, reuse across requests
+redis_client = aioredis.from_url("redis://localhost:6379", decode_responses=True)
+
+async def push_message_async(session_id: str, role: str, content: str):
+    key = f"window:{session_id}"
+    message = json.dumps({"role": role, "content": content})
+    async with redis_client.pipeline(transaction=True) as pipe:
+        await pipe.lpush(key, message)
+        await pipe.ltrim(key, 0, WINDOW_SIZE - 1)
+        await pipe.expire(key, SESSION_TTL)
+        await pipe.execute()
+
+async def get_window_async(session_id: str) -> list[dict]:
+    key = f"window:{session_id}"
+    raw = await redis_client.lrange(key, 0, -1)
+    return [json.loads(m) for m in reversed(raw)]
+
+async def restore_session_async(session_id: str):
+    exists = await redis_client.exists(f"summary:{session_id}")
+    if not exists:
+        archived = await load_summary_from_sql_async(session_id)
+        if archived:
+            await redis_client.set(f"summary:{session_id}", archived, ex=SUMMARY_TTL)
+</code></pre>
+
+  <div class="alert alert-info mt-4">
+    <strong>Threading vs async for Redis:</strong> The async approach is ideal when your web framework is async (FastAPI, aiohttp). If you are using a sync framework (Flask, Django without ASGI) and want concurrency, use a thread pool with the sync <code>redis-py</code> client instead. See <a href="Python_Threading.html">Python Concurrency Part 3: Threading, ThreadPoolExecutor &amp; the GIL</a> for the detailed comparison.
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">8. Performance Comparison</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Approach</th>
+          <th>History load latency</th>
+          <th>Concurrent users</th>
+          <th>Cold-resume after long inactivity</th>
+          <th>Token cost per turn</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sync SQLite (Part 1)</td>
+          <td>5&ndash;50 ms</td>
+          <td>Low (&lt;10)</td>
+          <td>Full history replay (expensive)</td>
+          <td>Grows with session length</td>
+        </tr>
+        <tr>
+          <td>Async SQLite (Part 1)</td>
+          <td>5&ndash;50 ms</td>
+          <td>Medium (&lt;100)</td>
+          <td>Full history replay (expensive)</td>
+          <td>Grows with session length</td>
+        </tr>
+        <tr>
+          <td><strong>Redis + SQL (this part)</strong></td>
+          <td><strong>0.1&ndash;1 ms</strong></td>
+          <td><strong>High (1000+)</strong></td>
+          <td><strong>Summary only (cheap &amp; fast)</strong></td>
+          <td><strong>Fixed (window + summary)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">9. What Is Still Missing</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <p>
+    The bot now handles fast active sessions, graceful eviction, and smooth cold-resume. But there is one thing it still cannot do: <strong>recognise the same user across completely separate conversations</strong>.
+  </p>
+  <p>
+    If user 42 contacts support today about a billing issue, then comes back next month with a shipping question, the bot starts from a blank slate (unless you manually link the session IDs). It does not know that user 42 had a billing dispute last month and resolved it with a refund. It cannot say &ldquo;I see you had an issue with us before; let me make sure we handle this quickly.&rdquo;
+  </p>
+  <p>
+    For that, we need <strong>cross-session semantic memory</strong>: the ability to extract key facts from conversations, store them as embeddings, and retrieve them by meaning, not just by session ID. That is what <a href="Memory_Agents_Part3_Mem0_Semantic.html">Part 3</a> is about.
+  </p>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <hr class="my-5" />
+  <h3 class="fw-bold">Summary</h3>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <div class="alert alert-success mt-3">
+    <ul class="mb-0">
+      <li>Redis keeps active session context in RAM for sub-millisecond reads, far faster than SQLite on disk.</li>
+      <li>A <strong>rolling window</strong> (last N turns) keeps token counts fixed and predictable.</li>
+      <li>A <strong>running summary</strong> alongside the window preserves older context without storing every message verbatim.</li>
+      <li>SQL acts as the permanent archive. On cold-resume, a single summary row is loaded and Redis is reseeded; the conversation picks up naturally.</li>
+      <li><strong>ADK path:</strong> swap <code>InMemorySessionService</code> for <code>RedisWorkingMemorySessionService</code> (adk-redis) and add <code>add_session_to_memory()</code> in your after-agent callback. The Agent Memory Server handles rolling window and summarisation automatically.</li>
+      <li><strong>LangChain path:</strong> use <code>redis-py</code> with LPUSH + LTRIM for the window, a separate summary key, and <code>aiosqlite</code> for SQL archival and cold-resume.</li>
+      <li>Upgrade to async Redis (<code>redis[asyncio]</code>) to serve many concurrent users without thread blocking.</li>
+      <li>Continue to <a href="Memory_Agents_Part3_Mem0_Semantic.html">Part 3</a> to add cross-session semantic memory and semantic caching.</li>
+    </ul>
+  </div>
+
+  <hr />
+  <footer class="mt-4 mb-3">
+    <p class="text-muted mb-1">
+      <i class="bi bi-person-circle me-2"></i>
+      <strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a>
+    </p>
+    <p class="text-muted small mb-0">
+      &copy; 2026 Byte-Sized-Brilliance-AI. All rights reserved.
+    </p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

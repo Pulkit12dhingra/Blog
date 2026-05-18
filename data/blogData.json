@@ -1,5 +1,29 @@
 [
   {
+    "file": "Memory_Agents_Part3_Mem0_Semantic.html",
+    "title": "Memory Management in Agentic Systems Part 3: Cross-Session Memory with mem0, LangMem & Semantic Caching",
+    "summary": "Complete the memory journey by adding cross-session semantic memory using mem0 with Google ADK and LangMem with LangChain. Learn how embeddings enable semantic matching, how LangCache eliminates redundant LLM calls, and how to wire an async full-stack pipeline that knows your users across every session.",
+    "tags": ["AI", "Agents", "Memory", "mem0", "LangMem", "Semantic Search", "Caching", "Embeddings", "Google ADK", "LangChain", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Memory_Agents_Part2_Redis.html",
+    "title": "Memory Management in Agentic Systems Part 2: Short-Term & Long-Term Memory with Redis",
+    "summary": "Upgrade your agent's memory with a two-layer Redis plus SQL architecture. Learn rolling windows and running summaries for active sessions, cold-resume for returning users, and async Redis with adk-redis (Google ADK) and redis-py (LangChain).",
+    "tags": ["AI", "Agents", "Memory", "Redis", "SQL", "Google ADK", "LangChain", "adk-redis", "Short-term", "Long-term", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Memory_Agents_Part1_SQL.html",
+    "title": "Memory Management in Agentic Systems Part 1: Session Memory with SQLite",
+    "summary": "Give your AI agent its first memory using SQLite. Build a customer support bot that stores and retrieves conversation history, design a sessions and messages schema, then upgrade from blocking sync I/O to async aiosqlite for concurrent users.",
+    "tags": ["AI", "Agents", "Memory", "SQL", "SQLite", "Python", "asyncio", "Google ADK", "LangChain", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
     "file": "RL_Agents_Part6_Safety_Credit_Assignment.html",
     "title": "RL Agents Part 6: RLAIF, Reward Hacking, and Credit Assignment",
     "summary": "Final part of the RL agents series covering RLAIF-based critics, reward hacking failure patterns and mitigations, KL regularization, and why long-horizon credit assignment remains the hardest open problem.",
