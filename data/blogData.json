@@ -1,5 +1,93 @@
 [
   {
+    "file": "Jev_Part11_Production.html",
+    "title": "Jev in Production: Models, Reliability, and Evaluation",
+    "summary": "Review model versions, retries, evaluation, data handling, language support, and hierarchical classification before deploying a Jev workflow.",
+    "tags": ["AI", "Jev", "TypeSafe", "Production", "Evaluation", "Reliability", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part10_Extraction_Verification.html",
+    "title": "Jev for Structured Extraction and Verification",
+    "summary": "Select bounded values, verify extracted fields against source text, and keep exact parsing, date construction, and arithmetic in code.",
+    "tags": ["AI", "Jev", "TypeSafe", "Extraction", "Verification", "Python", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part9_Guardrails_Citations.html",
+    "title": "Jev for LLM Guardrails and Citation Checks",
+    "summary": "Evaluate LLM inputs, outputs, and citation support with narrow structured questions, confidence-aware review, and clear security limitations.",
+    "tags": ["AI", "Jev", "TypeSafe", "LLM Safety", "Guardrails", "Citations", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part8_RAG_Passages.html",
+    "title": "Jev in a RAG Pipeline: Classifying Retrieved Passages",
+    "summary": "Add a Jev evaluation stage between retrieval and generation to classify evidence, contradictions, relevance, and possible prompt injection.",
+    "tags": ["AI", "Jev", "TypeSafe", "RAG", "Retrieval", "Prompt Injection", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part7_Fanout_Composite.html",
+    "title": "Advanced Jev Patterns: Fan-Out and Composite Scoring",
+    "summary": "Batch independent and speculative questions, then normalize and combine atomic Jev scores using application-owned weights.",
+    "tags": ["AI", "Jev", "TypeSafe", "Fan-Out", "Scoring", "Patterns", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part6_Workflow.html",
+    "title": "Build a Complete Jev Workflow: Support Ticket Triage",
+    "summary": "Combine Choice, Score, and Noul in one support workflow with code-owned routing, confidence checks, and human review paths.",
+    "tags": ["AI", "Jev", "TypeSafe", "Python", "Support Triage", "Workflow", "Intermediate"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part5_Choice.html",
+    "title": "Choice in Practice: Routing Tickets by Intent with Jev",
+    "summary": "Classify support tickets into defined teams using Choice criteria, probability distributions, confidence, and a review path for ambiguous cases.",
+    "tags": ["AI", "Jev", "TypeSafe", "Choice", "Classification", "Support", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part4_Score.html",
+    "title": "Score in Practice: Rating Ticket Severity with Jev",
+    "summary": "Design an ordered severity rubric and interpret Score values, level probabilities, confidence, and review thresholds.",
+    "tags": ["AI", "Jev", "TypeSafe", "Score", "Rubric", "Confidence", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part3_Noul.html",
+    "title": "Noul in Practice: Detecting Refund Requests with Jev",
+    "summary": "Build a yes/no refund-request detector with explicit true and false criteria, application thresholds, and human review for uncertain cases.",
+    "tags": ["AI", "Jev", "TypeSafe", "Noul", "Classification", "Support", "Tutorial"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part2_Quickstart.html",
+    "title": "Your First Jev Evaluation: Playground, API, and Python",
+    "summary": "Try a Jev evaluation in the Playground and Python SDK, configure an API key, and understand the state, question, and answer fields.",
+    "tags": ["AI", "Jev", "TypeSafe", "Python", "API", "Quickstart", "Beginner"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
+    "file": "Jev_Part1_Introduction.html",
+    "title": "What Is Jev? A Practical Introduction to System One Models",
+    "summary": "Meet Jev, TypeSafe's System One model for structured decisions. Learn how it differs from generative LLMs, where it fits in software, and what to expect from this six-part series.",
+    "tags": ["AI", "Jev", "TypeSafe", "System One", "LLM", "Tutorial", "Beginner"],
+    "topic": "AI & LLM",
+    "contributor": "Pulkit Dhingra"
+  },
+  {
     "file": "Memory_Agents_Part3_Mem0_Semantic.html",
     "title": "Memory Management in Agentic Systems Part 3: Cross-Session Memory with mem0, LangMem & Semantic Caching",
     "summary": "Complete the memory journey by adding cross-session semantic memory using mem0 with Google ADK and LangMem with LangChain. Learn how embeddings enable semantic matching, how LangCache eliminates redundant LLM calls, and how to wire an async full-stack pipeline that knows your users across every session.",

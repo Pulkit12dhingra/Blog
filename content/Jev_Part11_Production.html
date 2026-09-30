@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="robots" content="index, follow" /><meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Jev_Part11_Production.html" /><meta name="description" content="Finish the Jev series with production considerations: model aliases, retries, evaluation, data handling, language support, and large taxonomies." />
+  <title>Jev in Production: Models, Reliability, and Evaluation | Byte-Sized-Brilliance-AI</title><link rel="icon" type="image/png" href="../img/icon.png" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <meta property="og:title" content="Jev in Production: Models, Reliability, and Evaluation" /><meta property="og:description" content="Review model versions, retries, evaluation, data handling, and hierarchical classification before production." /><meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" /><meta property="og:type" content="article" /><meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Jev_Part11_Production.html" />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Jev in Production: Models, Reliability, and Evaluation" /><meta name="twitter:description" content="Review model versions, retries, evaluation, data handling, and hierarchical classification before production." /><meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" /><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /><link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"><div><p class="text-muted small mb-1">Jev Series · Part 11 · Advanced operations</p><h2 class="fw-bold mb-0">Jev in Production: Models, Reliability, and Evaluation</h2></div><a href="../index.html" class="btn btn-primary mt-2 mt-md-0">Back to Home</a></div>
+  <hr />
+  <p class="lead">A prototype proves that a question can be answered. A production workflow also needs version control, failure handling, evaluation, and a plan for uncertainty. This final article collects the operational decisions that keep a Jev integration observable and reviewable.</p>
+
+  <h4 class="mt-5">1. Choose a model versioning strategy</h4>
+  <p>The documentation uses aliases such as <code>jev-latest</code> and also accepts versioned model IDs. An alias is convenient, but it can resolve to a newer release over time. The API response includes the model version that handled the request.</p>
+  <ul><li>Log the requested model name and the returned model version.</li><li>Re-run a representative evaluation set before adopting a new version.</li><li>If thresholds were tuned to a specific version, consider pinning that version and upgrading deliberately.</li><li>Verify current model names, price, context limits, and rate limits in the official model documentation before deployment.</li></ul>
+
+  <h4 class="mt-5">2. Handle request failures and rate limits</h4>
+  <p>API requests can fail for authentication, validation, rate-limit, overload, timeout, or network reasons. The HTTP API documents standard error responses, including 401 for authentication, 422 for invalid requests, and retryable 429 or 529 conditions. The supported SDKs include default retry behavior for retryable responses.</p>
+  <p>Production code should still have a timeout, a bounded retry policy, structured error handling, and a fallback route. Avoid retrying invalid request bodies or invalid credentials as if they were transient failures. Keep request identifiers and error status in logs, but do not log API keys or sensitive request data indiscriminately.</p>
+
+  <h4 class="mt-5">3. Evaluate decisions, not just model values</h4>
+  <p>Keep a labeled set that represents the expected inputs, including common examples, edge cases, missing information, and adversarial wording. Evaluate the exact application decision produced by the probability and threshold, not only whether the model's top label looks plausible.</p>
+  <ul><li>Measure false positives and false negatives for each route.</li><li>Measure how many cases are sent to human review.</li><li>Set thresholds according to the cost of an incorrect action and the cost of review.</li><li>Re-evaluate after changing instructions, criteria, state structure, thresholds, or model versions.</li><li>Keep a holdout set that was not used to tune those decisions.</li></ul>
+  <p>Confidence is derived from the distribution for Choice and Score. It is a useful routing signal, not a guarantee of correctness. Noul returns a yes probability and does not include a separate confidence field.</p>
+
+  <h4 class="mt-5">4. Scale classification through a hierarchy</h4>
+  <p>A Choice question can represent a fixed set of categories. When the taxonomy is deep or too large for one decision, ask a Choice at each level and let code traverse the hierarchy. A greedy traversal follows only the top option at each step and can lose a correct path after one early mistake. Beam search retains multiple plausible paths and explores them further, trading additional work for a chance to recover from ambiguity.</p>
+  <p>Keep path selection and pruning rules explicit. Test against known classifications, inspect where errors occur, and consider reporting a broader parent category or escalating when the leaf-level result is uncertain.</p>
+
+  <h4 class="mt-5">5. Review language, context, and data requirements</h4>
+  <p>The current model documentation describes Jev as text-only and notes that English is its primary training language. Other languages are supported with lower accuracy, so evaluate your actual language and domain before relying on an integration. The documentation also describes bounded context limits that can vary by model version.</p>
+  <p>Reduce irrelevant state before calling Jev. Include only the fields needed for the questions, and retrieve relevant evidence in code rather than sending an unnecessarily large record. This can improve clarity and control request size.</p>
+  <p>For data handling, review TypeSafe's current legal and privacy materials and your organization's requirements before sending customer information. The provider's policies and offerings can change; do not treat a tutorial as a substitute for a current contractual or security review.</p>
+
+  <h4 class="mt-5">Final production checklist</h4>
+  <ul><li>Questions, criteria, thresholds, and weights are stored in a reviewable place.</li><li>Every automated action has an uncertainty and fallback policy.</li><li>Representative and holdout evaluations exist for the real workflow.</li><li>Model versions, request errors, and application decisions are observable.</li><li>Timeouts, bounded retries, rate limits, and privacy requirements are addressed.</li><li>Jev is used for judgments, while exact computation and side effects remain in code.</li></ul>
+  <p>This completes the series, from the first structured question through advanced integration patterns and production considerations.</p>
+  <ul><li><a href="https://docs.typesafe.ai/models" target="_blank" rel="noopener noreferrer">Current models and limits</a></li><li><a href="https://docs.typesafe.ai/api" target="_blank" rel="noopener noreferrer">HTTP API reference</a></li><li><a href="https://docs.typesafe.ai/sdk/python/usage" target="_blank" rel="noopener noreferrer">Python SDK usage, retries, and errors</a></li><li><a href="https://docs.typesafe.ai/legal" target="_blank" rel="noopener noreferrer">Legal and data-handling information</a></li><li><a href="https://docs.typesafe.ai/cookbooks/hierarchical_classification" target="_blank" rel="noopener noreferrer">Hierarchical classification cookbook</a></li></ul>
+</div>
+<footer class="bg-light py-4 mt-5 border-top"><div class="container text-center"><p class="text-muted mb-1"><i class="bi bi-person-circle me-2"></i><strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a></p><p class="text-muted small mb-0">2026 Byte-Sized-Brilliance-AI. All rights reserved.</p></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script><script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script><script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

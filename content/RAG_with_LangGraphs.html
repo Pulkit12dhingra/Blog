@@ -84,7 +84,7 @@
 <body>
 <div class="container mt-4">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-    <h2 class="fw-bold mb-3">Building a RAG Pipeline with PDFs, Chroma DB, and Gemma 3 </h2>
+    <h2 class="fw-bold mb-3">Graph-Powered RAG with LangChain, Chroma DB, and Gemma 3</h2>
     <a href="../index.html" class="btn btn-primary">← Back to Home</a>
   </div>
   <hr />
@@ -148,7 +148,7 @@ chunks = text_splitter.split_documents(all_docs)</code></pre>
 
   <h5 class="mt-4"> Define the Embeddings</h5>
   <p>
-  This step converts each chunk of text into a numerical vector using a pretrained embedding model. 
+  This step converts each chunk of text into a numerical vector using a pretrained embedding model from <code>langchain-huggingface</code>. 
   We use the <code>HuggingFaceEmbeddings</code> wrapper with the <code>all-MiniLM-L6-v2</code> model  a lightweight and efficient transformer from the 
   <a href="https://www.sbert.net/" target="_blank">SentenceTransformers</a> library.
 </p>
@@ -161,13 +161,13 @@ chunks = text_splitter.split_documents(all_docs)</code></pre>
 </p>
 
   <pre><code class="language-python">
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")</code></pre>
 
   <h5 class="mt-4"> Store Chunks in Chroma DB</h5>
   <p>
-  Now that each text chunk has been converted into a vector, we store them in a vector database  in this case, <strong>Chroma DB</strong>. 
+  Now that each text chunk has been converted into a vector, we store them in a vector database using the modern <code>langchain-chroma</code> package. 
   A vector database allows us to perform fast and efficient <strong>similarity searches</strong> based on the embeddings.
 </p>
 <p>
@@ -178,15 +178,15 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 </p>
 
   <pre><code class="language-python">
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")</code></pre>
 
   <h5 class="mt-4"> Initialize Ollama with Gemma 3</h5>
   <pre><code class="language-python">
-from langchain_community.llms import Ollama
+from langchain_ollama import ChatOllama
 
-llm = Ollama(model="gemma3")</code></pre>
+llm = ChatOllama(model="gemma3")</code></pre>
 
 <h4 class="mt-5">Graph-Based RAG with LangGraph</h4>
 <p>This section walks through each part of the LangGraph-powered RAG implementation, explaining every node and design decision in detail.</p>
@@ -353,12 +353,12 @@ all_splits = text_splitter.split_documents(all_docs)
 print(f"Split resume pdfs into {len(all_splits)} sub-documents.")
 
 # Embeddings
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # Vectorstore
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 vectorstore = Chroma.from_documents(all_splits, embedding=embedding_model, persist_directory="./chroma_db")
 retriever = vectorstore.as_retriever()
@@ -367,9 +367,9 @@ document_ids = vectorstore.add_documents(documents=all_splits)
 print(document_ids[:3])
 
 # LLM Initialization
-from langchain_community.llms import Ollama
+from langchain_ollama import ChatOllama
 
-llm = Ollama(model="gemma3")
+llm = ChatOllama(model="gemma3")
 
 # LangGraph Setup
 from langgraph.graph import START, StateGraph

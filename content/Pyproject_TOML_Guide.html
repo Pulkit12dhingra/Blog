@@ -305,17 +305,19 @@ Changelog = "https://github.com/user/project/blob/main/CHANGELOG.md"</code></pre
   </p>
   <pre><code class="language-python">[tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py312"
+exclude = [".git", "__pycache__", "dist", "build"]
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "B", "C4", "UP"]
 ignore = ["E501"]
-exclude = [".git", "__pycache__", "dist", "build"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["myproject"]
 
 [tool.ruff.format]
 quote-style = "double"
-indent-style = "space"
-
-[tool.ruff.isort]
-known-first-party = ["myproject"]</code></pre>
+indent-style = "space"</code></pre>
 
   <h5 class="mt-3">Pytest Configuration</h5>
   <p>
@@ -473,7 +475,9 @@ Repository = "https://github.com/user/awesome-ml"
 # Ruff configuration
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -485,7 +489,7 @@ select = [
 ]
 ignore = ["E501", "B008"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*" = ["S101"]
 

@@ -93,7 +93,7 @@
     <p>
     LangChain is a powerful framework designed to connect large language models (LLMs) to external data sources, tools, and APIs. 
     If you're just getting started, I recently covered the fundamentals in this post: 
-    <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_9.html" target="_blank">Intro to LangChain </a>.
+    <a href="https://pulkit12dhingra.github.io/Blog/content/Langchains_with_Ollama.html" target="_blank">Intro to LangChain </a>.
     It simplifies workflows like Retrieval-Augmented Generation (RAG), allowing you to load documents, embed them, and query intelligently  all in just a few lines of code.
     </p>
 
@@ -148,12 +148,12 @@ print(len(chunks))
   </code></pre>
   <h4 class="mt-4"> Step 3: Define Embeddings</h4>
   <p>
-    Instead of using an external hosted model, we leverage a local embedding model from HuggingFace: 
+    Instead of using an external hosted model, we leverage a local embedding model from HuggingFace via the modern dedicated <code>langchain-huggingface</code> package: 
     <code>sentence-transformers/all-MiniLM-L6-v2</code>. This model is lightweight, fast, and delivers surprisingly strong performance 
     for semantic search and similarity tasks  making it ideal for use in RAG pipelines.
   </p>
   <pre><code class="language-python">
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 # Define the Embeddings
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -166,7 +166,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 
   <h4 class="mt-4"> Step 4: Store Chunks in Chroma DB</h4>
   <p>
-    Once we’ve embedded our text chunks, the next crucial step is storing them in a vector database  and that’s where <strong>Chroma DB</strong> comes in. 
+    Once we’ve embedded our text chunks, the next crucial step is storing them in a vector database using the modern <code>langchain-chroma</code> package. 
     A vectorstore allows us to perform efficient similarity searches based on semantic meaning rather than keyword matches. 
     By persisting the embeddings in Chroma, we enable our RAG pipeline to retrieve the most relevant pieces of information dynamically at query time. 
     Without a vectorstore, the model would have no memory of the document structure or content, making retrieval impossible. 
@@ -174,48 +174,59 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
   </p>
   
   <pre><code class="language-python">
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
+
 # Store chunks in Chroma DB
 vectorstore = Chroma.from_documents(chunks, embedding=embedding_model, persist_directory="./chroma_db")
-retriever = vectorstore.as_retriever()
+retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
   </code></pre>
 
   <h4 class="mt-4"> Step 5: Initialize Ollama with Gemma 3</h4>
   <p>
-    Now we initialize our LLM. <strong>Gemma 3B</strong> is a lightweight and capable model that will be used for the generation step in RAG.
+    Now we initialize our LLM using the modern <code>langchain-ollama</code> package. <strong>Gemma 3B</strong> is a lightweight and capable model that will be used for the generation step in RAG.
   </p>
   <pre><code class="language-python">
-from langchain_community.llms import Ollama
+from langchain_ollama import ChatOllama
 
-# Initialize Ollama with the gemma3 model
-llm = Ollama(model="gemma3")
+# Initialize Ollama with the gemma3 chat model
+llm = ChatOllama(model="gemma3")
   </code></pre>
 
 
-  <h4 class="mt-4"> Step 6: Create the RAG Pipeline</h4>
+  <h4 class="mt-4"> Step 6: Create the Modern RAG Pipeline</h4>
   <p>
-    This step combines the retriever and the LLM into a unified RAG chain. When queried, it retrieves the most relevant chunks and generates an answer.
+    In modern LangChain (0.2/0.3+), legacy chains like <code>RetrievalQA</code> are replaced by modular LCEL chains via <code>create_retrieval_chain</code> and <code>create_stuff_documents_chain</code>. This provides full visibility, streaming capability, and clean separation between formatting context and model prompting.
   </p>
   <pre><code class="language-python">
-from langchain.chains import RetrievalQA  # use create_retrieval_chain in langchain>=0.2
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
 
-# Create RAG pipeline
-
-rag_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    retriever=retriever,
-    return_source_documents=True
+# Define system prompt incorporating retrieved context
+system_prompt = (
+    "You are an assistant for question-answering tasks. "
+    "Use the following pieces of retrieved context to answer the question. "
+    "If you don't know the answer, say that you don't know.\n\n"
+    "{context}"
 )
+prompt = ChatPromptTemplate.from_messages([
+    ("system", system_prompt),
+    ("human", "{input}"),
+])
+
+# Build document combination chain and connect to retriever
+question_answer_chain = create_stuff_documents_chain(llm, prompt)
+rag_chain = create_retrieval_chain(retriever, question_answer_chain)
   </code></pre>
 
 
   <h4 class="mt-4"> Querying the RAG Pipeline</h4>
   <pre><code class="language-python">
-# Now we can query it
+# Query using .invoke()
 query = "Has pulkit worked on AWS?" 
-response = rag_chain(query)
+response = rag_chain.invoke({"input": query})
 
-print("Answer:", response['result'])
+print("Answer:", response["answer"])
   </code></pre>
 <h3>Output</h3>
 <pre><code class="language-python">Answer: Yes, based on the provided text, 

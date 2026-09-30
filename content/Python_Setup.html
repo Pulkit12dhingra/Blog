@@ -119,18 +119,15 @@
       Virtual environments let you isolate dependencies per project, so packages from one project don’t mess with another.
     </p>
 
-    <pre class="bg-light p-3 rounded">
-  <code># Create a virtual environment
-  python -m venv env
-  
-  # Activate it
-  # On Windows:
-  env\Scripts\activate
-  
-  # On macOS/Linux:
-  source env/bin/activate
-  </code>
-    </pre>
+    <pre><code class="language-bash"># Create a virtual environment
+python -m venv env
+
+# Activate it
+# On Windows:
+env\Scripts\activate
+
+# On macOS/Linux:
+source env/bin/activate</code></pre>
   
     <p>
       Once activated, your terminal will show the environment name  and now you're installing packages into that isolated space.
@@ -141,34 +138,41 @@
       With your virtual environment active, use <code>pip</code> to install libraries:
     </p>
   
-    <pre class="bg-light p-3 rounded">
-  <code>pip install numpy pandas matplotlib</code>
-    </pre>
+    <pre><code class="language-bash">pip install numpy pandas matplotlib</code></pre>
   
     <p>
       You can freeze your installed packages for future sharing:
     </p>
   
-    <pre class="bg-light p-3 rounded">
-  <code>pip freeze > requirements.txt</code>
-    </pre>
+    <pre><code class="language-bash">pip freeze > requirements.txt</code></pre>
   
     <p>
       And later recreate the exact environment with:
     </p>
   
-    <pre class="bg-light p-3 rounded">
-  <code>pip install -r requirements.txt</code>
-    </pre>
+    <pre><code class="language-bash">pip install -r requirements.txt</code></pre>
   
     <h4 class="mt-4"> Pro Tip: Use <code>python -m pip</code></h4>
     <p>
       To avoid path issues, it’s best practice to use:
     </p>
   
-    <pre class="bg-light p-3 rounded">
-  <code>python -m pip install flask</code>
-    </pre>
+    <pre><code class="language-bash">python -m pip install flask</code></pre>
+
+    <!-- Modern Fast-Track Card -->
+    <div class="card border-primary my-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title text-primary"><i class="bi bi-lightning-charge-fill me-2"></i>Modern Alternative: Ultra-Fast Setup with UV</h5>
+        <p class="card-text mb-2">
+          Want a setup that runs 10–100x faster than standard pip? <strong>Astral's UV</strong> has become the modern standard in Python development, replacing pip, venv, and pyenv with a single blazingly fast Rust binary:
+        </p>
+        <pre><code class="language-bash"># Install UV, create an environment, and install packages in seconds
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv
+uv pip install numpy pandas matplotlib</code></pre>
+        <a href="./UV_Package_Manager.html" class="btn btn-outline-primary btn-sm mt-2">Read the Full UV Package Manager Guide →</a>
+      </div>
+    </div>
   
     <h4 class="mt-4"> That’s It!</h4>
     <p>
@@ -176,7 +180,7 @@
     </p>
   
     <p class="fw-bold">
-      In future posts, I’ll dive into using tools like Conda, Poetry, and virtualenvwrapper  so stay tuned!
+      Check out our guides on <a href="./UV_Package_Manager.html">UV</a>, <a href="./Pyproject_TOML_Guide.html">pyproject.toml</a>, and <a href="./Ruff_Linter_Formatter.html">Ruff</a> for the ultimate modern Python workflow!
     </p>
   </div>
 

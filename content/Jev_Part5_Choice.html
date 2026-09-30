@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="robots" content="index, follow" /><meta name="author" content="Pulkit Dhingra" />
+  <link rel="canonical" href="https://pulkit12dhingra.github.io/Blog/content/Jev_Part5_Choice.html" /><meta name="description" content="Use Jev Choice to classify and route support tickets. Define clear option criteria, inspect probabilities and confidence, and handle ambiguous cases." />
+  <title>Choice in Practice: Routing Tickets by Intent with Jev | Byte-Sized-Brilliance-AI</title><link rel="icon" type="image/png" href="../img/icon.png" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <meta property="og:title" content="Choice in Practice: Routing Tickets by Intent with Jev" /><meta property="og:description" content="Classify customer tickets into defined support queues using Choice, probabilities, and confidence." /><meta property="og:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" /><meta property="og:type" content="article" /><meta property="og:url" content="https://pulkit12dhingra.github.io/Blog/content/Jev_Part5_Choice.html" />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Choice in Practice: Routing Tickets by Intent with Jev" /><meta name="twitter:description" content="Classify customer tickets into defined support queues using Choice, probabilities, and confidence." /><meta name="twitter:image" content="https://pulkit12dhingra.github.io/Blog/img/social-preview.jpg" />
+  <link rel="stylesheet" href="../data/style.css?v=2.0.0" /><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" /></noscript>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" /></noscript>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" /><noscript><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" /><link rel="stylesheet" href="../data/blog-post.css?v=1.0.0" />
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4"><div><p class="text-muted small mb-1">Jev Series · Part 5 of 6 · Intermediate</p><h2 class="fw-bold mb-0">Choice in Practice: Routing Tickets by Intent with Jev</h2></div><a href="../index.html" class="btn btn-primary mt-2 mt-md-0">Back to Home</a></div>
+  <hr />
+  <p class="lead">When a support ticket belongs in one of a known set of queues, Choice can classify it into that set. The result includes both the selected option and the probability distribution, so application code can route clear cases and handle ambiguity deliberately.</p>
+
+  <h4 class="mt-5">1. Define the destinations</h4>
+  <p>Suppose a support team routes incoming messages to billing, technical support, account support, or an “other” queue. Write a description for each option that explains its boundary. The model needs to distinguish similar options from the ticket's content, not merely repeat a label.</p>
+  <pre><code class="language-python">from typesafe_sdk import Choice
+
+team_question = Choice(
+    instructions="Which team should handle the customer's primary request?",
+    criteria={
+        "billing": "Charges, invoices, refunds, or subscriptions",
+        "technical": "Bugs, errors, outages, or integration problems",
+        "account": "Login, profile, permissions, or account security",
+        "other": "A request that does not fit the listed support teams",
+    },
+)</code></pre>
+  <p>Choice is appropriate because these destinations are categories, not levels on a scale. Include a fallback when real tickets can fall outside the listed options. The API allows up to 255 options, but more options still require clear descriptions and evaluation.</p>
+
+  <h4 class="mt-5">2. Evaluate a ticket</h4>
+  <pre><code class="language-python">from typesafe_sdk import Choice, TypeSafeClient
+
+message = "My payment was taken twice for the same order."
+questions = {
+    "team": Choice(
+        instructions="Which team should handle the customer's primary request?",
+        criteria={
+            "billing": "Charges, invoices, refunds, or subscriptions",
+            "technical": "Bugs, errors, outages, or integration problems",
+            "account": "Login, profile, permissions, or account security",
+            "other": "A request that does not fit the listed support teams",
+        },
+    )
+}
+
+with TypeSafeClient() as client:
+    response = client.system_one(state=message, questions=questions)
+
+answer = response.answers["team"]
+print(answer.choice)
+print(answer.probabilities)
+print(answer.confidence)</code></pre>
+  <p>The example demonstrates SDK field access. No live classification output is included. In an application, log the result alongside the model version and the outcome of the routing policy so behavior can be evaluated later.</p>
+
+  <h4 class="mt-5">3. Understand the distribution</h4>
+  <p><code>choice</code> is the option with the highest probability. <code>probabilities</code> gives the distribution over every option, and <code>confidence</code> summarizes how concentrated that distribution is. A confident classification can still be wrong, so evaluate the complete route against labeled examples.</p>
+  <p>A Choice distribution always assigns its probability across the supplied options. That means some option will rank first even when none is a good fit. An “other” option can provide an escape route, but if the application must decide whether the content answers a question at all, pair the ranking with a separate Noul question that checks for existence or relevance.</p>
+
+  <h4 class="mt-5">4. Add a review path</h4>
+  <pre><code class="language-python">MIN_CONFIDENCE = 0.65
+
+
+def route_team(answer) -&gt; str:
+    if answer.confidence &lt; MIN_CONFIDENCE:
+        return "manual_triage"
+    return answer.choice</code></pre>
+  <p>The confidence threshold is an example, not a TypeSafe default. Set it from the cost of a wrong route, the cost of manual review, and validation results. For high-impact actions, a lower-risk design may require confirmation even when the classification is clear.</p>
+
+  <h4 class="mt-5">5. Make the classifier testable</h4>
+  <p>Maintain labeled examples for every team and include boundary cases, such as a message that mentions both a duplicate charge and a login failure. Review not only whether the top choice is right, but also whether the probability distribution and confidence support the application's action.</p>
+  <ul><li>Keep the category set aligned with the real routing destinations.</li><li>Write parallel, contrasting criteria for easily confused teams.</li><li>Use a fallback option for uncovered cases.</li><li>Send ambiguous or costly decisions to the appropriate review path.</li></ul>
+  <p><strong>Next:</strong> Part 6 combines Choice, Score, and Noul into one support-ticket workflow.</p>
+  <ul><li><a href="https://docs.typesafe.ai/primitives/choice" target="_blank" rel="noopener noreferrer">Official Choice guide</a></li><li><a href="https://docs.typesafe.ai/concepts/how-to-build-with-system-one" target="_blank" rel="noopener noreferrer">Workflow design guidance</a></li></ul>
+</div>
+<footer class="bg-light py-4 mt-5 border-top"><div class="container text-center"><p class="text-muted mb-1"><i class="bi bi-person-circle me-2"></i><strong>Written by:</strong> <a href="https://www.linkedin.com/in/pulkit-dhingra-4b7312193/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Pulkit Dhingra</a></p><p class="text-muted small mb-0">2026 Byte-Sized-Brilliance-AI. All rights reserved.</p></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script><script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script><script src="../data/blog-post.js?v=1.0.0"></script>
+</body>
+</html>

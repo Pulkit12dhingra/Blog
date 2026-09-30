@@ -166,10 +166,24 @@ ruff check . --fix && ruff format .</code></pre>
   <p>Configure Ruff using <code>pyproject.toml</code>, <code>ruff.toml</code>, or <code>.ruff.toml</code>:</p>
 
   <h5 class="mt-3">Basic Configuration (pyproject.toml)</h5>
+  <div class="alert alert-info py-2 px-3 small">
+    <strong>Modern Schema:</strong> In current Ruff releases, lint settings belong under <code>[tool.ruff.lint]</code> rather than the root <code>[tool.ruff]</code> table.
+  </div>
   <pre><code class="language-python">[tool.ruff]
-# Set line length
+# Set line length and target Python version
 line-length = 88
+target-version = "py312"
 
+# Exclude directories
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
 # Enable specific rule sets
 select = [
     "E",   # pycodestyle errors
@@ -184,17 +198,11 @@ select = [
 # Ignore specific rules
 ignore = ["E501"]  # Line too long
 
-# Exclude directories
-exclude = [
-    ".git",
-    ".venv",
-    "__pycache__",
-    "build",
-    "dist",
-]
-
 # Fix automatically when possible
-fix = true
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["myproject"]
 
 [tool.ruff.format]
 # Use double quotes

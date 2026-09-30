@@ -11,6 +11,72 @@
 
   <!-- Blog Posts -->
   <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part11_Production.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part10_Extraction_Verification.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part9_Guardrails_Citations.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part8_RAG_Passages.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part7_Fanout_Composite.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part6_Workflow.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part5_Choice.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part4_Score.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part3_Noul.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part2_Quickstart.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pulkit12dhingra.github.io/Blog/content/Jev_Part1_Introduction.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://pulkit12dhingra.github.io/Blog/content/Google_ADK_Extras.html</loc>
     <lastmod>2026-03-28</lastmod>
     <changefreq>monthly</changefreq>

@@ -89,7 +89,7 @@
     </div>
     <hr />
     <p><strong> New to Ollama?</strong> Before diving in, make sure you’ve got it set up locally. Follow this guide first:  
-        <a href="https://pulkit12dhingra.github.io/Blog/content/Blog_8.html" target="_blank">
+        <a href="https://pulkit12dhingra.github.io/Blog/content/Setting_up_Ollama.html" target="_blank">
           How to Setup Ollama on Your Machine 
         </a>
       </p>
@@ -110,48 +110,51 @@
 
     <h4> Two Ways to Use the Ollama Model</h4>
     <p>LangChain supports Ollama models  and there are two primary interfaces depending on your use case.</p>
+    <div class="alert alert-info py-2 px-3 small">
+      <strong>Modern Trend Note:</strong> In LangChain 0.2+, Ollama integrations have moved to the dedicated official partner package <code>langchain-ollama</code> (install via <code>pip install langchain-ollama</code> or <code>uv add langchain-ollama</code>). This replaces legacy <code>langchain_community</code> wrappers and supports native streaming, structured outputs, and tool calling.
+    </div>
 
-    <h5>Option 1: Plain Completion</h5>
-    <pre><code class="language-python">from langchain_community.llms import Ollama
+    <h5>Option 1: Plain Completion (OllamaLLM)</h5>
+    <pre><code class="language-python">from langchain_ollama import OllamaLLM
 
-llm = Ollama(model="gemma3")
-response = llm("What is the capital of France?")
+llm = OllamaLLM(model="gemma3")
+response = llm.invoke("What is the capital of France?")
 print(response)</code></pre>
 <div class="mb-4">
     <img src="../img/Blog_9_2.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
   </div>
   
 
-    <h5> Option 2: Chat Interface</h5>
-    <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
+    <h5> Option 2: Chat Interface (ChatOllama)</h5>
+    <pre><code class="language-python">from langchain_ollama import ChatOllama
 
 model = ChatOllama(model="gemma3")
 model.invoke("Hello, world!")</code></pre>
 <div class="mb-4">
     <img src="../img/Blog_9_3.png" alt="LangChain Logo" class="img-fluid rounded shadow" style="max-width: 400px; width: 100%; height: auto;" />
   </div>
-    <h4> Ollama vs. ChatOllama  What's the Difference?</h4>
+    <h4> OllamaLLM vs. ChatOllama  What's the Difference?</h4>
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead class="table-dark">
           <tr>
             <th>Feature / Use Case</th>
-            <th><code>Ollama</code> (`langchain.llms`)</th>
-            <th><code>ChatOllama</code> (`langchain_community.chat_models`)</th>
+            <th><code>OllamaLLM</code> (`langchain_ollama`)</th>
+            <th><code>ChatOllama</code> (`langchain_ollama`)</th>
           </tr>
         </thead>
         <tbody>
           <tr><td>Input</td><td>Text string</td><td>Message objects (e.g., HumanMessage)</td></tr>
           <tr><td>Output</td><td>Text completion</td><td>Chat message (.content)</td></tr>
           <tr><td>Roles</td><td> Not supported</td><td> Supported (system, user, assistant)</td></tr>
-          <tr><td>Best For</td><td>One-shot prompts</td><td>Multi-turn chat, assistants</td></tr>
-          <tr><td>Integrations</td><td>PromptTemplate, LLMChain</td><td>ChatPromptTemplate, ChatChain</td></tr>
+          <tr><td>Best For</td><td>One-shot prompts</td><td>Multi-turn chat, assistants, tool-use</td></tr>
+          <tr><td>Integrations</td><td>PromptTemplate, LCEL</td><td>ChatPromptTemplate, LangGraph</td></tr>
         </tbody>
       </table>
     </div>
 
     <h4> Using Chat Messages</h4>
-    <pre><code class="language-python">from langchain_community.chat_models import ChatOllama
+    <pre><code class="language-python">from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 
 model = ChatOllama(model="gemma3")

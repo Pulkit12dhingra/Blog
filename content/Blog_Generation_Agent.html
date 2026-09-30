@@ -193,7 +193,7 @@ chunks = text_splitter.split_documents(documents)
   This improves retrieval accuracy when searching for similar content during generation, ultimately leading to better and more coherent blog outputs.
 </p>
 
-<pre><code class="language-python">from langchain_community.embeddings import HuggingFaceEmbeddings
+<pre><code class="language-python">from langchain_huggingface import HuggingFaceEmbeddings
 
 embedding_model = HuggingFaceEmbeddings(model_name="intfloat/e5-base-v2")
 </code></pre>
@@ -224,8 +224,10 @@ retriever = vectorstore.as_retriever()
 
 
   <h5> Ollama LLM Setup</h5>
-  <p>We use the <code>qwen2.5-coder:7b</code> model from Ollama with a custom streaming callback.</p>
-  <pre><code class="language-python">llm = Ollama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
+  <p>We use the <code>qwen2.5-coder:7b</code> model via <code>langchain-ollama</code> with a custom streaming callback.</p>
+  <pre><code class="language-python">from langchain_ollama import ChatOllama
+
+llm = ChatOllama(model="qwen2.5-coder:7b", callbacks=[WordByWordPrinter()])</code></pre>
 
 <h5>History-Aware Question Rewriting</h5>
 <p>
